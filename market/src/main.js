@@ -4,6 +4,8 @@ import Vue from 'vue'
 import App from './App'
 // 引入路由
 import router from './router'
+// 引入vuex
+import store from './store'
 // 引入iview
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
@@ -15,6 +17,7 @@ Vue.use(iView)
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })

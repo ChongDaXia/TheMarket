@@ -11,7 +11,7 @@
                         </MenuItem>
                         <MenuItem name="2">
                             <Dropdown>
-                                <a href="javascript:void(0)">
+                                <a class="a" href="javascript:void(0)">
                                     <Icon type="md-person" />
                                     个人信息管理
                                 </a>
@@ -32,7 +32,9 @@
                                 用户管理
                             </template>
                             <MenuItem name="1-1">添加新用户</MenuItem>
-                            <MenuItem name="1-2">用户列表</MenuItem>
+                            <MenuItem name="1-2">
+                                <router-link to="/list">用户列表</router-link>
+                            </MenuItem>
                         </Submenu>
                         <Submenu name="2">
                             <template slot="title">
@@ -96,7 +98,8 @@
                         <BreadcrumbItem>Components</BreadcrumbItem>
                         <BreadcrumbItem>Layout</BreadcrumbItem>
                     </Breadcrumb>
-                    <Content :style="{padding: '24px', minHeight: '980px', background: '#fff'}">
+                    <Content class="content">
+                        <router-view></router-view>
                     </Content>
                 </Layout>
             </Layout>
@@ -132,10 +135,15 @@ export default {
     margin: 0 auto;
     margin-right: 0px;
 }
-a{
+.a{
     color: rgba(255,255,255,.7);
 }
-a:hover{
+.a:hover{
     color: #fff;
+}
+.content{
+    height: 980px;
+    padding: 48px;
+    background: #fff;
 }
 </style>

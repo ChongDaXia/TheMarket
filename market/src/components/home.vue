@@ -24,6 +24,7 @@
                     </div>
                 </Menu>
             </Header>
+            <!-- <v-memu></v-memu> -->
             <Layout>
                 <Sider hide-trigger :style="{backgroud: '#fff'}">
                     <Menu theme="light" width="auto" active-name="1-1" :open-names="['1']">
@@ -107,8 +108,13 @@
     </div>
 </template>
 <script>
-export default {
-}
+// 引入导航菜单
+// import menu from './components/menu.vue'
+// export default {
+//   components: {
+//     'v-menu': menu
+//   }
+// }
 </script>
 <style scoped>
 .layout{

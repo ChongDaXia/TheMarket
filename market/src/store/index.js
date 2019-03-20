@@ -8,9 +8,9 @@ const state = {
     // 登录状态
     isLogin: false,
     // 用户id
-    userId: window.sessionStorage.getItem('userId'),
+    userId: localStorage.getItem('userId'),
     // 用户名
-    username: window.sessionStorage.getItem('username')
+    username: localStorage.getItem('username')
 }
 // 实时监听state值的变化
 const getters = {

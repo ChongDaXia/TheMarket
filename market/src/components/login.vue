@@ -23,6 +23,7 @@
     </div>
 </template>
 <script>
+import {mapActions} from 'vuex'
 export default {
   data () {
     // 自定义验证规则
@@ -65,6 +66,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions({add_Routes: 'add_Routes'}),
     // 登录表单验证
     handleSubmit (name) {
       this.$refs[name].validate(valid => {
@@ -73,12 +75,14 @@ export default {
             username: this.$refs[name].model.username,
             password: this.$refs[name].model.password
           }
+          // this.$api.login.login(JSON.stringify(data)).then((res) => {}).catch()
           if(data.username === 'admin' && data.password === '123'){
             this.$store.dispatch('setUserName', data.username).then(() => {
               this.$Message.info({
                 content: '登录成功！',
                 duration: 3
               })
+              localStorage.setItem('Flag', 'isLogin')
               this.$router.push({name: 'home'})
             })
           } else {

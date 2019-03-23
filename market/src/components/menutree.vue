@@ -3,6 +3,7 @@
         <Menu theme="light" width="auto" active-name="1-1" :open-names="['1']">
             <Submenu name="1">
                 <template slot="title">
+                    <Icon type="ios-contacts" />
                     用户管理
                 </template>
                 <MenuItem name="1-1">添加新用户</MenuItem>
@@ -12,6 +13,7 @@
             </Submenu>
             <Submenu name="2">
                 <template slot="title">
+                    <Icon type="ios-home" />
                     门店管理
                 </template>
                 <MenuItem name="2-1">添加门店</MenuItem>
@@ -19,6 +21,7 @@
             </Submenu>
             <Submenu name="3">
                 <template slot="title">
+                    <Icon type="ios-people" />
                     员工管理
                 </template>
                 <MenuItem name="3-1">添加员工</MenuItem>
@@ -26,6 +29,7 @@
             </Submenu>
             <Submenu name="4">
                 <template slot="title">
+                    <Icon type="md-happy" />
                     会员管理
                 </template>
                 <MenuItem name="4-1">添加会员</MenuItem>
@@ -34,6 +38,7 @@
             </Submenu>
             <Submenu name="5">
                 <template slot="title">
+                    <Icon type="md-cart" />
                     商品管理
                 </template>
                 <MenuItem name="5-1">添加商品</MenuItem>
@@ -45,6 +50,7 @@
             </Submenu>
             <Submenu name="6">
                 <template slot="title">
+                    <Icon type="ios-construct" />
                     维修管理
                 </template>
                 <MenuItem name="6-1">申请维修</MenuItem>
@@ -53,6 +59,7 @@
             </Submenu>
             <Submenu name="7">
                 <template slot="title">
+                    <Icon type="md-chatboxes" />
                     通知管理
                 </template>
                 <MenuItem name="7-1">发送通知</MenuItem>
@@ -60,6 +67,7 @@
             </Submenu>
             <Submenu name="8">
                 <template slot="title">
+                    <Icon type="ios-stats" />
                     财务管理
                 </template>
                 <MenuItem name="8-1">财务统计报表</MenuItem>

@@ -6,7 +6,7 @@
                     <div class="layout-logo"></div>
                     <div class="layout-nav">
                         <MenuItem name="1">
-                            <a class="a" @click="change_loginout">
+                            <a class="a" @click="loginout_isShowModal=true">
                                 <Icon type="md-power" />
                                 退出登录
                             </a>
@@ -21,8 +21,16 @@
                                     个人信息管理
                                 </a>
                                 <DropdownMenu slot="list">
-                                    <DropdownItem>基本信息</DropdownItem>
-                                    <DropdownItem>修改密码</DropdownItem>
+                                    <DropdownItem>
+                                        <a @click="personalinfo">
+                                            基本信息
+                                        </a>
+                                    </DropdownItem>
+                                    <DropdownItem>
+                                        <a @click="passwordchange">
+                                            修改密码
+                                        </a>
+                                    </DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
                         </MenuItem>
@@ -36,9 +44,11 @@
                 </Sider>
                 <Layout :style="{padding: '0 24px 24px'}">
                     <Breadcrumb :style="{margin: '24px 0'}">
-                        <BreadcrumbItem>Home</BreadcrumbItem>
-                        <BreadcrumbItem>Components</BreadcrumbItem>
-                        <BreadcrumbItem>Layout</BreadcrumbItem>
+                        <BreadcrumbItem to="/">
+                            <Icon type="ios-apps" />主页
+                        </BreadcrumbItem>
+                        <BreadcrumbItem>菜单名</BreadcrumbItem>
+                        <BreadcrumbItem>菜单项</BreadcrumbItem>
                     </Breadcrumb>
                     <Content class="content">
                         <!-- 页面内容展示 -->
@@ -73,8 +83,31 @@ export default {
     loginout_cancel () {
       this.$Message.info('取消退出')
     },
-    change_loginout () {
-        this.loginout_isShowModal = true
+    // 基本信息提示框
+    personalinfo () {
+      this.$Modal.confirm ({
+        content: '<p>信息</p>',
+        okText: '修改',
+        onOk: () => {
+          this.$Message.info('基本信息修改成功')
+        },
+        onCancel () {
+          this.$Message.info('取消基本信息修改')
+        }
+      })
+    },
+    // 忘记密码提示框
+    passwordchange () {
+      this.$Modal.confirm ({
+        content: '<p>密码</p>',
+        okText: '修改',
+        onOk: () => {
+          this.$Message.info('密码修改成功')
+        },
+        onCancel () {
+          this.$Message.info('取消密码修改')
+        }
+      })
     }
   }
 }

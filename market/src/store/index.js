@@ -9,8 +9,6 @@ const state = {
     isLogin: false,
     // 用户id
     userId: localStorage.getItem('userId'),
-    // 用户名
-    username: localStorage.getItem('username'),
     // 导航菜单
     memuTree: []
 }
@@ -20,8 +18,6 @@ const getters = {
     isLogin: state => state.isLogin,
     // 获取用户id
     userId: state => state.userId,
-    // 获取用户名
-    username: state => state.username,
     // 获取导航菜单
     memuTree: state => state.memuTree
 }
@@ -34,10 +30,6 @@ const mutations = {
     // 保存用户id
     setUserId (state, date) {
         state.userId = date
-    },
-    // 保存用户名
-    setUserName (state, data) {
-        state.username = data
     },
     // 保存导航菜单
     setMenuTree (state, data) {
@@ -53,10 +45,6 @@ const actions = {
     // 改变用户id
     setUserId ({commit}, data) {
         commit('setUserId', data)
-    },
-    //改变用户名
-    setUserName ({commit}, data) {
-        commit('setUserName', data)
     },
     // 改变导航菜单
     setMenuTree ({commit}, data) {

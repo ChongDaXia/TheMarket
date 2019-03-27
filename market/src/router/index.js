@@ -3,7 +3,8 @@ import Router from 'vue-router'
 // 引入项目的模块组件
 import login from '@/components/login'
 import home from '@/components/home'
-import list from '@/components/list'
+import showlist from '@/components/list'
+import addsome from '@/components/addsome'
 
 Vue.use(Router)
 
@@ -26,9 +27,17 @@ export default new Router({
       },
       children: [
         {
-          path: '/list',
-          name: 'list',
-          component: list,
+          path: '/showlist',
+          name: 'showlist',
+          component: showlist,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/addsome',
+          name: 'addsome',
+          component: addsome,
           meta: {
             isLogin: true
           }

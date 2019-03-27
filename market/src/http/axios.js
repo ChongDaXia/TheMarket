@@ -1,12 +1,12 @@
+// 进行远程调用
 import axios from 'axios'
+// 包装param参数
 import qs from 'qs'
 
-// 响应时间
-axios.defaults.timeout = 5000;
 // 请求头格式
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+//axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
 // 接口地址
-axios.defaults.baseURL = 'http://localhost:8085';
+axios.defaults.baseURL = 'http://localhost:8088';
 
 // post传参序列化（添加请求拦截器）
 axios.interceptors.request.use ((config) => {
@@ -20,7 +20,8 @@ axios.interceptors.request.use ((config) => {
 }
 // 返回状态判断（添加响应拦截器）
 axios.interceptors.response.use ((res) => {
-    return res
+    // 对响应数据做些事
+    return res.data
 }), (error) => {
     return Promise.reject(error)
 }
@@ -34,7 +35,7 @@ export function fetchPost(url, params) {
                 reject(err);
             })
             .catch((error) => {
-               reject(error)
+                reject(error)
             })
     })
 }

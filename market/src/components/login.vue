@@ -15,6 +15,12 @@
                     </div>
                     <Icon type="md-lock" />
                 </FormItem>
+                <FormItem class="form-item" prop="role">
+                    <RadioGroup v-model="loginForm.role">
+                        <Radio label="用户"></Radio>
+                        <Radio label="管理员"></Radio>
+                    </RadioGroup>
+                </FormItem>
                 <div class="form-item">
                     <Button class="login-btn" shape="circle" long @click="handleSubmit('loginForm')">登录</Button>
                 </div>
@@ -23,7 +29,7 @@
     </div>
 </template>
 <script>
-import {mapActions} from 'vuex'
+import {login} from '../http/moudules/login'
 export default {
   data () {
     // 自定义验证规则
@@ -46,7 +52,8 @@ export default {
       // 登录表单字段
       loginForm: {
         username: '',
-        password: ''
+        password: '',
+        role: '用户'
       },
       // 登录表单验证
       loginFormRule: {
@@ -66,28 +73,37 @@ export default {
     }
   },
   methods: {
-    ...mapActions({add_Routes: 'add_Routes'}),
     // 登录表单验证
     handleSubmit (name) {
       this.$refs[name].validate(valid => {
         if (valid) {
-          let data = {
-            username: this.$refs[name].model.username,
-            password: this.$refs[name].model.password
+          let logindata = {
+            userName: this.$refs[name].model.username,
+            password: this.$refs[name].model.password,
+            role: this.$refs[name].model.role
           }
-          // this.$api.login.login(JSON.stringify(data)).then((res) => {}).catch()
-          if(data.username === 'admin' && data.password === '123'){
-            this.$store.dispatch('setUserName', data.username).then(() => {
-              this.$Message.info({
-                content: '登录成功！',
-                duration: 3
+          login(logindata).then(data => {
+            if(data.code == '200'){
+              //登录成功
+              this.$store.dispatch('setUserId', data.userId).then(() => {
+                this.$Message.info({
+                  content: '登录成功！',
+                  duration: 3
+                })
+                localStorage.setItem('userId',  data.userId)
+                localStorage.setItem('Flag', 'isLogin')
+                this.$router.push({name: 'home'})
               })
-              localStorage.setItem('Flag', 'isLogin')
-              this.$router.push({name: 'home'})
-            })
-          } else {
-            this.$Message.error('用户名或者密码错误')
-          }
+            }
+            if(data.code == "500") {
+              //登录失败
+              this.$Message.error('用户名或者密码错误')
+            }
+            if(data.code == "300") {
+              //无权限
+              this.$Message.error('请重新选择登录权限')
+            }
+          })
         } else {
           this.$Message.error('请输入用户名或者密码')
         }

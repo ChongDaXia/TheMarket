@@ -6,9 +6,11 @@
                     <Icon type="ios-contacts" />
                     用户管理
                 </template>
-                <MenuItem name="1-1">添加新用户</MenuItem>
+                <MenuItem name="1-1">
+                    <a @click="linkto('1-1')">添加新用户</a>
+                </MenuItem>
                 <MenuItem name="1-2">
-                    <router-link to="/list">用户列表</router-link>
+                    <router-link to="/showlist">用户列表</router-link>
                 </MenuItem>
             </Submenu>
             <Submenu name="2">
@@ -77,6 +79,16 @@
 </template>
 <script>
 export default {
+  methods: {
+    linkto (id) {
+      this.$router.push({
+        path: '/addsome',
+        query: {
+          theid: id
+        }
+      })
+    }
+  }
 }
 </script>
 <style scoped>

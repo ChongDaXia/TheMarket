@@ -22,14 +22,55 @@
                                 </a>
                                 <DropdownMenu slot="list">
                                     <DropdownItem>
-                                        <a @click="personalinfo">
+                                        <a @click="personalinfochange">
                                             基本信息
                                         </a>
+                                        <Modal v-model="personalinfo_isShowModal" :mask-closable="false" @on-ok="personalinfo_ok('personalinfoRef')" @on-cancel="personalinfo_cancel('personalinfoRef')" ok-text="保存">
+                                            <p class="modaltitle">
+                                              <span>基本信息</span>
+                                            </p>
+                                            <Form ref="personalinfoRef" :model="personalinfoForm" :rules="personalinfoRule" :label-width="80">
+                                              <FormItem label="用户Id" prop="userId">
+                                                <Input v-model="personalinfoForm.userId" disabled></Input>
+                                              </FormItem>
+                                              <FormItem label="角色权限" prop="role">
+                                                <Input v-model="personalinfoForm.role" disabled></Input>
+                                              </FormItem>
+                                              <FormItem label="用户名" prop="userName">
+                                                <Input v-model="personalinfoForm.userName"></Input>
+                                              </FormItem>
+                                              <FormItem label="姓名" prop="name">
+                                                <Input v-model="personalinfoForm.name"></Input>
+                                              </FormItem>
+                                              <FormItem label="联系电话" prop="mobileNo">
+                                                <Input v-model="personalinfoForm.mobileNo"></Input>
+                                              </FormItem>
+                                              <FormItem label="身份证号码" prop="idcardNo">
+                                                <Input v-model="personalinfoForm.idcardNo"></Input>
+                                              </FormItem>
+                                            </Form>
+                                        </Modal>
                                     </DropdownItem>
                                     <DropdownItem>
-                                        <a @click="passwordchange">
+                                        <a @click="passwordchange_isShowModal=true">
                                             修改密码
                                         </a>
+                                        <Modal v-model="passwordchange_isShowModal" :mask-closable="false" @on-ok="passwordchange_ok('passwordchangeRef')" @on-cancel="passwordchange_cancel('passwordchangeRef')" ok-text="修改">
+                                          <p class="modaltitle">
+                                              <span>修改密码</span>
+                                          </p>
+                                          <Form ref="passwordchangeRef" :model="passwordchangeForm" :rules="passwordchangeRule" :label-width="80">
+                                              <FormItem label="旧密码" prop="oldpassword">
+                                                  <Input v-model="passwordchangeForm.oldpassword"></Input>
+                                              </FormItem>
+                                              <FormItem label="新密码" prop="newpassword">
+                                                  <Input v-model="passwordchangeForm.newpassword"></Input>
+                                              </FormItem>
+                                              <FormItem label="确认密码" prop="renewpassword">
+                                                  <Input v-model="passwordchangeForm.renewpassword"></Input>
+                                              </FormItem>
+                                          </Form>
+                                        </Modal>
                                     </DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
@@ -48,7 +89,11 @@
                             <Icon type="ios-apps" />主页
                         </BreadcrumbItem>
                         <BreadcrumbItem>菜单名</BreadcrumbItem>
-                        <BreadcrumbItem>菜单项</BreadcrumbItem>
+                        <BreadcrumbItem>
+                          <!-- <a @click="testnet1">
+                            菜单项
+                          </a> -->
+                        </BreadcrumbItem>
                     </Breadcrumb>
                     <Content class="content">
                         <!-- 页面内容展示 -->
@@ -62,11 +107,75 @@
 <script>
 // 引入导航菜单
 import menu from './menutree.vue'
+import {getpersonalinfo, postpersonalinfo,passwordchange} from '../http/moudules/user'
 export default {
   data () {
     return {
       // 退出登录
-      loginout_isShowModal: false
+      loginout_isShowModal: false,
+      // 基本信息修改框
+      personalinfo_isShowModal: false,
+      // 忘记密码修改框
+      passwordchange_isShowModal: false,
+      // 用户基本信息
+      personalinfoForm: {
+        userId: '',
+        role: '',
+        userName: '',
+        name: '',
+        mobileNo: '',
+        idcardNo: ''
+      },
+      // 用户基本信息表单验证
+      personalinfoRule: {
+        userName: [{
+          required: true,
+          trigger: 'blur',
+          message: '请输入用户名'
+        }],
+        name: [{
+          max:20,
+          trigger: 'blur',
+          message: '不大于20哥字符'
+        }],
+        mobileNo: [{
+          trigger: 'blur',
+          pattern:/^\d{11,11}$/,
+          message: '仅支持11位数字'
+        }],
+        idcardNo: [{
+          trigger: 'blur',
+          pattern:/^\d{18,18}$/,
+          message: '仅支持18位数字'
+        }]
+      },
+      // 用户忘记密码
+      passwordchangeForm: {
+        oldpassword: '',
+        newpassword: '',
+        renewpassword: ''
+      },
+      // 用户忘记密码表单验证
+      passwordchangeRule: {
+        oldpassword: [{
+          required: true,
+          trigger: 'blur, change',
+          pattern: /^[a-zA-Z0-9]{6,12}$/,
+          message: '仅支持包含大小写字母或数字的密码，且长度在6-12位之间'
+        }],
+        newpassword: [{
+          required: true,
+          trigger: 'blur, change',
+          pattern: /^[a-zA-Z0-9]{6,12}$/,
+          message: '仅支持包含大小写字母或数字的密码，且长度在6-12位之间'
+        }],
+        renewpassword: [{
+          required: true,
+          trigger: 'blur, change',
+          pattern: /^[a-zA-Z0-9]{6,12}$/,
+          message: '仅支持包含大小写字母或数字的密码，且长度在6-12位之间'
+        }]
+      }
     }
   },
   components: {
@@ -76,38 +185,107 @@ export default {
   methods: {
     // 退出登录提示框
     loginout_ok () {
-      this.$Message.info('已退出登录')
       localStorage.removeItem("Flag")
+      localStorage.removeItem("userId")
+      this.$store.dispatch('setUserId', '')
+      this.loginout_isShowModal = false;
+      this.$Message.info('已退出登录')
       this.$router.push({name: 'login'})
     },
     loginout_cancel () {
       this.$Message.info('取消退出')
+      this.loginout_isShowModal = false;
+    },
+    // 基本信息按钮
+    personalinfochange () {
+      getpersonalinfo({
+        userId: this.$store.state.userId
+      }).then(data => {
+        if(data.code == '200'){
+          this.personalinfoForm.userId=data.userId
+          this.personalinfoForm.role=data.role
+          this.personalinfoForm.userName=data.userName
+          this.personalinfoForm.name=data.name
+          this.personalinfoForm.mobileNo=data.mobileNo
+          this.personalinfoForm.idcardNo=data.idcardNo
+          this.personalinfo_isShowModal = true
+        }
+        if(data.code == "500") {
+          //获取信息失败
+          this.$Message.error('请重新登录')
+        }
+      })
     },
     // 基本信息提示框
-    personalinfo () {
-      this.$Modal.confirm ({
-        content: '<p>信息</p>',
-        okText: '修改',
-        onOk: () => {
-          this.$Message.info('基本信息修改成功')
-        },
-        onCancel () {
-          this.$Message.info('取消基本信息修改')
+    personalinfo_ok (personalinfoRef) {
+      this.$refs[personalinfoRef].validate(valid => {
+        if(valid) {
+          postpersonalinfo(this.personalinfoForm).then(data => {
+            if(data.code == '200'){
+              this.$Message.info('基本信息修改成功')
+              this.personalinfo_isShowModal = false;
+            }
+            if(data.code == "500") {
+              //保存信息失败
+              this.$Message.error('基本信息保存失败')
+            }
+          })
+        } else {
+          this.$refs[personalinfoRef].resetFields
+          this.$Message.error('填写内容不符合规范')
         }
       })
     },
+    personalinfo_cancel (personalinfoRef) {
+      this.$refs[personalinfoRef].resetFields
+      this.$Message.info('取消基本信息修改')
+      this.personalinfo_isShowModal = false;
+    },
     // 忘记密码提示框
-    passwordchange () {
-      this.$Modal.confirm ({
-        content: '<p>密码</p>',
-        okText: '修改',
-        onOk: () => {
-          this.$Message.info('密码修改成功')
-        },
-        onCancel () {
-          this.$Message.info('取消密码修改')
+    passwordchange_ok (passwordchangeRef) {
+      this.$refs[passwordchangeRef].validate(valid => {
+        if(valid){
+          if(this.passwordchangeForm.newpassword !== this.passwordchangeForm.renewpassword){
+            this.$Message.info('两次密码不一致')
+          } else {
+            getpersonalinfo({
+              userId: this.$store.state.userId
+            }).then(data => {
+              if(data.code == '200'){
+                if(this.passwordchangeForm.oldpassword === data.password){
+                  passwordchange({
+                    userId: this.$store.state.userId,
+                    password: this.passwordchangeForm.newpassword
+                  }).then(data => {
+                    if(data.code == '200'){
+                      this.$Message.info('密码修改成功')
+                      this.$refs[passwordchangeRef].resetFields
+                      this.passwordchange_isShowModal = false;
+                    }
+                    if(data.code == "500") {
+                      //保存信息失败
+                      this.$Message.error('密码修改失败')
+                    }
+                  })
+                } else {
+                  this.$Message.error('旧密码错误，请重新输入')
+                }
+              }
+              if(data.code == "500") {
+                //获取信息失败
+                this.$Message.error('请重新登录')
+              }
+            })
+          }
+        } else {
+          this.$Message.error('填写内容不符合规范')
         }
       })
+    },
+    passwordchange_cancel (passwordchangeRef) {
+      this.$refs[passwordchangeRef].resetFields
+      this.$Message.info('取消密码修改')
+      this.passwordchange_isShowModal = false;
     }
   }
 }
@@ -142,6 +320,13 @@ export default {
 }
 .a:hover{
     color: #fff;
+}
+.modaltitle{
+  width: 100%;
+  height: 100px;
+  text-align: center;
+  font-size: 24px;
+  padding-top: 25px;
 }
 .content{
     height: 980px;

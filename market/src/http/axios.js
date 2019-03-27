@@ -20,10 +20,6 @@ axios.interceptors.request.use ((config) => {
 }
 // 返回状态判断（添加响应拦截器）
 axios.interceptors.response.use ((res) => {
-    // 对响应数据做些事
-    if (!res.data.success) {
-        return Promise.reject(res)
-    }
     return res
 }), (error) => {
     return Promise.reject(error)

@@ -4,8 +4,8 @@
             <div v-if="AddUserPage">添加新用户</div>
             <div v-if="AddStorePage">添加新门店</div>
             <div v-if="AddStaffPage">添加新员工</div>
-            <div>添加会员</div>
-            <div>添加商品</div>
+            <div v-if="AddMemberPage">添加新会员</div>
+            <div v-if="AddGoodsPage">添加新商品</div>
             <div>申请维修</div>
             <div>发送通知</div>
         </div>
@@ -35,7 +35,7 @@
                       <Input v-model="newUserForm.mobileNo" placeholder="请输入11位数字"></Input>
                   </FormItem>
                   <FormItem label="身份证号码" prop="idcardNo">
-                      <Input v-model="newUserForm.idcardNo" placeholder="请输入18位数字"></Input>
+                      <Input v-model="newUserForm.idcardNo" placeholder="请输入正确的身份证号码"></Input>
                   </FormItem>
                   <div class="form-item">
                     <Button class="login-btn" shape="circle" @click="resetAdd('newUserRef')">重置</Button>
@@ -90,14 +90,60 @@
                       <Input v-model="newStaffForm.mobileNo" placeholder="请输入11位数字"></Input>
                   </FormItem>
                   <FormItem label="身份证号码" prop="idcardNo">
-                      <Input v-model="newStaffForm.idcardNo" placeholder="请输入18位数字"></Input>
+                      <Input v-model="newStaffForm.idcardNo" placeholder="请输入正确的身份证号码"></Input>
                   </FormItem>
                   <div class="form-item">
                     <Button class="login-btn" shape="circle" @click="resetAdd('newStaffRef')">重置</Button>
                     <Button class="login-btn" shape="circle" @click="submitAddStaff('newStaffRef')">登录</Button>
                   </div>
                   <Modal v-model="addStaffModal" title="确认提示" @on-ok="resubmitAddStaff" @on-cancel="cancelAddStaff">
-                    <p>是否确认保存该？员工</p>
+                    <p>是否确认保存该员工？</p>
+                  </Modal>
+              </Form>
+            </div>
+            <!-- 添加新会员 -->
+            <div class="formtext">
+              <Form ref="newMemberRef" :model="newMemberForm" :rules="newMemberRules" :label-width="80" v-if="AddMemberPage">
+                  <FormItem label="姓名" prop="name">
+                      <Input v-model="newMemberForm.name" placeholder="仅支持2-20位大小写字母或数字、中文"></Input>
+                  </FormItem>
+                  <FormItem label="性别" prop="sex" style="text-align:left">
+                      <RadioGroup v-model="newMemberForm.sex">
+                          <Radio label="女"></Radio>
+                          <Radio label="男"></Radio>
+                      </RadioGroup>
+                  </FormItem>
+                  <FormItem label="联系电话" prop="mobileNo">
+                      <Input v-model="newMemberForm.mobileNo" placeholder="请输入11位数字"></Input>
+                  </FormItem>
+                  <FormItem label="积分" prop="integration" style="text-align:left">
+                      <Input v-model="newMemberForm.integration" style="width:100px;margin-right:10px"></Input>
+                      <span>积分</span>
+                  </FormItem>
+                  <div class="form-item">
+                    <Button class="login-btn" shape="circle" @click="resetAdd('newMemberRef')">重置</Button>
+                    <Button class="login-btn" shape="circle" @click="submitAddMember('newMemberRef')">登录</Button>
+                  </div>
+                  <Modal v-model="addMemberModal" title="确认提示" @on-ok="resubmitAddMember" @on-cancel="cancelAddMember">
+                    <p>是否确认保存该会员？</p>
+                  </Modal>
+              </Form>
+            </div>
+            <!-- 添加新商品 -->
+            <div class="formtext">
+              <Form ref="newGoodsRef" :model="newGoodsForm" :rules="newGoodsRules" :label-width="80" v-if="AddGoodsPage">
+                  <FormItem label="名称" prop="name">
+                      <Input v-model="newGoodsForm.name" placeholder="仅支持2-20位大小写字母或数字、中文"></Input>
+                  </FormItem>
+                  <FormItem label="数量" prop="amount" style="text-align:left">
+                      <InputNumber v-model="newGoodsForm.amount" :min="1"></InputNumber>
+                  </FormItem>
+                  <div class="form-item">
+                    <Button class="login-btn" shape="circle" @click="resetAdd('newGoodsRef')">重置</Button>
+                    <Button class="login-btn" shape="circle" @click="submitAddGoods('newGoodsRef')">添加</Button>
+                  </div>
+                  <Modal v-model="addGoodsModal" title="确认提示" @on-ok="resubmitAddGoods" @on-cancel="cancelAddGoods">
+                    <p>是否确认保存该商品？</p>
                   </Modal>
               </Form>
             </div>
@@ -112,6 +158,9 @@
 <script>
 import {addnewuser} from '../http/moudules/user'
 import {addnewstore} from '../http/moudules/store'
+import {addnewstaff} from '../http/moudules/staff'
+import {addnewmember} from '../http/moudules/member'
+import {addnewgoods} from '../http/moudules/goods'
 export default {
   name: 'addSome',
   data () {
@@ -121,7 +170,9 @@ export default {
       // 页面参数
       AddUserPage: false,
       AddStorePage: false,
-      AddStaffPage: true,
+      AddStaffPage: false,
+      AddMemberPage: false,
+      AddGoodsPage: false,
       // 添加新用户
       newUserForm: {
         userName: '',
@@ -168,7 +219,7 @@ export default {
         }],
         idcardNo: [{
           trigger: 'blur, change',
-          pattern:/^\d{15}|\d{18,18}$/,
+          pattern:/^\d{18}$/,
           message: '请输入正确的身份证号码'
         }]
       },
@@ -233,14 +284,64 @@ export default {
         }],
         idcardNo: [{
           trigger: 'blur, change',
-          pattern:/^\d{15}|\d{18,18}$/,
+          pattern:/^\d{18}$/,
           message: '请输入正确的身份证号码'
         }]
       },
       // 添加新员工二次确认框
       addStaffModal: false,
       // 添加新会员
+      newMemberForm: {
+        name: '',
+        sex: '',
+        mobileNo: '',
+        integration: ''
+      },
+      newMemberRules: {
+        name: [{
+          required: true,
+          trigger: 'blur, change',
+          pattern:/^[\u4E00-\u9FA5A-Za-z0-9]{2,20}$/,
+          message: '仅支持2-20位大小写字母或数字、中文'
+        }],
+        sex: [{
+          required: true,
+          trigger: 'blur, change',
+          message: '请选择性别'
+        }],
+        mobileNo: [{
+          trigger: 'blur, change',
+          pattern:/^\d{11}$/,
+          message: '仅支持11位数字'
+        }],
+        integration: [{
+          trigger: 'blur, change',
+          pattern:/^[1-9]*$/,
+          message: '请输入数字'
+        }]
+      },
+      // 添加新会员二次确认框
+      addMemberModal: false,
       // 添加新商品
+      newGoodsForm: {
+        name: '',
+        amount: 1
+      },
+      newGoodsRules: {
+        name: [{
+          required: true,
+          trigger: 'blur, change',
+          pattern:/^[\u4E00-\u9FA5A-Za-z0-9]{2,20}$/,
+          message: '仅支持2-20位大小写字母或数字、中文'
+        }],
+        amount: [{
+          trigger: 'blur, change',
+          pattern:/^[0-9]*$/,
+          message: '请输入数字'
+        }]
+      },
+      // 添加新商品二次确认框
+      addGoodsModal: false,
       // 申请维修
       // 发送通知
     }
@@ -310,7 +411,7 @@ export default {
       this.$Message.info('取消添加新门店')
     },
     // 添加新员工
-    submitAddStore (name) {
+    submitAddStaff (name) {
       this.$refs[name].validate(valid => {
         if(valid){
           this.addStaffModal=true
@@ -320,11 +421,72 @@ export default {
       })
     },
     resubmitAddStaff () {
-
+      addnewstaff(this.newStaffForm).then(data => {
+        if(data.code == '200'){
+          this.addStaffModal=false
+          this.$Message.info('新员工添加成功')
+          this.$refs['newStaffRef'].resetFields()
+        }
+        if(data.code == "500") {
+          this.$Message.error('新员工添加失败')
+        }
+      })
     },
     cancelAddStaff () {
       this.addStaffModal=false
       this.$Message.info('取消添加新员工')
+    },
+    // 添加新会员
+    submitAddMember (name) {
+      this.$refs[name].validate(valid => {
+        if(valid){
+          this.addMemberModal=true
+        } else {
+          this.$Message.error('填写内容不符合规范')
+        }
+      })
+    },
+    resubmitAddMember () {
+      addnewmember(this.newMemberForm).then(data => {
+        if(data.code == '200'){
+          this.addMemberModal=false
+          this.$Message.info('新会员添加成功')
+          this.$refs['newMemberRef'].resetFields()
+        }
+        if(data.code == "500") {
+          this.$Message.error('新员工添加失败')
+        }
+      })
+    },
+    cancelAddMember () {
+      this.addMemberModal=false
+      this.$Message.info('取消添加新会员')
+    },
+    // 保存新商品
+    submitAddGoods (name) {
+      this.$refs[name].validate(valid => {
+        if(valid){
+          this.addGoodsModal=true
+        } else {
+          this.$Message.error('填写内容不符合规范')
+        }
+      })
+    },
+    resubmitAddGoods () {
+      addnewgoods(this.newGoodsForm).then(data => {
+        if(data.code == '200'){
+          this.addGoodsModal=false
+          this.$Message.info('新商品添加成功')
+          this.$refs['newGoodsRef'].resetFields()
+        }
+        if(data.code == "500") {
+          this.$Message.error('新商品添加失败')
+        }
+      })
+    },
+    cancelAddGoods () {
+      this.addGoodsModal=false
+      this.$Message.info('取消添加新商品')
     }
   }
 }

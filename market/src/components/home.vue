@@ -130,23 +130,23 @@ export default {
       personalinfoRule: {
         userName: [{
           required: true,
-          trigger: 'blur',
+          trigger: 'blur, change',
           message: '请输入用户名'
         }],
         name: [{
           max:20,
-          trigger: 'blur',
+          trigger: 'blur, change',
           message: '不大于20哥字符'
         }],
         mobileNo: [{
-          trigger: 'blur',
-          pattern:/^\d{11,11}$/,
+          trigger: 'blur, change',
+          pattern:/^\d{11}$/,
           message: '仅支持11位数字'
         }],
         idcardNo: [{
-          trigger: 'blur',
-          pattern:/^\d{18,18}$/,
-          message: '仅支持18位数字'
+          trigger: 'blur, change',
+          pattern:/^\d{15}|\d{18}$/,
+          message: '请输入正确的身份证号码'
         }]
       },
       // 用户忘记密码
@@ -187,6 +187,7 @@ export default {
     loginout_ok () {
       localStorage.removeItem("Flag")
       localStorage.removeItem("userId")
+      localStorage.removeItem("role")
       this.$store.dispatch('setUserId', '')
       this.loginout_isShowModal = false;
       this.$Message.info('已退出登录')
@@ -231,13 +232,12 @@ export default {
             }
           })
         } else {
-          this.$refs[personalinfoRef].resetFields
           this.$Message.error('填写内容不符合规范')
         }
       })
     },
     personalinfo_cancel (personalinfoRef) {
-      this.$refs[personalinfoRef].resetFields
+      this.$refs[personalinfoRef].resetFields()
       this.$Message.info('取消基本信息修改')
       this.personalinfo_isShowModal = false;
     },
@@ -246,7 +246,7 @@ export default {
       this.$refs[passwordchangeRef].validate(valid => {
         if(valid){
           if(this.passwordchangeForm.newpassword !== this.passwordchangeForm.renewpassword){
-            this.$Message.info('两次密码不一致')
+            this.$Message.error('两次密码不一致')
           } else {
             getpersonalinfo({
               userId: this.$store.state.userId
@@ -259,7 +259,7 @@ export default {
                   }).then(data => {
                     if(data.code == '200'){
                       this.$Message.info('密码修改成功')
-                      this.$refs[passwordchangeRef].resetFields
+                      this.$refs[passwordchangeRef].resetFields()
                       this.passwordchange_isShowModal = false;
                     }
                     if(data.code == "500") {
@@ -283,7 +283,7 @@ export default {
       })
     },
     passwordchange_cancel (passwordchangeRef) {
-      this.$refs[passwordchangeRef].resetFields
+      this.$refs[passwordchangeRef].resetFields()
       this.$Message.info('取消密码修改')
       this.passwordchange_isShowModal = false;
     }
@@ -295,9 +295,9 @@ export default {
     width: 100%;
     height: 100%;
     position: relative;
-    overflow: hidden;
     border: 1px solid #d7dde4;
     background: #f5f7f9;
+    overflow: scroll;
     border-radius: 4px;
 }
 .layout-logo{
@@ -329,7 +329,7 @@ export default {
   padding-top: 25px;
 }
 .content{
-    height: 980px;
+    height: 900px;
     padding: 48px;
     background: #fff;
 }

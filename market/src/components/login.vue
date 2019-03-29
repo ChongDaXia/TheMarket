@@ -1,5 +1,5 @@
 <template>
-    <div class="login" @keyup.enter="handleSubmit('loginForm')">
+    <div class="login">
         <div class="login-box">
             <div class="title">登录</div>
             <Form ref="loginForm" :model="loginForm" :rules="loginFormRule">
@@ -25,6 +25,20 @@
                     <Button class="login-btn" shape="circle" long @click="handleSubmit('loginForm')">登录</Button>
                 </div>
             </Form>
+        </div>
+        <div class="login-text">
+            <div class="web-title">XUHONGMEI</div>
+            <div class="web-text">商业中心管理系统</div>
+            <div class="web-text-min">
+              <p>Business center</p>
+              <p>management system</p>
+            </div>
+            <div class="stars"></div>
+            <div class="twinkling"></div>
+            <div class="clouds"></div>
+        </div>
+        <div class="login-bg">
+          22
         </div>
     </div>
 </template>
@@ -90,6 +104,7 @@ export default {
                   content: '登录成功！',
                   duration: 3
                 })
+                localStorage.setItem('role',  this.$refs[name].model.role)
                 localStorage.setItem('userId',  data.userId)
                 localStorage.setItem('Flag', 'isLogin')
                 this.$router.push({name: 'home'})
@@ -124,14 +139,55 @@ export default {
 .login-box {
     width: 400px;
     position: fixed;
-    right: 15%;
-    top: 30%;
     z-index: 20;
+    right: 15%;
+    top: 20%;
     background: #ffffff;
     box-shadow: 0 4px 100px rgba(80, 80, 80, 0.15);
     border-radius: 10px;
     box-sizing: border-box;
     padding: 20px 40px;
+}
+.login-text{
+  width: 70%;
+  height: 100%;
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  top: 0;
+  background: #0f1a35;
+  box-sizing: border-box;
+  padding: 50px 60px;
+}
+.login-bg{
+  width: 50%;
+  height: 110%;
+  position: absolute;
+  z-index: 0;
+  right: -10%;
+  top: -10%;
+}
+.web-title{
+  width: 100%;
+  position: relative;
+  font-size: 40px;
+  font-weight: 400;
+  margin: 10px 0 20px 0;
+  color: #0f1a35;
+}
+.web-text{
+  width: 100%;
+  text-align: left;
+  font-size: 80px;
+  color: #ffffff;
+  font-weight: 500;
+}
+.web-text-min{
+  width: 100%;
+  text-align: left;
+  font-size: 60px;
+  color: #ffffff;
+  font-weight: 500;
 }
 .title {
     width: 100%;
@@ -168,5 +224,103 @@ i {
     font-size: 22px;
     margin-bottom: 30px;
     font-family: sans-serif;
+}
+@keyframes move-twink-back {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -10000px 5000px;
+  }
+}
+@-webkit-keyframes move-twink-back {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -10000px 5000px;
+  }
+}
+@-moz-keyframes move-twink-back {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -10000px 5000px;
+  }
+}
+@-moz-keyframes move-twink-back {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -10000px 5000px;
+  }
+}
+@keyframes move-clouds-back {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 10000px 0px;
+  }
+}
+@-webkit-keyframes move-clouds-back {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 10000px 0px;
+  }
+}
+@-moz-keyframes move-clouds-back {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 10000px 0px;
+  }
+}
+@-moz-keyframes move-clouds-back {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 10000px 0px;
+  }
+}
+.stars,
+.twinkling,
+.clouds{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.stars{
+  background: #000000 url(https://cdn.kuaiyugo.com/plat/CMS/prod/static_files/stars.png?6494ab5b3760b5e2cc46f5566a245371) repeat top center;
+  z-index: -3;
+}
+.twinkling{
+  background: transparent url(https://cdn.kuaiyugo.com/plat/CMS/prod/static_files/twinkling.png?5a05442668c03ba1cf80ca8bdc3f3e96) repeat top center;
+  z-index: -2;
+  -moz-animation: move-twink-back 200s linear infinite;
+  -ms-animatiom: move-twink-back 200s linear infinite;
+  -o-animation: move-twink-back 200s linear infinite;
+  -webkit-animation: move-twink-back 200s linear infinite;
+  animation: move-twink-back 200s linear infinite;
+}
+.clouds{
+  background: transparent url(https://cdn.kuaiyugo.com/plat/CMS/prod/static_files/clouds.png?79e8fa64a8503259d3ff45d06fbc01b8) repeat top center;
+  z-index: -1;
+  -moz-animation: move-clouds-back 200s linear infinite;
+  -ms-animatiom: move-clouds-back 200s linear infinite;
+  -o-animation: move-clouds-back 200s linear infinite;
+  -webkit-animation: move-clouds-back 200s linear infinite;
+  animation: move-clouds-back 200s linear infinite;
 }
 </style>

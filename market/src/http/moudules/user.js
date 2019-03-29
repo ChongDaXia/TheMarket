@@ -26,3 +26,12 @@ export const passwordchange = params => {
         params: params
     })
 }
+
+// 保存新增用户（用户管理）
+export const addnewuser = params => {
+    return axios ({
+        url: '/user/home/addnewuser',
+        method: 'post',
+        params: params
+    })
+}

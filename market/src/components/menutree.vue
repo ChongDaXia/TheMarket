@@ -1,7 +1,7 @@
 <template>
     <div>
         <Menu theme="light" width="auto" active-name="1-1" :open-names="['1']">
-            <Submenu name="1">
+            <Submenu name="1" v-if="showManager">
                 <template slot="title">
                     <Icon type="ios-contacts" />
                     用户管理
@@ -29,7 +29,7 @@
                 <MenuItem name="3-1">添加员工</MenuItem>
                 <MenuItem name="3-2">员工列表</MenuItem>
             </Submenu>
-            <Submenu name="4">
+            <Submenu name="4" v-if="showUser">
                 <template slot="title">
                     <Icon type="md-happy" />
                     会员管理
@@ -38,7 +38,7 @@
                 <MenuItem name="4-2">会员列表</MenuItem>
                 <MenuItem name="4-3">会员折扣</MenuItem>
             </Submenu>
-            <Submenu name="5">
+            <Submenu name="5" v-if="showUser">
                 <template slot="title">
                     <Icon type="md-cart" />
                     商品管理
@@ -79,6 +79,20 @@
 </template>
 <script>
 export default {
+  data () {
+    return {
+      showUser: true,
+      showManager: true
+    }
+  },
+  // 页面加载时完成的内容
+  mounted() {
+    // if(localStorage.getItem("role") === "用户"){
+    //   this.showUser = true
+    // } else {
+    //   this.showManager = true
+    // }
+  },
   methods: {
     linkto (id) {
       this.$router.push({

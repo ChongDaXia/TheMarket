@@ -6,8 +6,8 @@
                     <Icon type="ios-contacts" />
                     用户管理
                 </template>
-                <MenuItem name="1-1">
-                    <a @click="linkto('1-1')">添加新用户</a>
+                <MenuItem name="AddUserPage">
+                    <a @click="linkto('AddUserPage')">添加新用户</a>
                 </MenuItem>
                 <MenuItem name="1-2">
                     <router-link to="/showlist">用户列表</router-link>
@@ -18,7 +18,9 @@
                     <Icon type="ios-home" />
                     门店管理
                 </template>
-                <MenuItem name="2-1">添加门店</MenuItem>
+                <MenuItem name="AddStorePage">
+                    <a @click="linkto('AddStorePage')">添加门店</a>
+                </MenuItem>
                 <MenuItem name="2-2">门店列表</MenuItem>
             </Submenu>
             <Submenu name="3">
@@ -26,7 +28,9 @@
                     <Icon type="ios-people" />
                     员工管理
                 </template>
-                <MenuItem name="3-1">添加员工</MenuItem>
+                <MenuItem name="AddStaffPage">
+                    <a @click="linkto('AddStaffPage')">添加员工</a>
+                </MenuItem>
                 <MenuItem name="3-2">员工列表</MenuItem>
             </Submenu>
             <Submenu name="4" v-if="showUser">
@@ -34,7 +38,9 @@
                     <Icon type="md-happy" />
                     会员管理
                 </template>
-                <MenuItem name="4-1">添加会员</MenuItem>
+                <MenuItem name="AddMemberPage">
+                    <a @click="linkto('AddMemberPage')">添加会员</a>
+                </MenuItem>
                 <MenuItem name="4-2">会员列表</MenuItem>
                 <MenuItem name="4-3">会员折扣</MenuItem>
             </Submenu>
@@ -43,7 +49,9 @@
                     <Icon type="md-cart" />
                     商品管理
                 </template>
-                <MenuItem name="5-1">添加商品</MenuItem>
+                <MenuItem name="AddGoodsPage">
+                    <a @click="linkto('AddGoodsPage')">添加商品</a>
+                </MenuItem>
                 <MenuItem name="5-2">商品列表</MenuItem>
                 <MenuGroup title="库存">
                     <MenuItem name="5-3">库存统计</MenuItem>
@@ -55,7 +63,9 @@
                     <Icon type="ios-construct" />
                     维修管理
                 </template>
-                <MenuItem name="6-1">申请维修</MenuItem>
+                <MenuItem name="AddRepairPage">
+                    <a @click="linkto('AddRepairPage')">申请维修</a>
+                </MenuItem>
                 <MenuItem name="6-2">维修列表</MenuItem>
                 <MenuItem name="6-3">维修反馈</MenuItem>
             </Submenu>
@@ -64,7 +74,9 @@
                     <Icon type="md-chatboxes" />
                     通知管理
                 </template>
-                <MenuItem name="7-1">发送通知</MenuItem>
+                <MenuItem name="AddInformPage">
+                    <a @click="linkto('AddInformPage')">发送通知</a>
+                </MenuItem>
                 <MenuItem name="7-2">通知记录</MenuItem>
             </Submenu>
             <Submenu name="8">
@@ -94,11 +106,11 @@ export default {
     // }
   },
   methods: {
-    linkto (id) {
+    linkto (name) {
       this.$router.push({
         path: '/addsome',
         query: {
-          theid: id
+          theid: name
         }
       })
     }

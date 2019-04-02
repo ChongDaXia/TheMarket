@@ -5,6 +5,8 @@ export const addnewstore = params => {
     return axios ({
         url: '/store/home/addnewstore',
         method: 'post',
-        params: params
+        data: {
+            ...params
+        }
     })
 }

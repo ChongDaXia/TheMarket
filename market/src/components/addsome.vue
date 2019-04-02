@@ -6,8 +6,8 @@
             <div v-if="AddStaffPage">添加新员工</div>
             <div v-if="AddMemberPage">添加新会员</div>
             <div v-if="AddGoodsPage">添加新商品</div>
-            <div>申请维修</div>
-            <div>发送通知</div>
+            <div v-if="AddRepairPage">申请维修</div>
+            <div v-if="AddInformPage">发送通知</div>
         </div>
         <div class="content">
             <!-- 添加新用户 -->
@@ -147,32 +147,105 @@
                   </Modal>
               </Form>
             </div>
+            <!-- 申请维修 -->
+            <div class="formtext">
+              <Form ref="newRepairRef" :model="newRepairForm" :rules="newRepairRules" :label-width="80" v-if="AddRepairPage">
+                  <FormItem label="标题" prop="title">
+                      <Input v-model="newRepairForm.title" placeholder="请输入标题"></Input>
+                  </FormItem>
+                  <FormItem label="描述" prop="content">
+                      <Input type="textarea" v-model="newRepairForm.content" placeholder="请输入详细内容" :autosize="{minRows: 5,maxRows: 8}"></Input>
+                  </FormItem>
+                  <FormItem label="类型" prop="style" style="text-align:left">
+                      <Input v-model="newRepairForm.style" style="width:120px;"></Input>
+                  </FormItem>
+                  <FormItem label="收件人" prop="userId" style="text-align:left">
+                      <Button class="login-btn" shape="circle" @click="selectrecipients">选择</Button>
+                  </FormItem>
+                  <Modal v-model="selectrecipients_isShowModal" :mask-closable="false"  @on-ok="okselectrecipients"  @on-cancel="cancelselectrecipients" width="400">
+                      <p class="modaltitle">
+                          <span>基本信息</span>
+                      </p>
+                      <Table ref="repairTableRef" height="300" border :columns="repairTabletitle" :data="recipientslist" 
+                          @on-select="selectrecipientslist"
+                          @on-select-cancel="cancelselectrecipientslist"
+                          @on-select-all="selectrecipientslist"
+                          @on-select-all-cancel="cancelselectrecipientslist">
+                      </Table>
+                  </Modal>
+                  <div>
+                      <Tag v-for="(item, index) in allreadyCheckRecipientslist" v-if="item['_checked']" :key="index" :name="index" closable @on-close="recipientsClose">{{item.name}}</Tag>
+                  </div>
+                  <div class="form-item">
+                      <Button class="login-btn" shape="circle" @click="resetAdd('newRepairRef')">重置</Button>
+                      <Button class="login-btn" shape="circle" @click="submitAddRepair('newRepairRef')">添加</Button>
+                  </div>
+                  <Modal v-model="addRepairModal" title="确认提示" @on-ok="resubmitAddRepair" @on-cancel="cancelAddRepair">
+                    <p>是否确认发送该维修申请？</p>
+                  </Modal>
+              </Form>
+            </div>
+            <!-- 发送通知 -->
+            <div class="formtext">
+              <Form ref="newInformRef" :model="newInformForm" :rules="newInformRules" :label-width="80" v-if="AddInformPage">
+                  <FormItem label="标题" prop="title">
+                      <Input v-model="newInformForm.title" placeholder="请输入标题"></Input>
+                  </FormItem>
+                  <FormItem label="描述" prop="content">
+                      <Input type="textarea" v-model="newInformForm.content" placeholder="请输入详细内容" :autosize="{minRows: 5,maxRows: 8}"></Input>
+                  </FormItem>
+                  <FormItem label="收件人" prop="userId" style="text-align:left">
+                      <Button class="login-btn" shape="circle" @click="selectrecipients">选择</Button>
+                  </FormItem>
+                  <Modal v-model="addressee_isShowModal" :mask-closable="false"  @on-ok="okselectaddressee"  @on-cancel="cancelselectaddressee" width="400">
+                      <p class="modaltitle">
+                          <span>基本信息</span>
+                      </p>
+                      <Table ref="informTableRef" height="300" border :columns="informTabletitle" :data="addresseelist" 
+                          @on-select="selectaddresseelist"
+                          @on-select-cancel="cancelselectaddresseelist"
+                          @on-select-all="selectaddresseelist"
+                          @on-select-all-cancel="cancelselectaddresseelist">
+                      </Table>
+                  </Modal>
+                  <div>
+                      <Tag v-for="(item, index) in allreadyCheckAddresseelist" v-if="item['_checked']" :key="index" :name="index" closable @on-close="addresseeClose">{{item.name}}</Tag>
+                  </div>
+                  <div class="form-item">
+                      <Button class="login-btn" shape="circle" @click="resetAdd('newInformRef')">重置</Button>
+                      <Button class="login-btn" shape="circle" @click="submitAddInform('newInformRef')">发送</Button>
+                  </div>
+                  <Modal v-model="addInformModal" title="确认提示" @on-ok="resubmitAddInform" @on-cancel="cancelAddInfrom">
+                    <p>是否确认发送该通知？</p>
+                  </Modal>
+              </Form>
+            </div>
             <div>页面内容2</div>
             <div>页面内容3</div>
-            <div>页面内容4</div>
-            <div>页面内容5</div>
-            <div>页面内容6</div>
         </div>
     </div>
 </template>
 <script>
-import {addnewuser} from '../http/moudules/user'
+import {addnewuser,getAdminRole} from '../http/moudules/user'
 import {addnewstore} from '../http/moudules/store'
 import {addnewstaff} from '../http/moudules/staff'
 import {addnewmember} from '../http/moudules/member'
 import {addnewgoods} from '../http/moudules/goods'
+import {addnewrepair} from '../http/moudules/repair'
+import {addnewinform} from '../http/moudules/inform'
 export default {
   name: 'addSome',
   data () {
     return {
-      // 页面名称
-      addname: '',
       // 页面参数
+      HomePage: false,
       AddUserPage: false,
       AddStorePage: false,
       AddStaffPage: false,
       AddMemberPage: false,
       AddGoodsPage: false,
+      AddRepairPage: true,
+      AddInformPage: true,
       // 添加新用户
       newUserForm: {
         userName: '',
@@ -252,7 +325,7 @@ export default {
         }],
         address: [{
           trigger: 'blur, change',
-          pattern:/^[\u4E00-\u9FA5A-Za-z0-9]|[-，\x22]$/,
+          pattern:/^[\u4E00-\u9FA5A-Za-z0-9]|[-，。,.\x22]$/,
           message: '格式错误'
         }]
       },
@@ -343,12 +416,202 @@ export default {
       // 添加新商品二次确认框
       addGoodsModal: false,
       // 申请维修
+      newRepairForm: {
+        title: '',
+        content: '',
+        style: '',
+        userId: []
+      },
+      newRepairRules: {
+        title: [{
+          required: true,
+          trigger: 'blur, change',
+          pattern:/^[\u4E00-\u9FA5A-Za-z0-9]{2,20}$/,
+          message: '仅支持2-20位大小写字母或数字、中文'
+        }],
+        content: [{
+          trigger: 'blur, change',
+          pattern:/^[\u4E00-\u9FA5A-Za-z0-9]|[-，。,.\x22]$/,
+          message: '格式错误'
+        }],
+        style: [{
+          trigger: 'blur, change',
+          pattern:/^[\u4E00-\u9FA5A-Za-z0-9]{2,10}$/,
+          message: '仅支持2-10位大小写字母或数字、中文'
+        }],
+        userId: [{
+          required: true,
+          message: '请选择接收者'
+        }]
+      },
+      // 申请维修二次确认框
+      addRepairModal: false,
+      // 选择收件人
+      selectrecipients_isShowModal: false,
+      // 收件人列表
+      recipientslist: [],
+      allreadyCheckRecipientslist: [],
+      repairTabletitle: [
+        {
+          type: 'selection',
+          width: 60,
+          align: 'center'
+        },{
+          title: '姓名',
+          key: 'name'
+        }
+      ],
       // 发送通知
+      newInformForm: {
+        title: '',
+        content: '',
+        userId: []
+      },
+      newInformRules: {
+        title: [{
+          required: true,
+          trigger: 'blur, change',
+          pattern:/^[\u4E00-\u9FA5A-Za-z0-9]{2,20}$/,
+          message: '仅支持2-20位大小写字母或数字、中文'
+        }],
+        content: [{
+          trigger: 'blur, change',
+          pattern:/^[\u4E00-\u9FA5A-Za-z0-9]|[-，。,.\x22]$/,
+          message: '格式错误'
+        }],
+        userId: [{
+          required: true,
+          message: '请选择接收者'
+        }]
+      },
+      // 发送通知二次确认框
+      addInformModal: false,
+      // 选择收件人
+      addressee_isShowModal: false,
+      // 收件人列表
+      addresseelist: [],
+      allreadyCheckAddresseelist: [],
+      informTabletitle: [
+        {
+          type: 'selection',
+          width: 60,
+          align: 'center'
+        },{
+          title: '姓名',
+          key: 'name'
+        }
+      ]
+    }
+  },
+  watch: {
+    $route: function(newRouter, oldRouter){
+      switch(this.$route.query.theid){
+        case "AddUserPage":
+          this.HomePage=false
+          this.AddUserPage=true
+          this.AddStorePage=false
+          this.AddStaffPage=false
+          this.AddMemberPage=false
+          this.AddGoodsPage=false
+          this.AddRepairPage=false
+          this.AddInformPage=false
+          break
+        case "AddStorePage":
+          this.HomePage=false
+          this.AddUserPage=false
+          this.AddStorePage=true
+          this.AddStaffPage=false
+          this.AddMemberPage=false
+          this.AddGoodsPage=false
+          this.AddRepairPage=false
+          this.AddInformPage=false
+          break
+        case "AddStaffPage":
+          this.HomePage=false
+          this.AddUserPage=false
+          this.AddStorePage=false
+          this.AddStaffPage=true
+          this.AddMemberPage=false
+          this.AddGoodsPage=false
+          this.AddRepairPage=false
+          this.AddInformPage=false
+          break
+        case "AddMemberPage":
+          this.HomePage=false
+          this.AddUserPage=false
+          this.AddStorePage=false
+          this.AddStaffPage=false
+          this.AddMemberPage=true
+          this.AddGoodsPage=false
+          this.AddRepairPage=false
+          this.AddInformPage=false
+          break
+        case "AddGoodsPage":
+          this.HomePage=false
+          this.AddUserPage=false
+          this.AddStorePage=false
+          this.AddStaffPage=false
+          this.AddMemberPage=false
+          this.AddGoodsPage=true
+          this.AddRepairPage=false
+          this.AddInformPage=false
+          break
+        case "AddRepairPage":
+          this.HomePage=false
+          this.AddUserPage=false
+          this.AddStorePage=false
+          this.AddStaffPage=false
+          this.AddMemberPage=false
+          this.AddGoodsPage=false
+          this.AddRepairPage=true
+          this.AddInformPage=false
+          break
+        case "AddInformPage":
+          this.HomePage=false
+          this.AddUserPage=false
+          this.AddStorePage=false
+          this.AddStaffPage=false
+          this.AddMemberPage=false
+          this.AddGoodsPage=false
+          this.AddRepairPage=false
+          this.AddInformPage=true
+          break
+        default:
+          this.HomePage=true
+      }
     }
   },
   // 页面加载时完成的内容
   mounted() {
-      this.addname=this.$route.query.theid
+    this.getAdminRole()
+    this.getPublicRole()
+    
+    // switch(this.$route.query.theid){
+    //   case "AddUserPage":
+    //     this.AddUserPage=true
+    //     break
+    //   case "AddStorePage":
+    //     this.AddStorePage=true
+    //     break
+    //   case "AddStaffPage":
+    //     this.AddStaffPage=true
+    //     break
+    //   case "AddMemberPage":
+    //     this.AddMemberPage=true
+    //     break
+    //   case "AddGoodsPage":
+    //     this.AddGoodsPage=true
+    //     break
+    //   case "AddRepairPage":
+    //     this.AddRepairPage=true
+    //     break
+    //   case "AddInformPage":
+    //    this.AddInformPage=true
+    //    break
+    //   default:
+    //     this.HomePage=true
+    // }
+
   },
   methods: {
     // 添加新用户
@@ -487,7 +750,236 @@ export default {
     cancelAddGoods () {
       this.addGoodsModal=false
       this.$Message.info('取消添加新商品')
-    }
+    },
+    // 选择维修收件人
+    selectrecipients () {
+      let checkUserIdList = this.allreadyCheckRecipientslist.map(item => item.userId);
+      this.recipientslist.forEach((item, index) => {
+        if(checkUserIdList.indexOf(item.userId) !== -1) {
+          item['_checked'] = true;
+        } else {
+          item['_checked'] = false;
+        }
+        this.$set(this.recipientslist, index, item)
+      })
+      this.selectrecipients_isShowModal = true;     
+    },
+    getAdminRole() {
+       getAdminRole("管理员").then(data => {
+        if(data.code == '200'){
+          this.recipientslist = data.users;
+        }
+        if(data.code == "500") {
+          this.$Message.error('维修收件人获取失败')
+        }
+      })
+    },
+    selectrecipientslist (selection, row){
+      // 全选
+      if (!row && selection && selection.length > 0) {
+        this.recipientslist.forEach(item => {
+          item['_checked'] = true
+        })
+      } else {
+        // 单选
+        this.recipientslist.forEach(item => {
+          if(item.userId === row.userId) {
+            item['_checked'] = true
+          }
+        })
+      }
+    },
+    cancelselectrecipientslist (selection, row) {
+      // 全不选
+      if (!row && selection && selection.length == 0) {
+        this.recipientslist.forEach(item => {
+          item['_checked'] = false
+        })
+      } else {
+        // 单不选
+        this.recipientslist.forEach(item => {
+          if(item.userId === row.userId) {
+            item['_checked'] = false
+          }
+        })
+      }
+    },
+    // 弹框取消收件人
+    cancelselectrecipients () {
+      this.selectrecipients_isShowModal=false
+    },
+    // 弹框确认收件人
+    okselectrecipients () {
+      let list = this.recipientslist.filter(item => item['_checked']);
+      let tempList = [];
+      list.forEach(item => {
+        tempList.push({
+          ...item
+        })
+      })
+      this.allreadyCheckRecipientslist = tempList;
+      this.selectrecipients_isShowModal=false
+    },
+    // 标签删除收件人
+    recipientsClose (event, index) {
+      let list = this.allreadyCheckRecipientslist.filter((item, tempIndex) => tempIndex !== index)
+      this.allreadyCheckRecipientslist = list;
+    },
+    // 保存维修申请
+    submitAddRepair (name) {
+      this.newRepairForm.userId = this.allreadyCheckRecipientslist.map(item => item.userId);
+      this.$refs[name].validate(valid => {
+        if(valid){
+          this.addRepairModal=true
+        } else {
+          this.$Message.error('填写内容不符合规范')
+        }
+      })
+    },
+    resubmitAddRepair () {
+      let data = {
+        sentUserId: this.$store.state.userId,
+        title: this.newRepairForm.title,
+        content: this.newRepairForm.content,
+        style: this.newRepairForm.style,
+        userId: JSON.stringify(this.newRepairForm.userId)
+      };
+      debugger
+      addnewrepair(data).then(data => {
+        if(data.code == '200'){
+          this.addRepairModal=false
+          this.$Message.info('维修申请发送成功')
+          this.$refs['newRepairRef'].resetFields()
+        }
+        if(data.code == "300") {
+          this.$Message.error('维修申请发送失败')
+        }
+        if(data.code == "500") {
+          this.$Message.error('维修申请创建失败')
+        }
+      })
+    },
+    cancelAddRepair () {
+      this.addRepairModal=false
+      this.$Message.info('取消发送维修申请')
+    },
+    // 选择通知维修人
+    selectrecipients () {
+      // 获取标签列表中的userId，循环弹框中的列表，能找到匹配的，就赋值列表中的_checked为true,重新赋值解决深层找不到的问题
+      // 每次打开弹框，都对列表里的值进行了初始化设置（依据是标签列表）
+      let checkUserIdList = this.allreadyCheckAddresseelist.map(item => item.userId);
+      this.addresseelist.forEach((item, index) => {
+        if(checkUserIdList.indexOf(item.userId) !== -1) {
+          item['_checked'] = true;
+        } else {
+          item['_checked'] = false;
+        }
+        this.$set(this.addresseelist, index, item)
+      })
+      this.addressee_isShowModal = true;     
+    },
+    getPublicRole() {
+      getAdminRole("用户").then(data => {
+        if(data.code == '200'){
+          this.addresseelist = data.users;
+        }
+        if(data.code == "500") {
+          this.$Message.error('通知收件人获取失败')
+        }
+      })
+    },
+    selectaddresseelist (selection, row){
+      // 全选
+      if (!row && selection && selection.length > 0) {
+        this.addresseelist.forEach(item => {
+          item['_checked'] = true
+        })
+      } else {
+        // 单选
+        this.addresseelist.forEach(item => {
+          if(item.userId === row.userId) {
+            item['_checked'] = true
+          }
+        })
+      }
+    },
+    cancelselectaddresseelist (selection, row) {
+      // 全不选
+      if (!row && selection && selection.length == 0) {
+        this.addresseelist.forEach(item => {
+          item['_checked'] = false
+        })
+      } else {
+        // 单不选
+        this.addresseelist.forEach(item => {
+          if(item.userId === row.userId) {
+            item['_checked'] = false
+          }
+        })
+      }
+    },
+    // 弹框取消收件人
+    cancelselectaddressee () {
+      this.addressee_isShowModal=false
+    },
+    // 弹框确认收件人
+    okselectaddressee () {
+      // 对弹框中数据的操作，改变的是列表值，只有保存时才将列表值赋给标签列表（弹框中初始化：列表值根据标签列表值）
+      // 直接=号赋值，会把地址赋值过去，其中一个值改变时，另外一个值也会改变（所以要改变这种方式）
+      let list = this.addresseelist.filter(item => item['_checked']);
+      let tempList = [];
+      list.forEach(item => {
+        tempList.push({
+          ...item
+        })
+      })
+      this.allreadyCheckAddresseelist = tempList;
+      this.addressee_isShowModal=false
+    },
+    // 标签删除收件人
+    addresseeClose (event, index) {
+      let list = this.allreadyCheckAddresseelist.filter((item, tempIndex) => tempIndex !== index)
+      this.allreadyCheckAddresseelist = list;
+    },
+    // 保存发送通知
+    submitAddInform (name) {
+      this.newInformForm.userId = this.allreadyCheckAddresseelist.map(item => item.userId);
+      this.$refs[name].validate(valid => {
+        if(valid){
+          this.addInformModal=true
+        } else {
+          this.$Message.error('填写内容不符合规范')
+        }
+      })
+    },
+    resubmitAddInform () {
+      let data = {
+        sentUserId: this.$store.state.userId,
+        title: this.newRepairForm.title,
+        content: this.newRepairForm.content,
+        style: this.newRepairForm.style,
+        userId: JSON.stringify(this.newRepairForm.userId)
+      };
+      debugger
+      addnewinform(data).then(data => {
+        if(data.code == '200'){
+          this.addRepairModal=false
+          this.$Message.info('维修申请发送成功')
+          this.$refs['newRepairRef'].resetFields()
+        }
+        if(data.code == "300") {
+          this.$Message.error('维修申请发送失败')
+        }
+        if(data.code == "500") {
+          this.$Message.error('维修申请创建失败')
+        }
+      })
+    },
+    cancelAddInfrom () {
+      this.addInformModal=false
+      this.$Message.info('取消发送通知')
+    },
+    // 
   }
 }
 </script>
@@ -509,5 +1001,12 @@ export default {
 .formtext{
   width: 50%;
   margin: 0 auto;
+}
+.modaltitle{
+  width: 100%;
+  height: 100px;
+  text-align: center;
+  font-size: 24px;
+  padding-top: 25px;
 }
 </style>

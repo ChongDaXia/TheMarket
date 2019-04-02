@@ -14,7 +14,9 @@ export const postpersonalinfo = params => {
     return axios ({
         url:'/user/home/personalinfo2',
         method:'post',
-        params: params
+        data: {
+            ...params
+        }
     })
 }
 
@@ -23,7 +25,9 @@ export const passwordchange = params => {
     return axios ({
         url: '/user/home/passwordchange',
         method: 'post',
-        params: params
+        data: {
+            ...params
+        }
     })
 }
 
@@ -32,6 +36,17 @@ export const addnewuser = params => {
     return axios ({
         url: '/user/home/addnewuser',
         method: 'post',
+        data: {
+            ...params
+        }
+    })
+}
+
+// 获取管理员（维修管理）
+export const getAdminRole = params => {
+    return axios ({
+        url: '/user/home/getAdminRole',
+        method: 'get',
         params: params
     })
 }

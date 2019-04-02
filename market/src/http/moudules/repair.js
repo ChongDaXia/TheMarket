@@ -1,9 +1,9 @@
 import axios from '../axios'
 
-// 保存新增会员（会员管理）
-export const addnewmember = params => {
+// 保存维修申请（维修管理）
+export const addnewrepair = params => {
     return axios ({
-        url: '/member/home/addnewmember',
+        url: '/repair/home/addnewrepair',
         method: 'post',
         data: {
             ...params

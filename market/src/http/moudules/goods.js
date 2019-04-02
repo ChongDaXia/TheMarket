@@ -5,6 +5,8 @@ export const addnewgoods = params => {
     return axios ({
         url: '/goods/home/addnewgoods',
         method: 'post',
-        params: params
+        data: {
+            ...params
+        }
     })
 }

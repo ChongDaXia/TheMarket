@@ -5,6 +5,8 @@ export const addnewstaff = params => {
     return axios ({
         url: '/staff/home/addnewstaff',
         method: 'post',
-        params: params
+        data: {
+            ...params
+        }
     })
 }

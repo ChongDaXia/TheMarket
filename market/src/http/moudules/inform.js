@@ -1,9 +1,9 @@
 import axios from '../axios'
 
-// 保存新增会员（会员管理）
-export const addnewmember = params => {
+// 保存发送通知（通知管理）
+export const addnewinform = params => {
     return axios ({
-        url: '/member/home/addnewmember',
+        url: '/inform/home/addnewinform',
         method: 'post',
         data: {
             ...params

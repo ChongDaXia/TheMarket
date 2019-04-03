@@ -10,7 +10,7 @@
                     <a @click="linkto('AddUserPage')">添加新用户</a>
                 </MenuItem>
                 <MenuItem name="1-2">
-                    <router-link to="/showlist">用户列表</router-link>
+                    <a @click="listto('UserList')">用户列表</a>
                 </MenuItem>
             </Submenu>
             <Submenu name="2">
@@ -99,16 +99,19 @@ export default {
   },
   // 页面加载时完成的内容
   mounted() {
-    // if(localStorage.getItem("role") === "用户"){
-    //   this.showUser = true
-    // } else {
-    //   this.showManager = true
-    // }
   },
   methods: {
     linkto (name) {
       this.$router.push({
         path: '/addsome',
+        query: {
+          theid: name
+        }
+      })
+    },
+    listto (name) {
+        this.$router.push({
+        path: '/showlist',
         query: {
           theid: name
         }

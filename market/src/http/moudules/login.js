@@ -1,19 +1,13 @@
 import axios from '../axios'
 
-//测试连接
-export const testnet = () => {
-    return axios ({
-        url:'/user/test1',
-        method:'get'
-    })
-}
-
 // 登录
 export const login = params => {
     return axios ({
         url:'/user/login',
-        method:'get',
-        params: params
+        method:'post',
+        data: {
+            ...params
+        }
     })
 }
 // 退出登录

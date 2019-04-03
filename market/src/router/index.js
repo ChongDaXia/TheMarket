@@ -3,8 +3,8 @@ import Router from 'vue-router'
 // 引入项目的模块组件
 import login from '@/components/login'
 import home from '@/components/home'
-import showlist from '@/components/list'
 import addsome from '@/components/addsome'
+import showlist from '@/components/showlist'
 
 Vue.use(Router)
 

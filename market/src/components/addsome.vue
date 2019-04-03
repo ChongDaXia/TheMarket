@@ -1,6 +1,7 @@
 <template>
     <div class="layout">
         <div class="header">
+            <div v-if="HomePage">主页</div>
             <div v-if="AddUserPage">添加新用户</div>
             <div v-if="AddStorePage">添加新门店</div>
             <div v-if="AddStaffPage">添加新员工</div>
@@ -10,6 +11,7 @@
             <div v-if="AddInformPage">发送通知</div>
         </div>
         <div class="content">
+            <div v-if="HomePage">主页</div>
             <!-- 添加新用户 -->
             <div class="formtext">
               <Form ref="newUserRef" :model="newUserForm" :rules="newUserRules" :label-width="80" v-if="AddUserPage">
@@ -22,8 +24,8 @@
                   <FormItem label="确认密码" prop="repassword">
                       <Input type="password" v-model="newUserForm.repassword" placeholder="仅支持6-12位大小写字母或数字"></Input>
                   </FormItem>
-                  <FormItem label="角色权限" prop="role">
-                      <RadioGroup v-model="newUserForm.role">
+                  <FormItem label="角色权限" prop="role" style="text-align:left">
+                      <RadioGroup v-model="newUserForm.role" style="width:200px">
                           <Radio label="用户"></Radio>
                           <Radio label="管理员"></Radio>
                       </RadioGroup>
@@ -39,7 +41,7 @@
                   </FormItem>
                   <div class="form-item">
                     <Button class="login-btn" shape="circle" @click="resetAdd('newUserRef')">重置</Button>
-                    <Button class="login-btn" shape="circle" @click="submitAddUser('newUserRef')">登录</Button>
+                    <Button class="login-btn" shape="circle" @click="submitAddUser('newUserRef')">添加</Button>
                   </div>
                   <Modal v-model="addUserModal" title="确认提示" @on-ok="resubmitAddUser" @on-cancel="cancelAddUser">
                     <p>是否确认保存该用户？</p>
@@ -195,7 +197,7 @@
                       <Input type="textarea" v-model="newInformForm.content" placeholder="请输入详细内容" :autosize="{minRows: 5,maxRows: 8}"></Input>
                   </FormItem>
                   <FormItem label="收件人" prop="userId" style="text-align:left">
-                      <Button class="login-btn" shape="circle" @click="selectrecipients">选择</Button>
+                      <Button class="login-btn" shape="circle" @click="selectaddressee">选择</Button>
                   </FormItem>
                   <Modal v-model="addressee_isShowModal" :mask-closable="false"  @on-ok="okselectaddressee"  @on-cancel="cancelselectaddressee" width="400">
                       <p class="modaltitle">
@@ -220,8 +222,6 @@
                   </Modal>
               </Form>
             </div>
-            <div>页面内容2</div>
-            <div>页面内容3</div>
         </div>
     </div>
 </template>
@@ -238,14 +238,14 @@ export default {
   data () {
     return {
       // 页面参数
-      HomePage: false,
+      HomePage: true,
       AddUserPage: false,
       AddStorePage: false,
       AddStaffPage: false,
       AddMemberPage: false,
       AddGoodsPage: false,
-      AddRepairPage: true,
-      AddInformPage: true,
+      AddRepairPage: false,
+      AddInformPage: false,
       // 添加新用户
       newUserForm: {
         userName: '',
@@ -281,6 +281,7 @@ export default {
           message: '请选择角色权限'
         }],
         name: [{
+          required: true,
           trigger: 'blur, change',
           pattern:/^[\u4E00-\u9FA5A-Za-z0-9]{2,20}$/,
           message: '仅支持2-20位大小写字母或数字、中文'
@@ -504,114 +505,90 @@ export default {
     }
   },
   watch: {
-    $route: function(newRouter, oldRouter){
-      switch(this.$route.query.theid){
-        case "AddUserPage":
-          this.HomePage=false
-          this.AddUserPage=true
-          this.AddStorePage=false
-          this.AddStaffPage=false
-          this.AddMemberPage=false
-          this.AddGoodsPage=false
-          this.AddRepairPage=false
-          this.AddInformPage=false
-          break
-        case "AddStorePage":
-          this.HomePage=false
-          this.AddUserPage=false
-          this.AddStorePage=true
-          this.AddStaffPage=false
-          this.AddMemberPage=false
-          this.AddGoodsPage=false
-          this.AddRepairPage=false
-          this.AddInformPage=false
-          break
-        case "AddStaffPage":
-          this.HomePage=false
-          this.AddUserPage=false
-          this.AddStorePage=false
-          this.AddStaffPage=true
-          this.AddMemberPage=false
-          this.AddGoodsPage=false
-          this.AddRepairPage=false
-          this.AddInformPage=false
-          break
-        case "AddMemberPage":
-          this.HomePage=false
-          this.AddUserPage=false
-          this.AddStorePage=false
-          this.AddStaffPage=false
-          this.AddMemberPage=true
-          this.AddGoodsPage=false
-          this.AddRepairPage=false
-          this.AddInformPage=false
-          break
-        case "AddGoodsPage":
-          this.HomePage=false
-          this.AddUserPage=false
-          this.AddStorePage=false
-          this.AddStaffPage=false
-          this.AddMemberPage=false
-          this.AddGoodsPage=true
-          this.AddRepairPage=false
-          this.AddInformPage=false
-          break
-        case "AddRepairPage":
-          this.HomePage=false
-          this.AddUserPage=false
-          this.AddStorePage=false
-          this.AddStaffPage=false
-          this.AddMemberPage=false
-          this.AddGoodsPage=false
-          this.AddRepairPage=true
-          this.AddInformPage=false
-          break
-        case "AddInformPage":
-          this.HomePage=false
-          this.AddUserPage=false
-          this.AddStorePage=false
-          this.AddStaffPage=false
-          this.AddMemberPage=false
-          this.AddGoodsPage=false
-          this.AddRepairPage=false
-          this.AddInformPage=true
-          break
-        default:
-          this.HomePage=true
-      }
+    $route: {
+      handler: function(newRouter, oldRouter){
+        switch(this.$route.query.theid){
+          case "AddUserPage":
+            this.HomePage=false
+            this.AddUserPage=true
+            this.AddStorePage=false
+            this.AddStaffPage=false
+            this.AddMemberPage=false
+            this.AddGoodsPage=false
+            this.AddRepairPage=false
+            this.AddInformPage=false
+            break
+          case "AddStorePage":
+            this.HomePage=false
+            this.AddUserPage=false
+            this.AddStorePage=true
+            this.AddStaffPage=false
+            this.AddMemberPage=false
+            this.AddGoodsPage=false
+            this.AddRepairPage=false
+            this.AddInformPage=false
+            break
+          case "AddStaffPage":
+            this.HomePage=false
+            this.AddUserPage=false
+            this.AddStorePage=false
+            this.AddStaffPage=true
+            this.AddMemberPage=false
+            this.AddGoodsPage=false
+            this.AddRepairPage=false
+            this.AddInformPage=false
+            break
+          case "AddMemberPage":
+            this.HomePage=false
+            this.AddUserPage=false
+            this.AddStorePage=false
+            this.AddStaffPage=false
+            this.AddMemberPage=true
+            this.AddGoodsPage=false
+            this.AddRepairPage=false
+            this.AddInformPage=false
+            break
+          case "AddGoodsPage":
+            this.HomePage=false
+            this.AddUserPage=false
+            this.AddStorePage=false
+            this.AddStaffPage=false
+            this.AddMemberPage=false
+            this.AddGoodsPage=true
+            this.AddRepairPage=false
+            this.AddInformPage=false
+            break
+          case "AddRepairPage":
+            this.HomePage=false
+            this.AddUserPage=false
+            this.AddStorePage=false
+            this.AddStaffPage=false
+            this.AddMemberPage=false
+            this.AddGoodsPage=false
+            this.AddRepairPage=true
+            this.AddInformPage=false
+            break
+          case "AddInformPage":
+            this.HomePage=false
+            this.AddUserPage=false
+            this.AddStorePage=false
+            this.AddStaffPage=false
+            this.AddMemberPage=false
+            this.AddGoodsPage=false
+            this.AddRepairPage=false
+            this.AddInformPage=true
+            break
+          default:
+            this.HomePage=true
+        }
+      },
+      immediate: true
     }
   },
   // 页面加载时完成的内容
   mounted() {
     this.getAdminRole()
     this.getPublicRole()
-    
-    // switch(this.$route.query.theid){
-    //   case "AddUserPage":
-    //     this.AddUserPage=true
-    //     break
-    //   case "AddStorePage":
-    //     this.AddStorePage=true
-    //     break
-    //   case "AddStaffPage":
-    //     this.AddStaffPage=true
-    //     break
-    //   case "AddMemberPage":
-    //     this.AddMemberPage=true
-    //     break
-    //   case "AddGoodsPage":
-    //     this.AddGoodsPage=true
-    //     break
-    //   case "AddRepairPage":
-    //     this.AddRepairPage=true
-    //     break
-    //   case "AddInformPage":
-    //    this.AddInformPage=true
-    //    break
-    //   default:
-    //     this.HomePage=true
-    // }
-
   },
   methods: {
     // 添加新用户
@@ -765,7 +742,7 @@ export default {
       this.selectrecipients_isShowModal = true;     
     },
     getAdminRole() {
-       getAdminRole("管理员").then(data => {
+      getAdminRole({role: "管理员"}).then(data => {
         if(data.code == '200'){
           this.recipientslist = data.users;
         }
@@ -844,7 +821,6 @@ export default {
         style: this.newRepairForm.style,
         userId: JSON.stringify(this.newRepairForm.userId)
       };
-      debugger
       addnewrepair(data).then(data => {
         if(data.code == '200'){
           this.addRepairModal=false
@@ -864,7 +840,7 @@ export default {
       this.$Message.info('取消发送维修申请')
     },
     // 选择通知维修人
-    selectrecipients () {
+    selectaddressee () {
       // 获取标签列表中的userId，循环弹框中的列表，能找到匹配的，就赋值列表中的_checked为true,重新赋值解决深层找不到的问题
       // 每次打开弹框，都对列表里的值进行了初始化设置（依据是标签列表）
       let checkUserIdList = this.allreadyCheckAddresseelist.map(item => item.userId);
@@ -879,7 +855,7 @@ export default {
       this.addressee_isShowModal = true;     
     },
     getPublicRole() {
-      getAdminRole("用户").then(data => {
+      getAdminRole({role: "用户"}).then(data => {
         if(data.code == '200'){
           this.addresseelist = data.users;
         }
@@ -955,23 +931,21 @@ export default {
     resubmitAddInform () {
       let data = {
         sentUserId: this.$store.state.userId,
-        title: this.newRepairForm.title,
-        content: this.newRepairForm.content,
-        style: this.newRepairForm.style,
-        userId: JSON.stringify(this.newRepairForm.userId)
+        title: this.newInformForm.title,
+        content: this.newInformForm.content,
+        userId: JSON.stringify(this.newInformForm.userId)
       };
-      debugger
       addnewinform(data).then(data => {
         if(data.code == '200'){
-          this.addRepairModal=false
-          this.$Message.info('维修申请发送成功')
-          this.$refs['newRepairRef'].resetFields()
+          this.addInformModal=false
+          this.$Message.info('通知发送成功')
+          this.$refs['newInformRef'].resetFields()
         }
         if(data.code == "300") {
-          this.$Message.error('维修申请发送失败')
+          this.$Message.error('通知发送失败')
         }
         if(data.code == "500") {
-          this.$Message.error('维修申请创建失败')
+          this.$Message.error('通知创建失败')
         }
       })
     },
@@ -992,7 +966,7 @@ export default {
 }
 .header{
   width: 100%;
-  height: 200px;
+  height: 100px;
 }
 .content{
   width: 100%;

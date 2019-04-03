@@ -131,12 +131,14 @@ export default {
         userName: [{
           required: true,
           trigger: 'blur, change',
-          message: '请输入用户名'
+          pattern:/^[\u4E00-\u9FA5A-Za-z0-9]{2,20}$/,
+          message: '仅支持2-20位大小写字母或数字、中文'
         }],
         name: [{
-          max:20,
+          required: true,
           trigger: 'blur, change',
-          message: '不大于20哥字符'
+          pattern:/^[\u4E00-\u9FA5A-Za-z0-9]{2,20}$/,
+          message: '仅支持2-20位大小写字母或数字、中文'
         }],
         mobileNo: [{
           trigger: 'blur, change',
@@ -329,7 +331,7 @@ export default {
   padding-top: 25px;
 }
 .content{
-    height: 900px;
+    height: 800px;
     padding: 48px;
     background: #fff;
 }

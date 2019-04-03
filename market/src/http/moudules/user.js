@@ -42,7 +42,7 @@ export const addnewuser = params => {
     })
 }
 
-// 获取管理员（维修管理）
+// 获取用户（维修管理、通知管理）
 export const getAdminRole = params => {
     return axios ({
         url: '/user/home/getAdminRole',

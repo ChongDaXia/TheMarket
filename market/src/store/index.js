@@ -9,6 +9,8 @@ const state = {
     isLogin: false,
     // 用户id
     userId: localStorage.getItem('userId'),
+    // 用户角色
+    role: localStorage.getItem('role'),
     // 导航菜单
     memuTree: []
 }
@@ -18,6 +20,8 @@ const getters = {
     isLogin: state => state.isLogin,
     // 获取用户id
     userId: state => state.userId,
+    // 用户角色
+    role: state => state.role,
     // 获取导航菜单
     memuTree: state => state.memuTree
 }
@@ -30,6 +34,10 @@ const mutations = {
     // 保存用户id
     setUserId (state, date) {
         state.userId = date
+    },
+    // 保存用户角色
+    setRole (state, data) {
+        state.role =data
     },
     // 保存导航菜单
     setMenuTree (state, data) {
@@ -45,6 +53,10 @@ const actions = {
     // 改变用户id
     setUserId ({commit}, data) {
         commit('setUserId', data)
+    },
+    // 改变用户角色
+    setRole ({commit}, data) {
+        commit('setRole', data)
     },
     // 改变导航菜单
     setMenuTree ({commit}, data) {

@@ -107,7 +107,7 @@
 <script>
 // 引入导航菜单
 import menu from './menutree.vue'
-import {getpersonalinfo, postpersonalinfo,passwordchange} from '../http/moudules/user'
+import {getOnceUser, updateUser} from '../http/moudules/user'
 export default {
   data () {
     return {
@@ -201,16 +201,11 @@ export default {
     },
     // 基本信息按钮
     personalinfochange () {
-      getpersonalinfo({
+      getOnceUser({
         userId: this.$store.state.userId
       }).then(data => {
         if(data.code == '200'){
-          this.personalinfoForm.userId=data.userId
-          this.personalinfoForm.role=data.role
-          this.personalinfoForm.userName=data.userName
-          this.personalinfoForm.name=data.name
-          this.personalinfoForm.mobileNo=data.mobileNo
-          this.personalinfoForm.idcardNo=data.idcardNo
+          this.personalinfoForm=data.users
           this.personalinfo_isShowModal = true
         }
         if(data.code == "500") {
@@ -223,7 +218,7 @@ export default {
     personalinfo_ok (personalinfoRef) {
       this.$refs[personalinfoRef].validate(valid => {
         if(valid) {
-          postpersonalinfo(this.personalinfoForm).then(data => {
+          updateUser(this.personalinfoForm).then(data => {
             if(data.code == '200'){
               this.$Message.info('基本信息修改成功')
               this.personalinfo_isShowModal = false;
@@ -250,12 +245,12 @@ export default {
           if(this.passwordchangeForm.newpassword !== this.passwordchangeForm.renewpassword){
             this.$Message.error('两次密码不一致')
           } else {
-            getpersonalinfo({
+            getOnceUser({
               userId: this.$store.state.userId
             }).then(data => {
               if(data.code == '200'){
-                if(this.passwordchangeForm.oldpassword === data.password){
-                  passwordchange({
+                if(this.passwordchangeForm.oldpassword === data.users.password){
+                  updateUser({
                     userId: this.$store.state.userId,
                     password: this.passwordchangeForm.newpassword
                   }).then(data => {
@@ -331,8 +326,7 @@ export default {
   padding-top: 25px;
 }
 .content{
-    height: 800px;
-    padding: 48px;
+    height: 900px;
     background: #fff;
 }
 </style>

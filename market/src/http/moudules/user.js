@@ -1,18 +1,9 @@
 import axios from '../axios'
 
-// 获取基本信息（主页）
-export const getpersonalinfo = params => {
+// 更新用户
+export const updateUser = params => {
     return axios ({
-        url:'/user/home/personalinfo1',
-        method:'get',
-        params: params
-    })
-}
-
-// 保存基本信息（主页）
-export const postpersonalinfo = params => {
-    return axios ({
-        url:'/user/home/personalinfo2',
+        url:'/user/home/updateUser',
         method:'post',
         data: {
             ...params
@@ -20,18 +11,7 @@ export const postpersonalinfo = params => {
     })
 }
 
-// 保存忘记密码（主页）
-export const passwordchange = params => {
-    return axios ({
-        url: '/user/home/passwordchange',
-        method: 'post',
-        data: {
-            ...params
-        }
-    })
-}
-
-// 保存新增用户（用户管理）
+// 保存新增用户
 export const addnewuser = params => {
     return axios ({
         url: '/user/home/addnewuser',
@@ -42,10 +22,19 @@ export const addnewuser = params => {
     })
 }
 
-// 获取用户（维修管理、通知管理）
-export const getAdminRole = params => {
+// 获取所有用户
+export const getAllUser = params => {
     return axios ({
-        url: '/user/home/getAdminRole',
+        url: '/user/home/getAllUser',
+        method: 'get',
+        params: params
+    })
+}
+
+// 获取单个用户
+export const getOnceUser =params => {
+    return axios ({
+        url: '/user/home/getOnceUser',
         method: 'get',
         params: params
     })

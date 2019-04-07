@@ -40,11 +40,11 @@
                       <Input v-model="newUserForm.idcardNo" placeholder="请输入正确的身份证号码"></Input>
                   </FormItem>
                   <div class="form-item">
-                    <Button class="login-btn" shape="circle" @click="resetAdd('newUserRef')">重置</Button>
-                    <Button class="login-btn" shape="circle" @click="submitAddUser('newUserRef')">添加</Button>
+                      <Button class="login-btn" shape="circle" @click="resetAdd('newUserRef')">重置</Button>
+                      <Button class="login-btn" shape="circle" @click="submitAddUser('newUserRef')">添加</Button>
                   </div>
                   <Modal v-model="addUserModal" title="确认提示" @on-ok="resubmitAddUser" @on-cancel="cancelAddUser">
-                    <p>是否确认保存该用户？</p>
+                      <p>是否确认保存该用户？</p>
                   </Modal>
               </Form>
             </div>
@@ -68,11 +68,11 @@
                       <Input type="textarea" v-model="newStoreForm.address" placeholder="请输入门店详细地址" :autosize="{minRows: 2,maxRows: 5}"></Input>
                   </FormItem>
                   <div class="form-item">
-                    <Button class="login-btn" shape="circle" @click="resetAdd('newStoreRef')">重置</Button>
-                    <Button class="login-btn" shape="circle" @click="submitAddStore('newStoreRef')">登录</Button>
+                      <Button class="login-btn" shape="circle" @click="resetAdd('newStoreRef')">重置</Button>
+                      <Button class="login-btn" shape="circle" @click="submitAddStore('newStoreRef')">登录</Button>
                   </div>
                   <Modal v-model="addStoreModal" title="确认提示" @on-ok="resubmitAddStore" @on-cancel="cancelAddStore">
-                    <p>是否确认保存该门店？</p>
+                      <p>是否确认保存该门店？</p>
                   </Modal>
               </Form>
             </div>
@@ -95,11 +95,11 @@
                       <Input v-model="newStaffForm.idcardNo" placeholder="请输入正确的身份证号码"></Input>
                   </FormItem>
                   <div class="form-item">
-                    <Button class="login-btn" shape="circle" @click="resetAdd('newStaffRef')">重置</Button>
-                    <Button class="login-btn" shape="circle" @click="submitAddStaff('newStaffRef')">登录</Button>
+                      <Button class="login-btn" shape="circle" @click="resetAdd('newStaffRef')">重置</Button>
+                      <Button class="login-btn" shape="circle" @click="submitAddStaff('newStaffRef')">登录</Button>
                   </div>
                   <Modal v-model="addStaffModal" title="确认提示" @on-ok="resubmitAddStaff" @on-cancel="cancelAddStaff">
-                    <p>是否确认保存该员工？</p>
+                      <p>是否确认保存该员工？</p>
                   </Modal>
               </Form>
             </div>
@@ -123,11 +123,11 @@
                       <span>积分</span>
                   </FormItem>
                   <div class="form-item">
-                    <Button class="login-btn" shape="circle" @click="resetAdd('newMemberRef')">重置</Button>
-                    <Button class="login-btn" shape="circle" @click="submitAddMember('newMemberRef')">登录</Button>
+                      <Button class="login-btn" shape="circle" @click="resetAdd('newMemberRef')">重置</Button>
+                      <Button class="login-btn" shape="circle" @click="submitAddMember('newMemberRef')">登录</Button>
                   </div>
                   <Modal v-model="addMemberModal" title="确认提示" @on-ok="resubmitAddMember" @on-cancel="cancelAddMember">
-                    <p>是否确认保存该会员？</p>
+                      <p>是否确认保存该会员？</p>
                   </Modal>
               </Form>
             </div>
@@ -141,11 +141,11 @@
                       <InputNumber v-model="newGoodsForm.amount" :min="1"></InputNumber>
                   </FormItem>
                   <div class="form-item">
-                    <Button class="login-btn" shape="circle" @click="resetAdd('newGoodsRef')">重置</Button>
-                    <Button class="login-btn" shape="circle" @click="submitAddGoods('newGoodsRef')">添加</Button>
+                      <Button class="login-btn" shape="circle" @click="resetAdd('newGoodsRef')">重置</Button>
+                      <Button class="login-btn" shape="circle" @click="submitAddGoods('newGoodsRef')">添加</Button>
                   </div>
                   <Modal v-model="addGoodsModal" title="确认提示" @on-ok="resubmitAddGoods" @on-cancel="cancelAddGoods">
-                    <p>是否确认保存该商品？</p>
+                      <p>是否确认保存该商品？</p>
                   </Modal>
               </Form>
             </div>
@@ -183,7 +183,7 @@
                       <Button class="login-btn" shape="circle" @click="submitAddRepair('newRepairRef')">添加</Button>
                   </div>
                   <Modal v-model="addRepairModal" title="确认提示" @on-ok="resubmitAddRepair" @on-cancel="cancelAddRepair">
-                    <p>是否确认发送该维修申请？</p>
+                      <p>是否确认发送该维修申请？</p>
                   </Modal>
               </Form>
             </div>
@@ -218,7 +218,7 @@
                       <Button class="login-btn" shape="circle" @click="submitAddInform('newInformRef')">发送</Button>
                   </div>
                   <Modal v-model="addInformModal" title="确认提示" @on-ok="resubmitAddInform" @on-cancel="cancelAddInfrom">
-                    <p>是否确认发送该通知？</p>
+                      <p>是否确认发送该通知？</p>
                   </Modal>
               </Form>
             </div>
@@ -226,7 +226,7 @@
     </div>
 </template>
 <script>
-import {addnewuser,getAdminRole} from '../http/moudules/user'
+import {addnewuser,getAllUser} from '../http/moudules/user'
 import {addnewstore} from '../http/moudules/store'
 import {addnewstaff} from '../http/moudules/staff'
 import {addnewmember} from '../http/moudules/member'
@@ -742,7 +742,7 @@ export default {
       this.selectrecipients_isShowModal = true;     
     },
     getAdminRole() {
-      getAdminRole({role: "管理员"}).then(data => {
+      getAllUser({role: "管理员"}).then(data => {
         if(data.code == '200'){
           this.recipientslist = data.users;
         }
@@ -855,7 +855,7 @@ export default {
       this.addressee_isShowModal = true;     
     },
     getPublicRole() {
-      getAdminRole({role: "用户"}).then(data => {
+      getAllUser({role: "用户"}).then(data => {
         if(data.code == '200'){
           this.addresseelist = data.users;
         }

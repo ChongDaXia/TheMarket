@@ -9,9 +9,14 @@ import store from './store'
 // 引入iview
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
+// 引入echarts
+// import ECharts from 'vue-echarts/components/ECharts'
+import echarts from 'echarts'
 
 Vue.config.productionTip = false
 Vue.use(iView)
+// Vue.component('v-chart', ECharts)
+Vue.prototype.$echarts=echarts
 
 router.beforeEach((to, from, next) => {
   // 获取用户登录成功后的状态

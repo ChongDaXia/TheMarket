@@ -66,7 +66,9 @@
                 <MenuItem name="AddRepairPage">
                     <a @click="linkto('AddRepairPage')">申请维修</a>
                 </MenuItem>
-                <MenuItem name="6-2">维修列表</MenuItem>
+                <MenuItem name="6-2">
+                    <a @click="linktoRepairList">维修列表</a>
+                </MenuItem>
                 <MenuItem name="6-3">维修反馈</MenuItem>
             </Submenu>
             <Submenu name="7">
@@ -84,7 +86,9 @@
                     <Icon type="ios-stats" />
                     财务管理
                 </template>
-                <MenuItem name="8-1">财务统计报表</MenuItem>
+                <MenuItem name="EchartsPage">
+                    <a @click="linktoecharts">财务统计报表</a>
+                </MenuItem>
             </Submenu>
         </Menu>
     </div>
@@ -110,11 +114,21 @@ export default {
       })
     },
     listto (name) {
-        this.$router.push({
-        path: '/showlist',
-        query: {
-          theid: name
-        }
+      this.$router.push({
+      path: '/showlist',
+      query: {
+        theid: name
+      }
+      })
+    },
+    linktoRepairList () {
+      this.$router.push({
+        path: '/repairlist'
+      })
+    },
+    linktoecharts () {
+      this.$router.push({
+        path: '/echarts'
       })
     }
   }

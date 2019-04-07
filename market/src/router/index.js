@@ -5,6 +5,8 @@ import login from '@/components/login'
 import home from '@/components/home'
 import addsome from '@/components/addsome'
 import showlist from '@/components/showlist'
+import repairlist from '@/components/repairlist'
+import echarts from '@/components/echarts'
 
 Vue.use(Router)
 
@@ -38,6 +40,22 @@ export default new Router({
           path: '/addsome',
           name: 'addsome',
           component: addsome,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/repairlist',
+          name: 'repairlist',
+          component: repairlist,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/echarts',
+          name: 'echarts',
+          component: echarts,
           meta: {
             isLogin: true
           }

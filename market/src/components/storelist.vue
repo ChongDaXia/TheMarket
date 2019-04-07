@@ -2,21 +2,23 @@
     <div class="layout">
         <div class="header">
             <!-- 搜索条件 -->
-            <Select v-model="selectrole" style="width:200px;margin-right:30px" placeholder="请选择角色">
-                <Option v-for="item in selectrolelist" :value="item" :key="item">
-                    {{item}}
-                </Option>
+            <Select v-model="selectstatus" style="width:200px;margin-right:30px" placeholder="请选择状态">
+                <Option v-for="item in selectstatuslist" :value="item" :key="item">{{item}}</Option>
             </Select>
-            <Select v-model="selectid" filterable style="width:200px;margin-right:30px" placeholder="请选择姓名">
-                <Option v-for="item in selectnamelist" :value="item.userId" :key="item.userId">{{item.name}}</Option>
+            <Select v-model="selectno" filterable style="width:200px;margin-right:30px" placeholder="请选择编号">
+                <Option v-for="item in selectalllist" :value="item.userId" :key="item.userId">{{item.name}}</Option>
+            </Select>
+            <Select v-model="selectadress" filterable style="width:200px;margin-right:30px" placeholder="请选择地址">
+                <Option v-for="item in selectalllist" :value="item.address" :key="item.address">{{item.name}}</Option>
             </Select>
         </div>
         <!-- 数据列表 -->
         <div class="content">
+      selectalllist: [],
             <Table height="330" border stripe :columns="tabletitle" :data="selectnamelist"></Table>
         </div>
         <!-- 信息详情 -->
-        <Modal v-model="selectdetail" :mask-closable="false" @on-ok="submitselectdetail('selectdetailRef')" @on-cancel="cancelselectdetail" ok-text="修改">
+        <!-- <Modal v-model="selectdetail" :mask-closable="false" @on-ok="submitselectdetail('selectdetailRef')" @on-cancel="cancelselectdetail" ok-text="修改">
             <p class="modaltitle">
                 <span>基本信息</span>
             </p>
@@ -40,13 +42,13 @@
                     <Input v-model="selectdetailForm.idcardNo"></Input>
                 </FormItem>
             </Form>
-        </Modal>
+        </Modal> -->
         <!-- 信息详情二次确认框 -->
-        <Modal v-model="reselectdetail" :mask-closable="false" title="确认提示" @on-ok="resubmitselectdetail" @on-cancel="recancelselectdetail">
+        <!-- <Modal v-model="reselectdetail" :mask-closable="false" title="确认提示" @on-ok="resubmitselectdetail" @on-cancel="recancelselectdetail">
             <p>是否确认修改该用户信息？</p>
-        </Modal>
+        </Modal> -->
         <!-- 修改密码 -->
-        <Modal v-model="changepassword" :mask-closable="false" @on-ok="submitchangepassword('passwordchangeRef')" @on-cancel="cancelchangepassword" ok-text="修改">
+        <!-- <Modal v-model="changepassword" :mask-closable="false" @on-ok="submitchangepassword('passwordchangeRef')" @on-cancel="cancelchangepassword" ok-text="修改">
             <p class="modaltitle">
                 <span>修改密码</span>
             </p>
@@ -61,11 +63,11 @@
                     <Input v-model="passwordForm.renewpassword"></Input>
                 </FormItem>
             </Form>
-        </Modal>
+        </Modal> -->
         <!-- 修改密码二次确认框 -->
-        <Modal v-model="rechangepassword" :mask-closable="false" title="确认提示" @on-ok="resubmitchangepassword" @on-cancel="recancelchangepassword">
+        <!-- <Modal v-model="rechangepassword" :mask-closable="false" title="确认提示" @on-ok="resubmitchangepassword" @on-cancel="recancelchangepassword">
             <p>是否确认修改该用户密码？</p>
-        </Modal>
+        </Modal> -->
     </div>
 </template>
 <script>
@@ -74,17 +76,19 @@ export default {
   name: 'showList',
   data () {
     return {
-      // 角色筛选
-      selectrole: '',
-      selectrolelist: [
-        '所有人',
-        '管理员',
-        '用户'
+      // 状态筛选
+      selectstatus: '',
+      selectstatuslist: [
+        '所有状态',
+        '未出租',
+        '已出租',
       ],
-      // 搜索(选择用户的id)
-      selectid: '',
-      // 数据列表
-      selectnamelist: [],
+      // 搜索(选择编号)
+      selectno: '',
+      // 搜索(选择地址)
+      selectadress: '',
+      // 所有数据列表
+      selectalllist: [],
       // 表格数据
       tabletitle: [
         {
@@ -93,16 +97,20 @@ export default {
           align: 'center'
         },
         {
-          title: '姓名',
-          key: 'name'
+          title: '编号',
+          key: 'storeNo'
         },
         {
-          title: '用户名',
-          key: 'userName'
+          title: '面积（平方米）',
+          key: 'area'
         },
         {
-          title: '角色',
-          key: 'role'
+          title: '地址',
+          key: 'address'
+        },
+        {
+          title: '状态',
+          key: 'rentStatus'
         },
         {
           title: '操作',
@@ -120,7 +128,7 @@ export default {
                     this.show(params.index)
                   }
                 }
-              }, '详情'),
+              }, '租赁详情'),
               h('Button', {
                 props: {
                   type: 'primary',
@@ -128,7 +136,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.updatepwd(params.index)
+                    //this.updatepwd(params.index)
                   }
                 }
               }, '修改密码')
@@ -210,7 +218,7 @@ export default {
     selectid: 'changelistbyUserId'
   },
   methods: {
-    // 获取所有用户信息
+    // 获取所有门店信息
     userhandlesearch () {
       getAllUser().then(data => {
         if(data.code == '200'){

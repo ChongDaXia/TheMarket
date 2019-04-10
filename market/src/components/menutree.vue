@@ -50,9 +50,14 @@
                     商品管理
                 </template>
                 <MenuItem name="AddGoodsPage">
-                    <a @click="linkto('AddGoodsPage')">添加商品</a>
+                    <a @click="linktoAddGoods">采购商品</a>
                 </MenuItem>
-                <MenuItem name="5-2">商品列表</MenuItem>
+                <MenuItem name="AddGoodsPage">
+                    <a @click="linktoSupplier">供货商管理</a>
+                </MenuItem>
+                <MenuItem name="GoodsListPage">
+                    <a @click="linktoGoods">商品列表</a>
+                </MenuItem>
                 <MenuGroup title="库存">
                     <MenuItem name="5-3">库存统计</MenuItem>
                     <MenuItem name="5-4">零库存商品</MenuItem>
@@ -66,7 +71,7 @@
                 <MenuItem name="AddRepairPage">
                     <a @click="linkto('AddRepairPage')">申请维修</a>
                 </MenuItem>
-                <MenuItem name="6-2">
+                <MenuItem name="RepairListPage">
                     <a @click="linktoRepairList">维修列表</a>
                 </MenuItem>
                 <MenuItem name="6-3">维修反馈</MenuItem>
@@ -79,7 +84,9 @@
                 <MenuItem name="AddInformPage">
                     <a @click="linkto('AddInformPage')">发送通知</a>
                 </MenuItem>
-                <MenuItem name="7-2">通知记录</MenuItem>
+                <MenuItem name="InformListPage">
+                    <a @click="linktoInformList">通知记录</a>
+                </MenuItem>
             </Submenu>
             <Submenu name="8">
                 <template slot="title">
@@ -129,6 +136,26 @@ export default {
     linktoecharts () {
       this.$router.push({
         path: '/echarts'
+      })
+    },
+    linktoSupplier () {
+      this.$router.push({
+        path: '/supplierlist'
+      })
+    },
+    linktoGoods () {
+      this.$router.push({
+        path: '/goodslist'
+      })
+    },
+    linktoAddGoods () {
+      this.$router.push({
+        path: '/addgoods'
+      })
+    },
+    linktoInformList () {
+      this.$router.push({
+        path: '/informlist'
       })
     }
   }

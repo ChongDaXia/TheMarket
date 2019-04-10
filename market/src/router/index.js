@@ -7,6 +7,10 @@ import addsome from '@/components/addsome'
 import showlist from '@/components/showlist'
 import repairlist from '@/components/repairlist'
 import echarts from '@/components/echarts'
+import supplierlist from '@/components/supplierlist'
+import goodslist from '@/components/goodslist'
+import addgoods from '@/components/addgoods'
+import informlist from '@/components/informlist'
 
 Vue.use(Router)
 
@@ -56,6 +60,38 @@ export default new Router({
           path: '/echarts',
           name: 'echarts',
           component: echarts,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/supplierlist',
+          name: 'supplierlist',
+          component: supplierlist,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/goodslist',
+          name: 'goodslist',
+          component: goodslist,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/addgoods',
+          name: 'addgoods',
+          component: addgoods,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/informlist',
+          name: 'informlist',
+          component: informlist,
           meta: {
             isLogin: true
           }

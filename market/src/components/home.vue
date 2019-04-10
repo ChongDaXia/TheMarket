@@ -1,7 +1,7 @@
 <template>
     <div class="layout">
         <Layout>
-             <Header>
+             <Header class="">
                 <Menu mode="horizontal" theme="dark">
                     <div class="layout-logo"></div>
                     <div class="layout-nav">
@@ -84,7 +84,7 @@
                     <v-menu></v-menu>
                 </Sider>
                 <Layout :style="{padding: '0 24px 24px'}">
-                    <Breadcrumb :style="{margin: '24px 0'}">
+                    <Breadcrumb style="margin:24px 0">
                         <BreadcrumbItem to="/">
                             <Icon type="ios-apps" />主页
                         </BreadcrumbItem>
@@ -95,6 +95,7 @@
                           </a> -->
                         </BreadcrumbItem>
                     </Breadcrumb>
+                    <div>{{this.TheDate}}</div>
                     <Content class="content">
                         <!-- 页面内容展示 -->
                         <router-view></router-view>
@@ -108,9 +109,12 @@
 // 引入导航菜单
 import menu from './menutree.vue'
 import {getOnceUser, updateUser} from '../http/moudules/user'
+import moment from 'moment'
 export default {
   data () {
     return {
+      // 时间
+      TheDate: '',
       // 退出登录
       loginout_isShowModal: false,
       // 基本信息修改框
@@ -184,7 +188,14 @@ export default {
     // 导航菜单
     'v-menu': menu
   },
+  mounted() {
+    this.getDate ()
+  },
   methods: {
+    getDate () {
+      let toDate=moment().format('YYYY-MM-DD')
+      this.TheDate=toDate
+    },
     // 退出登录提示框
     loginout_ok () {
       localStorage.removeItem("Flag")

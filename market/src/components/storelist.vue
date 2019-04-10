@@ -14,7 +14,6 @@
         </div>
         <!-- 数据列表 -->
         <div class="content">
-      selectalllist: [],
             <Table height="330" border stripe :columns="tabletitle" :data="selectnamelist"></Table>
         </div>
         <!-- 信息详情 -->

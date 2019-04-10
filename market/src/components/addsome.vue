@@ -6,7 +6,6 @@
             <div v-if="AddStorePage">添加新门店</div>
             <div v-if="AddStaffPage">添加新员工</div>
             <div v-if="AddMemberPage">添加新会员</div>
-            <div v-if="AddGoodsPage">添加新商品</div>
             <div v-if="AddRepairPage">申请维修</div>
             <div v-if="AddInformPage">发送通知</div>
         </div>
@@ -131,24 +130,6 @@
                   </Modal>
               </Form>
             </div>
-            <!-- 添加新商品 -->
-            <div class="formtext">
-              <Form ref="newGoodsRef" :model="newGoodsForm" :rules="newGoodsRules" :label-width="80" v-if="AddGoodsPage">
-                  <FormItem label="名称" prop="name">
-                      <Input v-model="newGoodsForm.name" placeholder="仅支持2-20位大小写字母或数字、中文"></Input>
-                  </FormItem>
-                  <FormItem label="数量" prop="amount" style="text-align:left">
-                      <InputNumber v-model="newGoodsForm.amount" :min="1"></InputNumber>
-                  </FormItem>
-                  <div class="form-item">
-                      <Button class="login-btn" shape="circle" @click="resetAdd('newGoodsRef')">重置</Button>
-                      <Button class="login-btn" shape="circle" @click="submitAddGoods('newGoodsRef')">添加</Button>
-                  </div>
-                  <Modal v-model="addGoodsModal" title="确认提示" @on-ok="resubmitAddGoods" @on-cancel="cancelAddGoods">
-                      <p>是否确认保存该商品？</p>
-                  </Modal>
-              </Form>
-            </div>
             <!-- 申请维修 -->
             <div class="formtext">
               <Form ref="newRepairRef" :model="newRepairForm" :rules="newRepairRules" :label-width="80" v-if="AddRepairPage">
@@ -230,7 +211,6 @@ import {addnewuser,getAllUser} from '../http/moudules/user'
 import {addnewstore} from '../http/moudules/store'
 import {addnewstaff} from '../http/moudules/staff'
 import {addnewmember} from '../http/moudules/member'
-import {addnewgoods} from '../http/moudules/goods'
 import {addnewrepair} from '../http/moudules/repair'
 import {addnewinform} from '../http/moudules/inform'
 export default {
@@ -243,7 +223,6 @@ export default {
       AddStorePage: false,
       AddStaffPage: false,
       AddMemberPage: false,
-      AddGoodsPage: false,
       AddRepairPage: false,
       AddInformPage: false,
       // 添加新用户
@@ -396,26 +375,6 @@ export default {
       },
       // 添加新会员二次确认框
       addMemberModal: false,
-      // 添加新商品
-      newGoodsForm: {
-        name: '',
-        amount: 1
-      },
-      newGoodsRules: {
-        name: [{
-          required: true,
-          trigger: 'blur, change',
-          pattern:/^[\u4E00-\u9FA5A-Za-z0-9]{2,20}$/,
-          message: '仅支持2-20位大小写字母或数字、中文'
-        }],
-        amount: [{
-          trigger: 'blur, change',
-          pattern:/^[0-9]*$/,
-          message: '请输入数字'
-        }]
-      },
-      // 添加新商品二次确认框
-      addGoodsModal: false,
       // 申请维修
       newRepairForm: {
         title: '',
@@ -514,7 +473,6 @@ export default {
             this.AddStorePage=false
             this.AddStaffPage=false
             this.AddMemberPage=false
-            this.AddGoodsPage=false
             this.AddRepairPage=false
             this.AddInformPage=false
             break
@@ -524,7 +482,6 @@ export default {
             this.AddStorePage=true
             this.AddStaffPage=false
             this.AddMemberPage=false
-            this.AddGoodsPage=false
             this.AddRepairPage=false
             this.AddInformPage=false
             break
@@ -534,7 +491,6 @@ export default {
             this.AddStorePage=false
             this.AddStaffPage=true
             this.AddMemberPage=false
-            this.AddGoodsPage=false
             this.AddRepairPage=false
             this.AddInformPage=false
             break
@@ -544,17 +500,6 @@ export default {
             this.AddStorePage=false
             this.AddStaffPage=false
             this.AddMemberPage=true
-            this.AddGoodsPage=false
-            this.AddRepairPage=false
-            this.AddInformPage=false
-            break
-          case "AddGoodsPage":
-            this.HomePage=false
-            this.AddUserPage=false
-            this.AddStorePage=false
-            this.AddStaffPage=false
-            this.AddMemberPage=false
-            this.AddGoodsPage=true
             this.AddRepairPage=false
             this.AddInformPage=false
             break
@@ -564,7 +509,6 @@ export default {
             this.AddStorePage=false
             this.AddStaffPage=false
             this.AddMemberPage=false
-            this.AddGoodsPage=false
             this.AddRepairPage=true
             this.AddInformPage=false
             break
@@ -574,7 +518,6 @@ export default {
             this.AddStorePage=false
             this.AddStaffPage=false
             this.AddMemberPage=false
-            this.AddGoodsPage=false
             this.AddRepairPage=false
             this.AddInformPage=true
             break
@@ -701,32 +644,6 @@ export default {
     cancelAddMember () {
       this.addMemberModal=false
       this.$Message.info('取消添加新会员')
-    },
-    // 保存新商品
-    submitAddGoods (name) {
-      this.$refs[name].validate(valid => {
-        if(valid){
-          this.addGoodsModal=true
-        } else {
-          this.$Message.error('填写内容不符合规范')
-        }
-      })
-    },
-    resubmitAddGoods () {
-      addnewgoods(this.newGoodsForm).then(data => {
-        if(data.code == '200'){
-          this.addGoodsModal=false
-          this.$Message.info('新商品添加成功')
-          this.$refs['newGoodsRef'].resetFields()
-        }
-        if(data.code == "500") {
-          this.$Message.error('新商品添加失败')
-        }
-      })
-    },
-    cancelAddGoods () {
-      this.addGoodsModal=false
-      this.$Message.info('取消添加新商品')
     },
     // 选择维修收件人
     selectrecipients () {

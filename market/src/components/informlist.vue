@@ -6,22 +6,12 @@
         </div>
         <!-- 数据列表 -->
         <div class="content">
-            <div>维修单：{{repairorder}}</div>
-            <div>维修表：{{repairlist}}</div>
-            <div>详情的内容：{{repairdetail}}</div>
-            <!-- 用户权限 -->
-            <Card v-for="(item,index) in repairlist" :value="item.repairId" :key="index" v-if="theUserRole">
-                <div @click="usergetrepairdetail(item)">
-                    <div style="float: right">
-                        {{item.formatCreateTime}}
-                      </div>
-                    <Divider orientation="left">{{item.title}}</Divider>
-                    <p>内容:{{item.content}}</p>
-                </div>
-            </Card>
+            <div>维修单：{{informorder}}</div>
+            <div>维修表：{{informlist}}</div>
+            <div>详情的内容：{{informdetail}}</div>
             <!-- 管理员权限 -->
-            <Card v-for="(item,index) in repairlist" :value="item.repairId" :key="index" v-if="theAdminRole">
-                <div @click="admingetrepairdetail(item)">
+            <Card v-for="(item,index) in informlist" :value="item.informId" :key="index" v-if="theAdminRole">
+                <div @click="admingetinformdetail(item)">
                     <div style="float: right">
                         {{item.formatCreateTime}}
                       </div>
@@ -29,37 +19,46 @@
                     <p>内容:{{item.content}}</p>
                 </div>
             </Card>
-            <!-- 用户维修详情 -->
-            <Modal v-model="repairdetail_isShowModal" :mask-closable="false" @on-cancel="usercancelrepairdetail">
-                <p class="modaltitle">
-                    <span>维修信息详情</span>
-                </p>
-                <p>标题：{{this.repairdetail.title}}</p>
-                <p>内容：{{this.repairdetail.content}}</p>
-                <p>类型：{{this.repairdetail.style}}</p>
-                <p>时间：{{this.repairdetail.createTime}}</p>
-                <p>收件人：{{this.sentUser}}</p>
-            </Modal>
-            <!-- 管理员维修详情 -->
-            <Modal v-model="otherrepairdetail_isShowModal" :mask-closable="false" @on-cancel="admincancelrepairdetail">
-                <p class="modaltitle">
-                    <span>维修信息详情</span>
-                </p>
-                <p>标题：{{this.repairdetail.title}}</p>
-                <p>内容：{{this.repairdetail.content}}</p>
-                <p>类型：{{this.repairdetail.style}}</p>
-                <p>时间：{{this.repairdetail.createTime}}</p>
-                <p>发件人：{{this.sentUser}}</p>
-            </Modal>
+            <!-- 用户权限 -->
+            <Card v-for="(item,index) in informlist" :value="item.informId" :key="index" v-if="theUserRole">
+                <div @click="usergetinformdetail(item)">
+                    <div style="float: right">
+                        {{item.formatCreateTime}}
+                      </div>
+                    <Divider orientation="left">{{item.title}}</Divider>
+                    <p>内容:{{item.content}}</p>
+                </div>
+            </Card>
         </div>
+        <!-- 管理员通知详情 -->
+        <Modal v-model="informdetail_isShowModal" :mask-closable="false" @on-cancel="cancelinformdetail">
+            <p class="modaltitle">
+                <span>通知信息详情</span>
+            </p>
+            <p>标题：{{this.informdetail.title}}</p>
+            <p>内容：{{this.informdetail.content}}</p>
+            <p>时间：{{this.informdetail.formatCreateTime}}</p>
+            <p>收件人：{{this.sentUserlist}}</p>
+        </Modal>
+        <!-- 用户通知详情 -->
+        <Modal v-model="otherinformdetail_isShowModal" :mask-closable="false" @on-cancel="othercancelinformdetail">
+            <p class="modaltitle">
+                <span>通知信息详情</span>
+            </p>
+            <p>标题：{{this.informdetail.title}}</p>
+            <p>内容：{{this.informdetail.content}}</p>
+            <p>时间：{{this.informdetail.formatCreateTime}}</p>
+            <p>发件人{{this.sentUser}}</p>
+        </Modal>
+        
     </div>
 </template>
 <script>
 import moment from 'moment'
-import {getrepairorder,getrepair,getrepairorderadmin} from  '../http/moudules/repair'
+import {getallinform,getalljoborder,getjoborderadmin} from  '../http/moudules/inform'
 import {getOnceUser} from '../http/moudules/user'
 export default {
-  name: 'repairlist',
+  name: 'informlist',
   data () {
     return {
       // 选中时间
@@ -102,21 +101,22 @@ export default {
       // 角色()
       theAdminRole: false,
       theUserRole: false,
-      // 维修单
-      repairorder: [],
-      // 维修表
-      repairlist: [],
+      // 通知单
+      informorder: [],
+      // 通知表
+      informlist: [],
       // 信息详情弹框
-      repairdetail_isShowModal:false,
-      otherrepairdetail_isShowModal:false,
+      informdetail_isShowModal: false,
+      otherinformdetail_isShowModal: false,
       // 信息详情数据
-      repairdetail: [],
-      // 收信人
+      informdetail: [],
+      // 收信人列表
+      sentUserlist: [],
       sentUser: ''
     }
   },
   mounted() {
-    this.getAllrepairorder ()
+    this.getAllJobOrder ()
   },
   methods: {
     // 时间筛选变化
@@ -124,30 +124,32 @@ export default {
       this.searchTimes=val
       let starttime=new Date(this.searchTimes[0]).getTime();
       let endtime=new Date(this.searchTimes[1]).getTime();
-      // 用户（作为发送者）管理员（作为接受者）
+      // 用户（作为接收者）管理员（作为发送者）
       let tempdata=[]
       if (this.$store.state.role == "用户") {
-        tempdata={sentUserId: this.$store.state.userId}
+        tempdata={userId: this.$store.state.userId}
         this.theUserRole=true
       } else {
-        tempdata={UserId: this.$store.state.userId}
+        tempdata={sentUserId: this.$store.state.userId}
         this.theAdminRole=true
       }
-      getrepairorderadmin(tempdata).then(data => {
+      debugger
+      getjoborderadmin(tempdata).then(data =>{
         if(data.code == '200'){
-          this.repairorder=data.repairorder
-          this.repairlist=data.repairs
-          this.repairorder.forEach(item => {
-            this.repairlist.forEach(i => {
-              if(item.repairId == i.repairId){
+          this.informorder=data.joborder
+          this.informlist=data.informs
+          this.informlist.forEach((i,index) => {
+            this.informorder.forEach(item => {
+              if(item.informId == i.informId){
                 i.formatCreateTime = moment(item.createTime).format('YYYY-MM-DD')
                 let createTimestap = new Date(i.formatCreateTime).getTime();
                 if(createTimestap < starttime || createTimestap > endtime){
-                  this.repairlist.splice(index,1)
+                  this.informlist.splice(index,1)
                 }
               }
             })
           })
+          let createTimestap = new Date(this.informorder.formatCreateTime).getTime();
         }
         if(data.code == '300'){
           this.$Message.error('通知获取失败')
@@ -157,24 +159,24 @@ export default {
         }
       })
     },
-    // 获取维修单信息
-    getAllrepairorder () {
-      // 用户（作为发送者）管理员（作为接收者）
+    // 获取通知单信息（管理员：同一个通知有多个发送者）
+    getAllJobOrder () {
+      // 用户（作为接收者）管理员（作为发送者）
       let tempdata=[]
       if (this.$store.state.role == "用户") {
-        tempdata={sentUserId: this.$store.state.userId}
+        tempdata={userId: this.$store.state.userId}
         this.theUserRole=true
       } else {
-        tempdata={userId: this.$store.state.userId}
+        tempdata={sentUserId: this.$store.state.userId}
         this.theAdminRole=true
       }
-      getrepairorderadmin(tempdata).then(data => {
+      getjoborderadmin(tempdata).then(data =>{
         if(data.code == '200'){
-          this.repairorder=data.repairorder
-          this.repairlist=data.repairs
-          this.repairorder.forEach(item => {
-            this.repairlist.forEach(i => {
-              if(item.repairId == i.repairId){
+          this.informorder=data.joborder
+          this.informlist=data.informs
+          this.informorder.forEach(item => {
+            this.informlist.forEach(i => {
+              if(item.informId == i.informId){
                 i.formatCreateTime = moment(item.createTime).format('YYYY-MM-DD')
               }
             })
@@ -188,18 +190,19 @@ export default {
         }
       })
     },
-    // 维修详情
-    usergetrepairdetail (name) {
-      this.repairdetail=name
-      // 用户（发送者id+维修id=接收者id=>接收者姓名）
-      getrepairorder({sentUserId: this.$store.state.userId, repairId: name.repairId}).then(data => {
+    // 通知详情
+    admingetinformdetail (name) {
+      this.sentUserlist=[]
+      this.informdetail=name
+      // 管理员（发送者id+通知id=接收者id=>接收者姓名）
+      getalljoborder({sentUserId: this.$store.state.userId, informId: name.informId}).then(data => {
         if(data.code == "200"){
-          let ordersuser=data.repairorder.map(item => item.userId)
+          let ordersuser=data.orders.map(item => item.userId)
           ordersuser.forEach(i => {
             getOnceUser({userId: i}).then(data => {
               if(data.code == "200") {
-                this.sentUser=data.repairorder.name
-                this.repairdetail_isShowModal=true
+                this.sentUserlist=this.sentUserlist.concat(data.users.name)
+                this.informdetail_isShowModal=true
               }
               if(data.code == "500") {
                 this.$Message.error('用户名获取失败')
@@ -208,19 +211,36 @@ export default {
           })
         }
         if(data.code == "500") {
-          this.$Message.error('维修单获取失败')
+          this.$Message.error('通知单获取失败')
         }
       })
     },
-    admingetrepairdetail (name) {
-      this.repairdetail=name
-      this.otherrepairdetail_isShowModal=true
+    usergetinformdetail (name) {
+      this.informdetail=name
+      // 用户（接受者id+通知id=接收者id=>接收者姓名）
+      getalljoborder({userId: this.$store.state.userId, informId: name.informId}).then(data => {
+        if(data.code == "200"){
+          debugger
+          getOnceUser({userId: data.orders.map(item => item.sentUserId)}).then(data => {
+            if(data.code == "200") {
+              this.sentUser=this.data.users.name
+              this.informdetail_isShowModal=true
+            }
+            if(data.code == "500") {
+              this.$Message.error('用户名获取失败')
+            }
+          })
+        }
+        if(data.code == "500") {
+          this.$Message.error('通知单获取失败')
+        }
+      })
     },
-    usercancelrepairdetail () {
-      this.repairdetail_isShowModal=false
+    cancelinformdetail () {
+      this.informdetail_isShowModal=false
     },
-    admincancelrepairdetail () {
-      this.otherrepairdetail_isShowModal=false
+    othercancelinformdetail () {
+      this.otherinformdetail_isShowModal=false
     }
   }
 }
@@ -248,5 +268,6 @@ export default {
 .content{
   width: 100%;
   padding: 50px;
+  overflow: auto;
 }
 </style>

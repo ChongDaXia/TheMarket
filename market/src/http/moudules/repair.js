@@ -28,3 +28,12 @@ export const getrepair = params => {
         params: params
     })
 }
+
+//获取管理员维修
+export const getrepairorderadmin = params => {
+    return axios ({
+        url: '/repair/home/getrepairorderadmin',
+        method: 'get',
+        params: params
+    })
+}

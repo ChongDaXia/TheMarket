@@ -2,35 +2,63 @@
     <div class="layout">
         <div class="header">
             <!-- 搜索条件 -->
-            <DatePicker type="daterange" :value="searchTimes" :options="optionsDatetime" @on-change="updatebytotime" placement="bottom-start" placeholder="选择日期" style="width: 200px" split-panels :editable="false"></DatePicker>
+            <DatePicker 
+                type="daterange" 
+                :value="searchTimes" 
+                :options="optionsDatetime" 
+                @on-change="updatebytotime" 
+                placement="bottom-start" 
+                placeholder="选择日期" 
+                style="width: 200px" 
+                split-panels 
+                :editable="false"
+            />
         </div>
         <!-- 数据列表 -->
         <div class="content">
             <div>维修单：{{repairorder}}</div>
             <div>维修表：{{repairlist}}</div>
             <div>详情的内容：{{repairdetail}}</div>
+            <div>用户：{{this.theUserRole}}</div>
+            <div>管理员：{{this.theAdminRole}}</div>
             <!-- 用户权限 -->
-            <Card v-for="(item,index) in repairlist" :value="item.repairId" :key="index" v-if="theUserRole">
+            <Card v-for="(item,index) in repairlist" 
+                :value="item.repairId" 
+                :key="index" 
+                v-if="theUserRole"
+            >
                 <div @click="usergetrepairdetail(item)">
                     <div style="float: right">
                         {{item.formatCreateTime}}
-                      </div>
-                    <Divider orientation="left">{{item.title}}</Divider>
+                    </div>
+                    <Divider orientation="left">
+                       {{item.title}}
+                    </Divider>
                     <p>内容:{{item.content}}</p>
                 </div>
             </Card>
             <!-- 管理员权限 -->
-            <Card v-for="(item,index) in repairlist" :value="item.repairId" :key="index" v-if="theAdminRole">
+            <Card v-for="(item,index) in repairlist" 
+                :value="item.repairId" 
+                :key="index" 
+                v-if="theAdminRole"
+            >
                 <div @click="admingetrepairdetail(item)">
                     <div style="float: right">
                         {{item.formatCreateTime}}
-                      </div>
-                    <Divider orientation="left">{{item.title}}</Divider>
+                    </div>
+                    <Divider orientation="left">
+                        {{item.title}}
+                    </Divider>
                     <p>内容:{{item.content}}</p>
                 </div>
             </Card>
             <!-- 用户维修详情 -->
-            <Modal v-model="repairdetail_isShowModal" :mask-closable="false" @on-cancel="usercancelrepairdetail">
+            <Modal 
+                v-model="repairdetail_isShowModal" 
+                :mask-closable="false" 
+                @on-cancel="usercancelrepairdetail"
+            >
                 <p class="modaltitle">
                     <span>维修信息详情</span>
                 </p>
@@ -41,7 +69,11 @@
                 <p>收件人：{{this.sentUser}}</p>
             </Modal>
             <!-- 管理员维修详情 -->
-            <Modal v-model="otherrepairdetail_isShowModal" :mask-closable="false" @on-cancel="admincancelrepairdetail">
+            <Modal 
+                v-model="otherrepairdetail_isShowModal" 
+                :mask-closable="false" 
+                @on-cancel="admincancelrepairdetail"
+            >
                 <p class="modaltitle">
                     <span>维修信息详情</span>
                 </p>
@@ -157,7 +189,7 @@ export default {
         }
       })
     },
-    // 获取维修单信息
+    // 获取维修+维修单信息
     getAllrepairorder () {
       // 用户（作为发送者）管理员（作为接收者）
       let tempdata=[]
@@ -170,6 +202,7 @@ export default {
       }
       getrepairorderadmin(tempdata).then(data => {
         if(data.code == '200'){
+          // 去重的维修单
           this.repairorder=data.repairorder
           this.repairlist=data.repairs
           this.repairorder.forEach(item => {
@@ -181,10 +214,10 @@ export default {
           })
         }
         if(data.code == '300'){
-          this.$Message.error('通知获取失败')
+          this.$Message.error('无维修信息')
         }
         if(data.code == '500'){
-          this.$Message.error('通知单获取失败')
+          this.$Message.info('无维修单信息')
         }
       })
     },
@@ -193,28 +226,47 @@ export default {
       this.repairdetail=name
       // 用户（发送者id+维修id=接收者id=>接收者姓名）
       getrepairorder({sentUserId: this.$store.state.userId, repairId: name.repairId}).then(data => {
-        if(data.code == "200"){
+        if(data.code == '200'){
           let ordersuser=data.repairorder.map(item => item.userId)
           ordersuser.forEach(i => {
-            getOnceUser({userId: i}).then(data => {
-              if(data.code == "200") {
-                this.sentUser=data.repairorder.name
+            getOnceUser({userId: i}).then(userData => {
+              if(userData.code == '200') {
+                this.sentUser=userData.repairorder.name
                 this.repairdetail_isShowModal=true
               }
-              if(data.code == "500") {
+              if(userData.code == '500') {
                 this.$Message.error('用户名获取失败')
               }
             })
           })
         }
-        if(data.code == "500") {
-          this.$Message.error('维修单获取失败')
+        if(data.code == '500') {
+          this.$Message.error('无法获取维修单信息')
         }
       })
     },
     admingetrepairdetail (name) {
       this.repairdetail=name
-      this.otherrepairdetail_isShowModal=true
+      // 管理员（接收者id+维修id=接收者id=>接收者姓名）
+      getrepairorder({userId: this.$store.state.userId, repairId: name.repairId}).then(data => {
+        if(data.code == '200'){
+          let ordersuser=data.repairorder.map(item => item.sentUserId)
+          ordersuser.forEach(i => {
+            getOnceUser({sentUserId: i}).then(userData => {
+              if(userData.code == '200') {
+                this.sentUser=userData.repairorder.name
+                this.otherrepairdetail_isShowModal=true
+              }
+              if(userData.code == '500') {
+                this.$Message.error('用户名获取失败')
+              }
+            })
+          })
+        }
+        if(data.code == '500') {
+          this.$Message.error('无法获取维修单信息')
+        }
+      })
     },
     usercancelrepairdetail () {
       this.repairdetail_isShowModal=false

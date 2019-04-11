@@ -2,36 +2,62 @@
     <div class="layout">
         <div class="header">
             <!-- 搜索条件 -->
-            <DatePicker type="daterange" :value="searchTimes" :options="optionsDatetime" @on-change="updatebytotime" placement="bottom-start" placeholder="选择日期" style="width: 200px" split-panels :editable="false"></DatePicker>
+            <DatePicker 
+                type="daterange" 
+                :value="searchTimes" 
+                :options="optionsDatetime" 
+                @on-change="updatebytotime" 
+                placement="bottom-start" 
+                placeholder="选择日期" 
+                style="width: 200px" 
+                split-panels 
+                :editable="false"
+            />
         </div>
         <!-- 数据列表 -->
         <div class="content">
             <div>维修单：{{informorder}}</div>
             <div>维修表：{{informlist}}</div>
             <div>详情的内容：{{informdetail}}</div>
+            <div>收件人：{{this.sentUser}}</div>
             <!-- 管理员权限 -->
-            <Card v-for="(item,index) in informlist" :value="item.informId" :key="index" v-if="theAdminRole">
+            <Card v-for="(item,index) in informlist" 
+                :value="item.informId" 
+                :key="index" 
+                v-if="theAdminRole"
+            >
                 <div @click="admingetinformdetail(item)">
                     <div style="float: right">
                         {{item.formatCreateTime}}
-                      </div>
-                    <Divider orientation="left">{{item.title}}</Divider>
+                    </div>
+                    <Divider orientation="left">
+                        {{item.title}}
+                    </Divider>
                     <p>内容:{{item.content}}</p>
                 </div>
             </Card>
             <!-- 用户权限 -->
-            <Card v-for="(item,index) in informlist" :value="item.informId" :key="index" v-if="theUserRole">
+            <Card v-for="(item,index) in informlist" 
+                :value="item.informId" 
+                :key="index" 
+                v-if="theUserRole"
+            >
                 <div @click="usergetinformdetail(item)">
                     <div style="float: right">
                         {{item.formatCreateTime}}
-                      </div>
-                    <Divider orientation="left">{{item.title}}</Divider>
+                    </div>
+                    <Divider orientation="left">
+                        {{item.title}}
+                    </Divider>
                     <p>内容:{{item.content}}</p>
                 </div>
             </Card>
         </div>
         <!-- 管理员通知详情 -->
-        <Modal v-model="informdetail_isShowModal" :mask-closable="false" @on-cancel="cancelinformdetail">
+        <Modal v-model="informdetail_isShowModal" 
+            :mask-closable="false" 
+            @on-cancel="cancelinformdetail"
+        >
             <p class="modaltitle">
                 <span>通知信息详情</span>
             </p>
@@ -41,14 +67,18 @@
             <p>收件人：{{this.sentUserlist}}</p>
         </Modal>
         <!-- 用户通知详情 -->
-        <Modal v-model="otherinformdetail_isShowModal" :mask-closable="false" @on-cancel="othercancelinformdetail">
+        <Modal 
+            v-model="otherinformdetail_isShowModal" 
+            :mask-closable="false" 
+            @on-cancel="othercancelinformdetail"
+        >
             <p class="modaltitle">
                 <span>通知信息详情</span>
             </p>
             <p>标题：{{this.informdetail.title}}</p>
             <p>内容：{{this.informdetail.content}}</p>
             <p>时间：{{this.informdetail.formatCreateTime}}</p>
-            <p>发件人{{this.sentUser}}</p>
+            <p>发件人: {{this.sentUser}}</p>
         </Modal>
         
     </div>
@@ -141,6 +171,7 @@ export default {
           this.informlist.forEach((i,index) => {
             this.informorder.forEach(item => {
               if(item.informId == i.informId){
+                debugger
                 i.formatCreateTime = moment(item.createTime).format('YYYY-MM-DD')
                 let createTimestap = new Date(i.formatCreateTime).getTime();
                 if(createTimestap < starttime || createTimestap > endtime){
@@ -159,7 +190,7 @@ export default {
         }
       })
     },
-    // 获取通知单信息（管理员：同一个通知有多个发送者）
+    // 获取通知+通知单信息
     getAllJobOrder () {
       // 用户（作为接收者）管理员（作为发送者）
       let tempdata=[]
@@ -172,6 +203,7 @@ export default {
       }
       getjoborderadmin(tempdata).then(data =>{
         if(data.code == '200'){
+          // 去重的通知单
           this.informorder=data.joborder
           this.informlist=data.informs
           this.informorder.forEach(item => {
@@ -183,10 +215,10 @@ export default {
           })
         }
         if(data.code == '300'){
-          this.$Message.error('通知获取失败')
+          this.$Message.error('无通知信息')
         }
         if(data.code == '500'){
-          this.$Message.error('通知单获取失败')
+          this.$Message.info('无通知单信息')
         }
       })
     },
@@ -196,22 +228,22 @@ export default {
       this.informdetail=name
       // 管理员（发送者id+通知id=接收者id=>接收者姓名）
       getalljoborder({sentUserId: this.$store.state.userId, informId: name.informId}).then(data => {
-        if(data.code == "200"){
+        if(data.code == '200'){
           let ordersuser=data.orders.map(item => item.userId)
           ordersuser.forEach(i => {
-            getOnceUser({userId: i}).then(data => {
-              if(data.code == "200") {
-                this.sentUserlist=this.sentUserlist.concat(data.users.name)
+            getOnceUser({userId: i}).then(userData => {
+              if(userData.code == '200') {
+                this.sentUserlist=this.sentUserlist.concat(userData.users.name)
                 this.informdetail_isShowModal=true
               }
-              if(data.code == "500") {
+              if(userData.code == '500') {
                 this.$Message.error('用户名获取失败')
               }
             })
           })
         }
-        if(data.code == "500") {
-          this.$Message.error('通知单获取失败')
+        if(data.code == '500') {
+          this.$Message.error('无法获取通知单信息')
         }
       })
     },
@@ -219,20 +251,20 @@ export default {
       this.informdetail=name
       // 用户（接受者id+通知id=接收者id=>接收者姓名）
       getalljoborder({userId: this.$store.state.userId, informId: name.informId}).then(data => {
-        if(data.code == "200"){
-          debugger
-          getOnceUser({userId: data.orders.map(item => item.sentUserId)}).then(data => {
-            if(data.code == "200") {
-              this.sentUser=this.data.users.name
-              this.informdetail_isShowModal=true
+        if(data.code == '200'){
+          let userid=data.orders.map(item => item.sentUserId)
+          getOnceUser({userId: userid[0]}).then(userData => {
+            if(userData.code == '200') {
+              this.sentUser=userData.users.name
+              this.otherinformdetail_isShowModal=true
             }
-            if(data.code == "500") {
+            if(userData.code == '500') {
               this.$Message.error('用户名获取失败')
             }
           })
         }
-        if(data.code == "500") {
-          this.$Message.error('通知单获取失败')
+        if(data.code == '500') {
+          this.$Message.error('无法获取通知单信息')
         }
       })
     },

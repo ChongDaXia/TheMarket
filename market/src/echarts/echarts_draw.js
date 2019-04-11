@@ -94,18 +94,15 @@ const optionUpdate = (option, optionData) => {
 
 class drawEchats {
 
-    constructor(myChart, {x = [], lines = [], bars = [], pies = [], maps = []}) {
-        this.myChart = myChart;     // 绘画的对象
+    constructor(myEchart, {x = [], lines = [], bars = [], pies = [], maps = []}) {
+        this.myEchart = myEchart;     // 绘画的对象
         this.x = x;         // x轴参数 eg: ['', '']
         this.lines = lines;         // 折线图参数 eg: [{data: [], name: ''}]
         this.bars = bars;           // 柱状图参数 eg: [{data: [], name: ''}]
         this.pies = pies;           // 饼状图参数 eg: [{value: '', name: ''}]
         this.maps = maps;           // 地图参数 eg: [{value: '', name: ''}]
-    }
-
-    // 重置绘制图形
-    resetMyEchart() {
-        myEchart.setOption({}, true);
+        // 重置绘制图形
+        if (this.myEchart) this.myEchart.setOption({}, true);
     }
 
     // 绘制折线图
@@ -155,7 +152,7 @@ class drawEchats {
             series: series
         };
         let option = optionUpdate(lineOption, optionData);
-        this.myChart.setOption(option);
+        this.myEchart.setOption(option);
         // 外部函数调用
         echartFunc && echartFunc.apply(this);
     }
@@ -224,7 +221,7 @@ class drawEchats {
             series: series
         };
         let option = optionUpdate(barOption, optionData);
-        this.myChart.setOption(option);
+        this.myEchart.setOption(option);
         // 外部函数调用
         echartFunc && echartFunc.apply(this);
     }
@@ -307,7 +304,7 @@ class drawEchats {
             ]
         };
         let option = optionUpdate(pieOption, optionData);
-        this.myChart.setOption(option);
+        this.myEchart.setOption(option);
         // 外部函数调用
         echartFunc && echartFunc.apply(this);
     }
@@ -433,7 +430,7 @@ class drawEchats {
             ]
         };
         let option = optionUpdate(mapOption, optionData);
-        this.myChart.setOption(option);
+        this.myEchart.setOption(option);
         // 外部函数调用
         echartFunc && echartFunc.apply(this);
     }
@@ -489,7 +486,7 @@ class drawEchats {
         };
 
         let option = optionUpdate(barOption, optionData);
-        this.myChart.setOption(option);
+        this.myEchart.setOption(option);
         // 外部函数调用
         echartFunc && echartFunc.apply(this);
     }

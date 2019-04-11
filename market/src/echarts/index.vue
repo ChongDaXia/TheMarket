@@ -1,12 +1,15 @@
 <template>
-    <div :ref="refName" class="charts"></div>
+    <div
+        :ref="refName"
+        class="charts"
+    />
 </template>
 
 <script>
 /**
  * 参数说明
- * 
- * props：{ 
+ *
+ * props：{
  *     type: String, // line: 折线图  bar: 柱状图  pie: 饼状图  map: 地图  barY: 柱状图Y轴常量
  *     refName: String, // 图表dom的ref值，相当于id
  *     chartsData: Object, // x: X轴参数（如果有），data: 参数值
@@ -69,17 +72,38 @@ export default {
             // 定义图表
             myChart: null,
             // 函数截流控制图表刷新
-            myChartResize: throttle(() => {
-                this.myChart && this.myChart.resize();
-            }, this, 500 )
+            myChartResize: throttle(
+                () => {
+                    this.myChart && this.myChart.resize();
+                },
+                this,
+                500
+            )
         };
     },
+
+    watch: {
+        chartsData: {
+            handler() {
+                this.updateChart();
+            },
+            deep: true
+        }
+    },
     
+    mounted() {
+        this.updateChart();
+    },
+
+    beforeDestroy() {
+        off(window, 'resize', this.resize);
+    },
+
     methods: {
         /**
          * 刷新图表方法
          */
-        resize () {
+        resize() {
             this.myChartResize();
         },
 
@@ -95,7 +119,7 @@ export default {
                 switch (this.type) {
                     case 'line':
                         drawFuncName = 'drawLine';
-                        data.lines =  this.chartsData.data;
+                        data.lines = this.chartsData.data;
                         break;
                     case 'bar':
                         drawFuncName = 'drawBar';
@@ -120,29 +144,12 @@ export default {
                 on(window, 'resize', this.resize);
             });
         }
-    },
-
-    mounted() {
-        this.updateChart();
-    },
-
-    beforeDestroy() {
-        off(window, 'resize', this.resize);
-    },
-
-    watch: {
-        chartsData:  {
-            handler(){
-                this.updateChart();                
-            },
-            deep: true
-        }
     }
 };
 </script>
 
 <style lang="less" scoped>
-.charts{
+.charts {
     width: 100%;
     height: 100%;
 }

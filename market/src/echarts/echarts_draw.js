@@ -492,4 +492,4 @@ class drawEchats {
     }
 }
 
-module.exports = drawEchats;
+export default drawEchats;

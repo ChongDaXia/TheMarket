@@ -11,6 +11,9 @@ import supplierlist from '@/components/supplierlist'
 import goodslist from '@/components/goodslist'
 import addgoods from '@/components/addgoods'
 import informlist from '@/components/informlist'
+import goodsmanager from '@/components/goods/index'
+import usermanager from '@/components/user/index'
+import shopmanager from '@/components/shop/index'
 
 Vue.use(Router)
 
@@ -92,6 +95,30 @@ export default new Router({
           path: '/informlist',
           name: 'informlist',
           component: informlist,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/goodsmanager',
+          name: 'goodsmanager',
+          component: goodsmanager,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/usermanager',
+          name: 'usermanager',
+          component: usermanager,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/shopmanager',
+          name: 'shopmanager',
+          component: shopmanager,
           meta: {
             isLogin: true
           }

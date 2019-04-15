@@ -266,7 +266,7 @@ export default {
         }
         if(data.code == "500") {
           //获取信息失败
-          this.$Message.error('维修详情获取失败')
+          this.$Message.error('详情获取失败')
         }
       })
     },

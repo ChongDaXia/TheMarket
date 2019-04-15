@@ -4,8 +4,11 @@
             <Submenu name="1" v-if="showManager">
                 <template slot="title">
                     <Icon type="ios-contacts" />
-                    用户管理
+                      用户管理
                 </template>
+                <MenuItem name="UserManager">
+                    <a @click="linktoUserManager">用户管理</a>
+                </MenuItem>
                 <MenuItem name="AddUserPage">
                     <a @click="linkto('AddUserPage')">添加新用户</a>
                 </MenuItem>
@@ -18,6 +21,9 @@
                     <Icon type="ios-home" />
                     门店管理
                 </template>
+                <MenuItem name="StoreManager">
+                    <a @click="linktoStoreManager">门店管理</a>
+                </MenuItem>
                 <MenuItem name="AddStorePage">
                     <a @click="linkto('AddStorePage')">添加门店</a>
                 </MenuItem>
@@ -49,6 +55,9 @@
                     <Icon type="md-cart" />
                     商品管理
                 </template>
+                <MenuItem name="GoodsPage">
+                    <a @click="linktoGoodsManager">商品</a>
+                </MenuItem>
                 <MenuItem name="AddGoodsPage">
                     <a @click="linktoAddGoods">采购商品</a>
                 </MenuItem>
@@ -157,7 +166,22 @@ export default {
       this.$router.push({
         path: '/informlist'
       })
-    }
+    },
+    linktoGoodsManager () {
+      this.$router.push({
+        path: '/goodsmanager'
+      })
+    },
+    linktoUserManager () {
+      this.$router.push({
+        path: '/usermanager'
+      })
+    },
+    linktoStoreManager () {
+      this.$router.push({
+        path: '/shopmanager'
+      })
+    },
   }
 }
 </script>

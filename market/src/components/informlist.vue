@@ -19,7 +19,7 @@
             <div>维修单：{{informorder}}</div>
             <div>维修表：{{informlist}}</div>
             <div>详情的内容：{{informdetail}}</div>
-            <div>收件人：{{this.sentUser}}</div>
+            <div>收件人：{{sentUser}}</div>
             <!-- 管理员权限 -->
             <Card v-for="(item,index) in informlist" 
                 :value="item.informId" 
@@ -61,10 +61,10 @@
             <p class="modaltitle">
                 <span>通知信息详情</span>
             </p>
-            <p>标题：{{this.informdetail.title}}</p>
-            <p>内容：{{this.informdetail.content}}</p>
-            <p>时间：{{this.informdetail.formatCreateTime}}</p>
-            <p>收件人：{{this.sentUserlist}}</p>
+            <p>标题：{{informdetail.title}}</p>
+            <p>内容：{{informdetail.content}}</p>
+            <p>时间：{{informdetail.formatCreateTime}}</p>
+            <p>收件人：{{sentUserlist}}</p>
         </Modal>
         <!-- 用户通知详情 -->
         <Modal 
@@ -75,10 +75,10 @@
             <p class="modaltitle">
                 <span>通知信息详情</span>
             </p>
-            <p>标题：{{this.informdetail.title}}</p>
-            <p>内容：{{this.informdetail.content}}</p>
-            <p>时间：{{this.informdetail.formatCreateTime}}</p>
-            <p>发件人: {{this.sentUser}}</p>
+            <p>标题：{{informdetail.title}}</p>
+            <p>内容：{{informdetail.content}}</p>
+            <p>时间：{{informdetail.formatCreateTime}}</p>
+            <p>发件人: {{sentUser}}</p>
         </Modal>
         
     </div>
@@ -171,7 +171,6 @@ export default {
           this.informlist.forEach((i,index) => {
             this.informorder.forEach(item => {
               if(item.informId == i.informId){
-                debugger
                 i.formatCreateTime = moment(item.createTime).format('YYYY-MM-DD')
                 let createTimestap = new Date(i.formatCreateTime).getTime();
                 if(createTimestap < starttime || createTimestap > endtime){

@@ -39,3 +39,12 @@ export const getOnceUser =params => {
         params: params
     })
 }
+
+// 删除用户
+export const deleteOnceUser =params => {
+    return axios ({
+        url: '/user/home/deleteOnceUser',
+        method: 'get',
+        params: params
+    })
+}

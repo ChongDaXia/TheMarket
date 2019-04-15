@@ -19,9 +19,9 @@
  */
 import ECHARTS from 'echarts';
 import './echarts_westeros.js';
-import './china.js';
-import { on, off, throttle } from '@common_libs/tools';
+import { on, off, throttle } from './tools';
 import drawEchats from './echarts_draw';
+import './china.js';
 
 export default {
     name: 'ChartBar',
@@ -148,7 +148,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style scoped>
 .charts {
     width: 100%;
     height: 100%;

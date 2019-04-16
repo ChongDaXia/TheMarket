@@ -1,7 +1,6 @@
 <template>
     <div class="layout">
         <div class="header">
-            头部
             <div style="float: right">
               <a @click="addnewsupplier">添加新供应商</a>
             </div>

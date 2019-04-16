@@ -200,6 +200,29 @@
             
             <!-- 删除用户 -->
             <TabPane label="删除">
+                <div class="header">
+                    <!-- 搜索条件 -->
+                    <Select 
+                        v-model="selectUserRole" 
+                        @on-change="changeSelectUserRole"
+                        style="width:200px;margin-right:30px" 
+                        placeholder="请选择角色"
+                    >
+                        <Option v-for="(item,index) in selectUserRoleList" :value="item" :key="index">
+                            {{item}}
+                        </Option>
+                    </Select>
+                    <Select 
+                        v-model="selectUserId"
+                        @on-change="changeSelectUserId"
+                        style="width:200px;margin-right:30px" 
+                        placeholder="请选择姓名"
+                    >
+                        <Option v-for="(item,index) in selectUserIdList" :value="item.userId" :key="index">
+                            {{item.name}}
+                        </Option>
+                    </Select>
+                </div>
                 <Button @click="deleteUser" style="margin: 10px 50px;">删除</Button>
                 <!-- 删除用户二次确认框 -->
                 <Modal 

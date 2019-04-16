@@ -1,7 +1,5 @@
 <template>
     <div>
-        <div>图标页面</div>
-
         <echarts
           style="width: 300px; height: 400px;"
           refName="line"

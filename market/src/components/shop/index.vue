@@ -149,6 +149,29 @@
 
             <!-- 删除门店 -->
             <TabPane label="删除">
+                <div class="header">
+                    <!-- 搜索条件 -->
+                    <Select 
+                        v-model="selectStoreStatus" 
+                        @on-change="changeSelectStoreStatus"
+                        style="width:200px;margin-right:30px" 
+                        placeholder="请选择租赁状态"
+                    >
+                        <Option v-for="(item,index) in selectStoreStatusList" :value="item" :key="index">
+                            {{item}}
+                        </Option>
+                    </Select>
+                    <Select 
+                        v-model="selectStoreId"
+                        @on-change="changeSelectStoreId"
+                        style="width:200px;margin-right:30px" 
+                        placeholder="请选择店铺编号"
+                    >
+                        <Option v-for="(item,index) in selectStoreIdList" :value="item.storeId" :key="index">
+                            {{item.storeNo}}
+                        </Option>
+                    </Select>
+                </div>
                 <Button @click="deleteStore" style="margin: 10px 50px;">删除</Button>
                 <!-- 删除用户二次确认框 -->
                 <Modal 

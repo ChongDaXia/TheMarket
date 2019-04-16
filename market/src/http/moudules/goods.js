@@ -81,3 +81,12 @@ export const selectGoods = params => {
         params: params
     })
 }
+
+//删除供应商
+export const deleteSupplier = params => {
+    return axios ({
+        url: '/goods/home/deleteSupplier',
+        method: 'get',
+        params: params
+    })
+}

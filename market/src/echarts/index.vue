@@ -30,9 +30,7 @@ export default {
         // 图表类型
         type: {
             type: String,
-            default() {
-                return 'line';
-            }
+            default: 'line'
         },
         // 图表dom refName
         refName: {

@@ -72,3 +72,12 @@ export const updatesupplier = params => {
         }
     })
 }
+
+//获取店铺的所有商品
+export const selectGoods = params => {
+    return axios ({
+        url: '/goods/home/selectGoods',
+        method: 'get',
+        params: params
+    })
+}

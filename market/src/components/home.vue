@@ -97,7 +97,7 @@
                     </Breadcrumb>
                     <div>{{this.TheDate}}</div>
                     <Content class="content">
-                        <!-- 页面内容展示 -->
+                        <!-- 页面内容展示 --> 
                         <router-view></router-view>
                     </Content>
                 </Layout>
@@ -337,7 +337,7 @@ export default {
   padding-top: 25px;
 }
 .content{
-    height: 900px;
-    background: #fff;
+  height: 900px;
+  background: #fff;
 }
 </style>

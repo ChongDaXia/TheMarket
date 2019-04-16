@@ -1,7 +1,7 @@
 <template>
     <div class="layout">
         <!-- tabs列表 -->
-        <Tabs>
+        <Tabs class="tabstyle">
             <!-- 添加新用户功能 -->
             <TabPane label="添加">
                 <!-- 添加新用户 -->
@@ -236,6 +236,24 @@
                 /> -->
             <!-- </TabPane> --> 
         </Tabs>
+        <vue-particles 
+            color="#7b7d7d" 
+            :particleOpacity="0.7" 
+            :particlesNumber="80" 
+            shapeType="circle" 
+            :particleSize="5" 
+            linesColor="#203c77" 
+            :linesWidth="2" 
+            :lineLinked="true" 
+            :lineOpacity="0.4" 
+            :linesDistance="150" 
+            :moveSpeed="3" 
+            :hoverEffect="true" 
+            hoverMode="grab" 
+            :clickEffect="true" 
+            clickMode="push" 
+            class="lizi">
+        </vue-particles>  
     </div>
 </template>
 
@@ -749,5 +767,19 @@ export default {
 .content{
   width: 100%;
   padding: 50px;
+}
+.lizi{
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+  background-image:url('/assets/images/timg.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+.tabstyle{
+  z-index: 2;
 }
 </style>

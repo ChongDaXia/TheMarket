@@ -10,3 +10,11 @@ export const addnewstaff = params => {
         }
     })
 }
+//获取员工
+export const selectPurchaseStaff = params => {
+    return axios ({
+        url: '/staff/home/selectPurchaseStaff',
+        method: 'get',
+        params: params
+    })
+}

@@ -60,7 +60,7 @@
                         </Button>
                     </div>
                     <div class="leftbtn">
-                        <Button @click="deleteSelectedSupplier">
+                        <Button @click="deleteSelectedSupplier" v-if="deleteable">
                             确认删除
                         </Button>
                     </div>
@@ -114,7 +114,7 @@
                         <p>是否确认添加该供应商？</p>
                     </Modal>
                     <!-- 删除供应商二次确认框 -->
-                    <!-- <Modal 
+                    <Modal 
                         v-model="redeleteSupplierModal" 
                         :mask-closable="false" 
                         title="确认提示" 
@@ -122,7 +122,7 @@
                         @on-cancel="recancelDeleteSupplier"
                     >
                         <p>是否确认删除所选供应商？</p>
-                    </Modal> -->
+                    </Modal>
                 </div>
                 <div class="content">
                     <CheckboxGroup v-model="selectdelete">
@@ -172,7 +172,7 @@
                         </FormItem>
                         <div class="form-item">
                             <Button class="login-btn" shape="circle" @click="cancelSupplierDetail('supplierRef')">取消</Button>
-                            <Button class="login-btn" shape="circle" @click="submitSupplierDetail('supplierRef')">添加</Button>
+                            <Button class="login-btn" shape="circle" @click="submitSupplierDetail('supplierRef')">修改</Button>
                         </div>
                     </Form>
                 </Modal>
@@ -360,6 +360,7 @@ export default {
       resupplierDetailModal: false,
       // 删除选择器
       selectdelete: [],
+      selectdeleteId: [],
       deleteable: false,
       // 删除二次确认按钮
       redeleteSupplierModal: false,
@@ -503,7 +504,7 @@ export default {
     },
     // 修改供应商二次确认按钮
     reSubmitSupplierDetail() {
-      updatesupplier(this.supplierForm).then(date => {
+      updatesupplier(this.supplierForm).then(data => {
         if(data.code == '200'){
           this.resupplierDetailModal=false
           this.cancelSupplierDetail('supplierRef')
@@ -529,27 +530,21 @@ export default {
       this.redeleteSupplierModal=true
     },
     // 二次确认删除按钮
-    resubmitDeleteSupplie() {
-      deleteSupplier()
-      let list=this.selectUserList.filter(item => item['_checked'])
-      let tempList=[]
-      list.forEach(item => {
-          tempList.push({
-            ...item
-          })
-      })
-      this.deleteUserListId=tempList.map(item => item.userId)
-      deleteOnceUser({userId: JSON.stringify(this.deleteUserListId)}).then(data => {
+    resubmitDeleteSupplier() {
+      debugger
+      this.selectdeleteId=this.selectdelete.map(item => item.supplierId)
+      deleteSupplier({supplierId: JSON.stringify(this.selectdeleteId)}).then(data => {
         if(data.code == '200'){
-          this.deleteUserModal=false
-          this.$Message.info('用户删除成功')
-          this.getAllUserInfo()
+          this.redeleteSupplierModal=false
+          this.$Message.info('供应商删除成功')
+          this.deleteable=false
+          this.getAllsupplierlist()
         }
         if(data.code == '300') {
-          this.$Message.error('部分用户删除失败')
+          this.$Message.error('部分供应商删除失败')
         }
         if(data.code == '500') {
-          this.$Message.info('无删除用户')
+          this.$Message.info('无删除供应商')
         }
       })
     },

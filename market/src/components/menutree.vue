@@ -144,7 +144,7 @@ export default {
     },
     linktoecharts () {
       this.$router.push({
-        path: '/echarts'
+        path: '/echarts1'
       })
     },
     linktoSupplier () {

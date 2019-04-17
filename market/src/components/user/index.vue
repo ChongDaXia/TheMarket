@@ -282,7 +282,7 @@
 
 <script>
 import {addnewuser,getAllUser, getOnceUser, updateUser,deleteOnceUser} from '@/http/moudules/user'
-import echarts from '../echarts'
+import echarts from '../../echarts'
 export default {
   components: {
     echarts

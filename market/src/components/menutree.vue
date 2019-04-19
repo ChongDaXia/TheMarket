@@ -9,12 +9,6 @@
                 <MenuItem name="UserManager">
                     <a @click="linktoUserManager">用户管理</a>
                 </MenuItem>
-                <MenuItem name="AddUserPage">
-                    <a @click="linkto('AddUserPage')">添加新用户</a>
-                </MenuItem>
-                <MenuItem name="1-2">
-                    <a @click="listto('UserList')">用户列表</a>
-                </MenuItem>
             </Submenu>
             <Submenu name="2">
                 <template slot="title">
@@ -77,19 +71,18 @@
                     <Icon type="ios-construct" />
                     维修管理
                 </template>
-                <MenuItem name="AddRepairPage">
-                    <a @click="linkto('AddRepairPage')">申请维修</a>
+                <MenuItem name="RepairManager">
+                    <a @click="linktoRepairManager">维修管理</a>
                 </MenuItem>
-                <MenuItem name="RepairListPage">
-                    <a @click="linktoRepairList">维修列表</a>
-                </MenuItem>
-                <MenuItem name="6-3">维修反馈</MenuItem>
             </Submenu>
             <Submenu name="7">
                 <template slot="title">
                     <Icon type="md-chatboxes" />
                     通知管理
                 </template>
+                <MenuItem name="InformManager">
+                    <a @click="linktoInformManager">维修管理</a>
+                </MenuItem>
                 <MenuItem name="AddInformPage">
                     <a @click="linkto('AddInformPage')">发送通知</a>
                 </MenuItem>
@@ -103,7 +96,7 @@
                     财务管理
                 </template>
                 <MenuItem name="EchartsPage">
-                    <a @click="linktoecharts">财务统计报表</a>
+                    财务统计报表
                 </MenuItem>
             </Submenu>
         </Menu>
@@ -129,24 +122,6 @@ export default {
         }
       })
     },
-    listto (name) {
-      this.$router.push({
-      path: '/showlist',
-      query: {
-        theid: name
-      }
-      })
-    },
-    linktoRepairList () {
-      this.$router.push({
-        path: '/repairlist'
-      })
-    },
-    linktoecharts () {
-      this.$router.push({
-        path: '/echarts1'
-      })
-    },
     linktoSupplier () {
       this.$router.push({
         path: '/supplierlist'
@@ -167,21 +142,31 @@ export default {
         path: '/informlist'
       })
     },
-    linktoGoodsManager () {
+    linktoGoodsManager() {
       this.$router.push({
         path: '/goodsmanager'
       })
     },
-    linktoUserManager () {
+    linktoUserManager() {
       this.$router.push({
         path: '/usermanager'
       })
     },
-    linktoStoreManager () {
+    linktoStoreManager() {
       this.$router.push({
         path: '/shopmanager'
       })
     },
+    linktoRepairManager() {
+      this.$router.push({
+        path: '/repairmanager'
+      })
+    },
+    linktoInformManager() {
+      this.$router.push({
+        path: '/informmanager'
+      })
+    }
   }
 }
 </script>

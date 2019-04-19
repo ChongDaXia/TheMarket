@@ -19,7 +19,7 @@
  */
 import ECHARTS from 'echarts';
 import './echarts_westeros.js';
-import './china.js';
+//import './china.js';
 import { on, off, throttle } from './tools';
 import drawEchats from './echarts_draw';
 

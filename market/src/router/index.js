@@ -4,9 +4,6 @@ import Router from 'vue-router'
 import login from '@/components/login'
 import home from '@/components/home'
 import addsome from '@/components/addsome'
-import showlist from '@/components/showlist'
-import repairlist from '@/components/repairlist'
-import echarts from '@/components/echarts1'
 import supplierlist from '@/components/supplierlist'
 import goodslist from '@/components/goodslist'
 import addgoods from '@/components/addgoods'
@@ -14,6 +11,8 @@ import informlist from '@/components/informlist'
 import goodsmanager from '@/components/goods/index'
 import usermanager from '@/components/user/index'
 import shopmanager from '@/components/shop/index'
+import repairmanager from '@/components/repair/index'
+import informmanager from '@/components/inform/index'
 
 Vue.use(Router)
 
@@ -36,33 +35,9 @@ export default new Router({
       },
       children: [
         {
-          path: '/showlist',
-          name: 'showlist',
-          component: showlist,
-          meta: {
-            isLogin: true
-          }
-        },
-        {
           path: '/addsome',
           name: 'addsome',
           component: addsome,
-          meta: {
-            isLogin: true
-          }
-        },
-        {
-          path: '/repairlist',
-          name: 'repairlist',
-          component: repairlist,
-          meta: {
-            isLogin: true
-          }
-        },
-        {
-          path: '/echarts',
-          name: 'echarts',
-          component: echarts,
           meta: {
             isLogin: true
           }
@@ -119,6 +94,22 @@ export default new Router({
           path: '/shopmanager',
           name: 'shopmanager',
           component: shopmanager,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/repairmanager',
+          name: 'repairmanager',
+          component: repairmanager,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/informmanager',
+          name: 'informmanager',
+          component: informmanager,
           meta: {
             isLogin: true
           }

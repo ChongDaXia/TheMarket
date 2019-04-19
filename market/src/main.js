@@ -10,14 +10,12 @@ import store from './store'
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
 // 引入echarts
-// import ECharts from 'vue-echarts/components/ECharts'
 import echarts from 'echarts'
 // 引入粒子背景
 import VueParticles from  'vue-particles'
 
 Vue.config.productionTip = false
 Vue.use(iView)
-// Vue.component('v-chart', ECharts)
 Vue.prototype.$echarts=echarts
 Vue.use(VueParticles) 
 

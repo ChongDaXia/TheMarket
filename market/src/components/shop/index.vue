@@ -436,7 +436,7 @@ export default {
           this.selectStoreList.forEach((i,index) => {
             StoreRent.forEach(item => {
               if(i.storeId == item.storeId){
-                i.push(item.rent)
+                i['rent']=item.rent
               }
             })
           })

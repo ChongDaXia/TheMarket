@@ -21,7 +21,7 @@
             <div>详情的内容：{{repairdetail}}</div>
             <div>用户：{{theUserRole}}</div>
             <div>管理员：{{theAdminRole}}</div>
-             <!-- 用户权限 -->
+            <!-- 用户权限 -->
             <Card v-for="(item,index) in repairlists" 
                 :value="item.repairId" 
                 :key="index" 

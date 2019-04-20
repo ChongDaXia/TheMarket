@@ -27,18 +27,19 @@
             </Form>
         </div>
         <div class="login-text">
+            <div class="bg">
             <div class="web-title">XUHONGMEI</div>
             <div class="web-text">商业中心管理系统</div>
             <div class="web-text-min">
               <p>Business center</p>
               <p>management system</p>
             </div>
-            <div class="stars"></div>
+            <!-- <div class="stars"></div>
             <div class="twinkling"></div>
-            <div class="clouds"></div>
+            <div class="clouds"></div> -->
+            </div>
         </div>
         <div class="login-bg">
-          22
         </div>
     </div>
 </template>
@@ -155,7 +156,7 @@ export default {
   z-index: 10;
   left: 0;
   top: 0;
-  background: #0f1a35;
+  background: -webkit-linear-gradient(left, #3cbac8 , #93edd4);
   box-sizing: border-box;
   padding: 50px 60px;
 }
@@ -173,13 +174,15 @@ export default {
   font-size: 40px;
   font-weight: 400;
   margin: 10px 0 20px 0;
-  color: #0f1a35;
+  color: #93edd4;
 }
 .web-text{
   width: 100%;
   text-align: left;
   font-size: 80px;
   color: #ffffff;
+  font-family: Teko,sans-serif;
+  text-shadow: 8px 8px rgba(80, 80, 80, 0.15);
   font-weight: 500;
 }
 .web-text-min{
@@ -217,13 +220,17 @@ i {
 }
 .login-btn {
     height: 60px;
-    background: #344267;
+    background: #ffde20;
     color: #ffffff;
-    border-color: #344267;
+    border-color: #fff;
+    box-shadow: 0 8px 12px 0 rgba(0,0,0,0.2);
     padding: 0;
     font-size: 22px;
     margin-bottom: 30px;
     font-family: sans-serif;
+}
+.login-btn:hover {
+  box-shadow: 0 12px 12px 0 rgba(0,0,0,0.24);
 }
 @keyframes move-twink-back {
   from {

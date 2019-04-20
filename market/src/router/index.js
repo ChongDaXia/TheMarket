@@ -4,10 +4,6 @@ import Router from 'vue-router'
 import login from '@/components/login'
 import home from '@/components/home'
 import addsome from '@/components/addsome'
-import supplierlist from '@/components/supplierlist'
-import goodslist from '@/components/goodslist'
-import addgoods from '@/components/addgoods'
-import informlist from '@/components/informlist'
 import goodsmanager from '@/components/goods/index'
 import usermanager from '@/components/user/index'
 import shopmanager from '@/components/shop/index'
@@ -43,46 +39,6 @@ export default new Router({
           }
         },
         {
-          path: '/supplierlist',
-          name: 'supplierlist',
-          component: supplierlist,
-          meta: {
-            isLogin: true
-          }
-        },
-        {
-          path: '/goodslist',
-          name: 'goodslist',
-          component: goodslist,
-          meta: {
-            isLogin: true
-          }
-        },
-        {
-          path: '/addgoods',
-          name: 'addgoods',
-          component: addgoods,
-          meta: {
-            isLogin: true
-          }
-        },
-        {
-          path: '/informlist',
-          name: 'informlist',
-          component: informlist,
-          meta: {
-            isLogin: true
-          }
-        },
-        {
-          path: '/goodsmanager',
-          name: 'goodsmanager',
-          component: goodsmanager,
-          meta: {
-            isLogin: true
-          }
-        },
-        {
           path: '/usermanager',
           name: 'usermanager',
           component: usermanager,
@@ -94,6 +50,14 @@ export default new Router({
           path: '/shopmanager',
           name: 'shopmanager',
           component: shopmanager,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/goodsmanager',
+          name: 'goodsmanager',
+          component: goodsmanager,
           meta: {
             isLogin: true
           }

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Menu theme="light" width="auto" active-name="1-1" :open-names="['1']">
+        <Menu theme="light" width="auto">
             <Submenu name="1" v-if="showManager">
                 <template slot="title">
                     <Icon type="ios-contacts" />
@@ -18,10 +18,6 @@
                 <MenuItem name="StoreManager">
                     <a @click="linktoStoreManager">门店管理</a>
                 </MenuItem>
-                <MenuItem name="AddStorePage">
-                    <a @click="linkto('AddStorePage')">添加门店</a>
-                </MenuItem>
-                <MenuItem name="2-2">门店列表</MenuItem>
             </Submenu>
             <Submenu name="3">
                 <template slot="title">
@@ -41,8 +37,6 @@
                 <MenuItem name="AddMemberPage">
                     <a @click="linkto('AddMemberPage')">添加会员</a>
                 </MenuItem>
-                <MenuItem name="4-2">会员列表</MenuItem>
-                <MenuItem name="4-3">会员折扣</MenuItem>
             </Submenu>
             <Submenu name="5" v-if="showUser">
                 <template slot="title">
@@ -50,21 +44,8 @@
                     商品管理
                 </template>
                 <MenuItem name="GoodsPage">
-                    <a @click="linktoGoodsManager">商品</a>
+                    <a @click="linktoGoodsManager">商品管理</a>
                 </MenuItem>
-                <MenuItem name="AddGoodsPage">
-                    <a @click="linktoAddGoods">采购商品</a>
-                </MenuItem>
-                <MenuItem name="AddGoodsPage">
-                    <a @click="linktoSupplier">供货商管理</a>
-                </MenuItem>
-                <MenuItem name="GoodsListPage">
-                    <a @click="linktoGoods">商品列表</a>
-                </MenuItem>
-                <MenuGroup title="库存">
-                    <MenuItem name="5-3">库存统计</MenuItem>
-                    <MenuItem name="5-4">零库存商品</MenuItem>
-                </MenuGroup>
             </Submenu>
             <Submenu name="6">
                 <template slot="title">
@@ -81,13 +62,7 @@
                     通知管理
                 </template>
                 <MenuItem name="InformManager">
-                    <a @click="linktoInformManager">维修管理</a>
-                </MenuItem>
-                <MenuItem name="AddInformPage">
-                    <a @click="linkto('AddInformPage')">发送通知</a>
-                </MenuItem>
-                <MenuItem name="InformListPage">
-                    <a @click="linktoInformList">通知记录</a>
+                    <a @click="linktoInformManager">通知管理</a>
                 </MenuItem>
             </Submenu>
             <Submenu name="8">
@@ -122,31 +97,6 @@ export default {
         }
       })
     },
-    linktoSupplier () {
-      this.$router.push({
-        path: '/supplierlist'
-      })
-    },
-    linktoGoods () {
-      this.$router.push({
-        path: '/goodslist'
-      })
-    },
-    linktoAddGoods () {
-      this.$router.push({
-        path: '/addgoods'
-      })
-    },
-    linktoInformList () {
-      this.$router.push({
-        path: '/informlist'
-      })
-    },
-    linktoGoodsManager() {
-      this.$router.push({
-        path: '/goodsmanager'
-      })
-    },
     linktoUserManager() {
       this.$router.push({
         path: '/usermanager'
@@ -155,6 +105,11 @@ export default {
     linktoStoreManager() {
       this.$router.push({
         path: '/shopmanager'
+      })
+    },
+    linktoGoodsManager() {
+      this.$router.push({
+        path: '/goodsmanager'
       })
     },
     linktoRepairManager() {

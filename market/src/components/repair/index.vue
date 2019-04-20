@@ -91,44 +91,44 @@
                 <!-- 数据列表 -->
                 <div class="content">
                     <Scroll :on-reach-bottom="handleReachBottom">
-                    <!-- 用户权限 -->
-                    <Card v-for="(item,index) in repairlists" 
-                        :value="item.repairId" 
-                        :key="index" 
-                        v-if="theUserRole"
-                        class="cardstyle"
-                    >
-                        <div @click="userGetRepairDetail(item)">
-                            <div style="float: right">
-                                {{item.createTime}}
+                        <!-- 用户权限 -->
+                        <Card v-for="(item,index) in repairlists" 
+                            :value="item.repairId" 
+                            :key="index" 
+                            v-if="theUserRole"
+                            class="cardstyle"
+                        >
+                            <div @click="userGetRepairDetail(item)">
+                                <div style="float: right">
+                                    {{item.createTime}}
+                                </div>
+                                <Divider orientation="left">
+                                    {{item.title}}
+                                </Divider>
+                                <div>
+                                    {{item.content}}
+                                </div>
                             </div>
-                            <Divider orientation="left">
-                                {{item.title}}
-                            </Divider>
-                            <div>
-                                {{item.content}}
+                        </Card>
+                        <!-- 管理员权限 -->
+                        <Card v-for="(item,index) in repairlists" 
+                            :value="item.repairId" 
+                            :key="index" 
+                            v-if="theAdminRole"
+                            class="cardstyle"
+                        >
+                            <div @click="adminGetRepairDetail(item)">
+                                <div style="float: right">
+                                    {{item.createTime}}
+                                </div>
+                                <Divider orientation="left">
+                                    {{item.title}}
+                                </Divider>
+                                <div>
+                                    {{item.content}}
+                                </div>
                             </div>
-                        </div>
-                    </Card>
-                    <!-- 管理员权限 -->
-                    <Card v-for="(item,index) in repairlists" 
-                        :value="item.repairId" 
-                        :key="index" 
-                        v-if="theAdminRole"
-                        class="cardstyle"
-                    >
-                        <div @click="adminGetRepairDetail(item)">
-                            <div style="float: right">
-                                {{item.createTime}}
-                            </div>
-                            <Divider orientation="left">
-                                {{item.title}}
-                            </Divider>
-                            <div>
-                                {{item.content}}
-                            </div>
-                        </div>
-                    </Card>
+                        </Card>
                     </Scroll>
                 </div>               
                 <!-- 用户维修详情 -->
@@ -301,13 +301,16 @@ export default {
       repairdetail: [],
       // 收信人
       sentUsers: [],
-      sentUser: []
+      sentUser: ''
     }
   },
 
   methods: {
     // tab函数
     selectTab(name){
+      if(name === 'name1'){
+        this.getAdminRole()
+      }
       if(name === 'name2'){
         this.getAllRepair()
       }
@@ -464,10 +467,10 @@ export default {
         }
         if(data.code == '300'){
           this.repairorder=data.repairorder
-          this.$Message.error('通知获取失败')
+          this.$Message.info('无维修信息')
         }
         if(data.code == '500'){
-          this.$Message.error('通知单获取失败')
+          this.$Message.info('无维修单信息')
         }
       })
     },
@@ -529,7 +532,7 @@ export default {
       // 管理员（接收者id+维修id=接收者id=>接收者姓名）
       getrepairorder({userId: this.$store.state.userId, repairId: name.repairId}).then(data => {
         if(data.code == '200'){
-          this.sentUser=data.user.map(item => item.name)
+          this.sentUser=data.users.name
           this.otherRepairDetailModal=true
         }
         if(data.code == '500') {

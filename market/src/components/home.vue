@@ -1,16 +1,27 @@
 <template>
     <div class="layout">
         <Layout>
-             <Header class="">
+            <!-- 头部 -->
+             <Header style="{position: 'fixed', width: '100%'}">
                 <Menu mode="horizontal" theme="dark">
-                    <div class="layout-logo"></div>
+                    <!-- logo -->
+                    <div class="layout-logo">
+
+                    </div>
+
+                    <!-- 头部菜单 -->
                     <div class="layout-nav">
                         <MenuItem name="1">
                             <a class="a" @click="loginout_isShowModal=true">
                                 <Icon type="md-power" />
                                 退出登录
                             </a>
-                            <Modal v-model="loginout_isShowModal" title="退出登录提示" @on-ok="loginout_ok" @on-cancel="loginout_cancel">
+                            <Modal 
+                                v-model="loginout_isShowModal" 
+                                title="退出登录提示" 
+                                @on-ok="loginout_ok" 
+                                @on-cancel="loginout_cancel"
+                            >
                                 <p>是否确认退出登录？</p>
                             </Modal>
                         </MenuItem>
@@ -25,29 +36,40 @@
                                         <a @click="personalinfochange">
                                             基本信息
                                         </a>
-                                        <Modal v-model="personalinfo_isShowModal" :mask-closable="false" @on-ok="personalinfo_ok('personalinfoRef')" @on-cancel="personalinfo_cancel('personalinfoRef')" ok-text="保存">
+                                        <Modal 
+                                            v-model="personalinfo_isShowModal" 
+                                            :mask-closable="false" 
+                                            @on-ok="personalinfo_ok('personalinfoRef')" 
+                                            @on-cancel="personalinfo_cancel('personalinfoRef')" 
+                                            ok-text="保存"
+                                        >
                                             <p class="modaltitle">
                                               <span>基本信息</span>
                                             </p>
-                                            <Form ref="personalinfoRef" :model="personalinfoForm" :rules="personalinfoRule" :label-width="80">
-                                              <FormItem label="用户Id" prop="userId">
-                                                <Input v-model="personalinfoForm.userId" disabled></Input>
-                                              </FormItem>
-                                              <FormItem label="角色权限" prop="role">
-                                                <Input v-model="personalinfoForm.role" disabled></Input>
-                                              </FormItem>
-                                              <FormItem label="用户名" prop="userName">
-                                                <Input v-model="personalinfoForm.userName"></Input>
-                                              </FormItem>
-                                              <FormItem label="姓名" prop="name">
-                                                <Input v-model="personalinfoForm.name"></Input>
-                                              </FormItem>
-                                              <FormItem label="联系电话" prop="mobileNo">
-                                                <Input v-model="personalinfoForm.mobileNo"></Input>
-                                              </FormItem>
-                                              <FormItem label="身份证号码" prop="idcardNo">
-                                                <Input v-model="personalinfoForm.idcardNo"></Input>
-                                              </FormItem>
+                                            <Form 
+                                                ref="personalinfoRef" 
+                                                :model="personalinfoForm" 
+                                                :rules="personalinfoRule" 
+                                                :label-width="80"
+                                            >
+                                                <FormItem label="用户Id" prop="userId">
+                                                  <Input v-model="personalinfoForm.userId" disabled></Input>
+                                                </FormItem>
+                                                <FormItem label="角色权限" prop="role">
+                                                  <Input v-model="personalinfoForm.role" disabled></Input>
+                                                </FormItem>
+                                                <FormItem label="用户名" prop="userName">
+                                                  <Input v-model="personalinfoForm.userName"></Input>
+                                                </FormItem>
+                                                <FormItem label="姓名" prop="name">
+                                                  <Input v-model="personalinfoForm.name"></Input>
+                                                </FormItem>
+                                                <FormItem label="联系电话" prop="mobileNo">
+                                                  <Input v-model="personalinfoForm.mobileNo"></Input>
+                                                </FormItem>
+                                                <FormItem label="身份证号码" prop="idcardNo">
+                                                  <Input v-model="personalinfoForm.idcardNo"></Input>
+                                                </FormItem>
                                             </Form>
                                         </Modal>
                                     </DropdownItem>
@@ -55,21 +77,32 @@
                                         <a @click="passwordchange_isShowModal=true">
                                             修改密码
                                         </a>
-                                        <Modal v-model="passwordchange_isShowModal" :mask-closable="false" @on-ok="passwordchange_ok('passwordchangeRef')" @on-cancel="passwordchange_cancel('passwordchangeRef')" ok-text="修改">
-                                          <p class="modaltitle">
-                                              <span>修改密码</span>
-                                          </p>
-                                          <Form ref="passwordchangeRef" :model="passwordchangeForm" :rules="passwordchangeRule" :label-width="80">
-                                              <FormItem label="旧密码" prop="oldpassword">
-                                                  <Input v-model="passwordchangeForm.oldpassword"></Input>
-                                              </FormItem>
-                                              <FormItem label="新密码" prop="newpassword">
-                                                  <Input v-model="passwordchangeForm.newpassword"></Input>
-                                              </FormItem>
-                                              <FormItem label="确认密码" prop="renewpassword">
-                                                  <Input v-model="passwordchangeForm.renewpassword"></Input>
-                                              </FormItem>
-                                          </Form>
+                                        <Modal 
+                                            v-model="passwordchange_isShowModal" 
+                                            :mask-closable="false" 
+                                            @on-ok="passwordchange_ok('passwordchangeRef')" 
+                                            @on-cancel="passwordchange_cancel('passwordchangeRef')" 
+                                            ok-text="修改"
+                                        >
+                                            <p class="modaltitle">
+                                                <span>修改密码</span>
+                                            </p>
+                                            <Form 
+                                                ref="passwordchangeRef" 
+                                                :model="passwordchangeForm" 
+                                                :rules="passwordchangeRule" 
+                                                :label-width="80"
+                                            >
+                                                <FormItem label="旧密码" prop="oldpassword">
+                                                    <Input type="password" v-model="passwordchangeForm.oldpassword"></Input>
+                                                </FormItem>
+                                                <FormItem label="新密码" prop="newpassword">
+                                                    <Input type="password" v-model="passwordchangeForm.newpassword"></Input>
+                                                </FormItem>
+                                                <FormItem label="确认密码" prop="renewpassword">
+                                                    <Input type="password" v-model="passwordchangeForm.renewpassword"></Input>
+                                                </FormItem>
+                                            </Form>
                                         </Modal>
                                     </DropdownItem>
                                 </DropdownMenu>
@@ -78,26 +111,27 @@
                     </div>
                 </Menu>
             </Header>
+
+            <!-- 中间内容 -->
             <Layout>
+                <!-- 左侧导航栏 -->
                 <Sider hide-trigger :style="{backgroud: '#fff'}">
-                    <!-- 导入导航菜单 -->
                     <v-menu></v-menu>
                 </Sider>
+
+                <!-- 主体内容 -->
                 <Layout :style="{padding: '0 24px 24px'}">
+                    <!-- 主体路由 -->
                     <Breadcrumb style="margin:24px 0">
                         <BreadcrumbItem to="/">
                             <Icon type="ios-apps" />主页
                         </BreadcrumbItem>
                         <BreadcrumbItem>菜单名</BreadcrumbItem>
-                        <BreadcrumbItem>
-                          <!-- <a @click="testnet1">
-                            菜单项
-                          </a> -->
-                        </BreadcrumbItem>
                     </Breadcrumb>
                     <div>{{this.TheDate}}</div>
+
+                    <!-- 主体页面 -->
                     <Content class="content">
-                        <!-- 页面内容展示 --> 
                         <router-view></router-view>
                     </Content>
                 </Layout>

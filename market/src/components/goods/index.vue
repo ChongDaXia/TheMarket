@@ -75,11 +75,11 @@
                             <InputNumber v-model="row.amount" :min="1" />
                         </template>
                         <template slot-scope="{row}" slot="price">
-                          <Input v-model="row.price" prefix="logo-usd" style="width:100px;margin-right:10px" />
-                          <span>元</span>
+                            <Input v-model="row.price" prefix="logo-usd" style="width:100px;margin-right:10px" />
+                            <span>元</span>
                         </template>
                         <template slot-scope="{row,index}" slot="action">
-                          <Button type="primary" @click="removeGoodsItem(index)" >删除</Button>
+                            <Button type="primary" @click="removeGoodsItem(index)" >删除</Button>
                         </template>
                     </Table>
                 </div>

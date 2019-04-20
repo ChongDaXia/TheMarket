@@ -9,6 +9,7 @@ import usermanager from '@/components/user/index'
 import shopmanager from '@/components/shop/index'
 import repairmanager from '@/components/repair/index'
 import informmanager from '@/components/inform/index'
+import staffmanager from '@/components/staff/index'
 
 Vue.use(Router)
 
@@ -74,6 +75,14 @@ export default new Router({
           path: '/informmanager',
           name: 'informmanager',
           component: informmanager,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/staffmanager',
+          name: 'staffmanager',
+          component: staffmanager,
           meta: {
             isLogin: true
           }

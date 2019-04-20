@@ -2,7 +2,7 @@
     <div class="layout">
         <Layout>
             <!-- 头部 -->
-             <Header style="{position: 'fixed', width: '100%'}">
+             <Header>
                 <Menu mode="horizontal" theme="dark">
                     <!-- logo -->
                     <div class="layout-logo">
@@ -11,20 +11,20 @@
 
                     <!-- 头部菜单 -->
                     <div class="layout-nav">
-                        <MenuItem name="1">
-                            <a class="a" @click="loginout_isShowModal=true">
+                        <MenuItem name="loginOut">
+                            <a class="a" @click="loginOutModal=true">
                                 <Icon type="md-power" />
                                 退出登录
                             </a>
-                            <Modal 
-                                v-model="loginout_isShowModal" 
-                                title="退出登录提示" 
-                                @on-ok="loginout_ok" 
-                                @on-cancel="loginout_cancel"
-                            >
-                                <p>是否确认退出登录？</p>
-                            </Modal>
                         </MenuItem>
+                        <Modal 
+                            v-model="loginOutModal" 
+                            title="退出登录提示" 
+                            @on-ok="loginout_ok" 
+                            @on-cancel="loginout_cancel"
+                        >
+                            <p>是否确认退出登录？</p>
+                        </Modal>
                         <MenuItem name="2">
                             <Dropdown>
                                 <a class="a" href="javascript:void(0)">
@@ -32,79 +32,79 @@
                                     个人信息管理
                                 </a>
                                 <DropdownMenu slot="list">
-                                    <DropdownItem>
+                                    <DropdownItem name="publicInfo">
                                         <a @click="personalinfochange">
                                             基本信息
                                         </a>
-                                        <Modal 
-                                            v-model="personalinfo_isShowModal" 
-                                            :mask-closable="false" 
-                                            @on-ok="personalinfo_ok('personalinfoRef')" 
-                                            @on-cancel="personalinfo_cancel('personalinfoRef')" 
-                                            ok-text="保存"
-                                        >
-                                            <p class="modaltitle">
-                                              <span>基本信息</span>
-                                            </p>
-                                            <Form 
-                                                ref="personalinfoRef" 
-                                                :model="personalinfoForm" 
-                                                :rules="personalinfoRule" 
-                                                :label-width="80"
-                                            >
-                                                <FormItem label="用户Id" prop="userId">
-                                                  <Input v-model="personalinfoForm.userId" disabled></Input>
-                                                </FormItem>
-                                                <FormItem label="角色权限" prop="role">
-                                                  <Input v-model="personalinfoForm.role" disabled></Input>
-                                                </FormItem>
-                                                <FormItem label="用户名" prop="userName">
-                                                  <Input v-model="personalinfoForm.userName"></Input>
-                                                </FormItem>
-                                                <FormItem label="姓名" prop="name">
-                                                  <Input v-model="personalinfoForm.name"></Input>
-                                                </FormItem>
-                                                <FormItem label="联系电话" prop="mobileNo">
-                                                  <Input v-model="personalinfoForm.mobileNo"></Input>
-                                                </FormItem>
-                                                <FormItem label="身份证号码" prop="idcardNo">
-                                                  <Input v-model="personalinfoForm.idcardNo"></Input>
-                                                </FormItem>
-                                            </Form>
-                                        </Modal>
                                     </DropdownItem>
-                                    <DropdownItem>
-                                        <a @click="passwordchange_isShowModal=true">
+                                    <Modal 
+                                        v-model="personalInfoModal" 
+                                        :mask-closable="false" 
+                                        @on-ok="personalinfo_ok('personalinfoRef')" 
+                                        @on-cancel="personalinfo_cancel('personalinfoRef')" 
+                                        ok-text="保存"
+                                    >
+                                        <p class="modaltitle">
+                                          <span>基本信息</span>
+                                        </p>
+                                        <Form 
+                                            ref="personalinfoRef" 
+                                            :model="personalinfoForm" 
+                                            :rules="personalinfoRule" 
+                                            :label-width="80"
+                                        >
+                                            <FormItem label="用户Id" prop="userId">
+                                              <Input v-model="personalinfoForm.userId" disabled></Input>
+                                            </FormItem>
+                                            <FormItem label="角色权限" prop="role">
+                                              <Input v-model="personalinfoForm.role" disabled></Input>
+                                            </FormItem>
+                                            <FormItem label="用户名" prop="userName">
+                                              <Input v-model="personalinfoForm.userName"></Input>
+                                            </FormItem>
+                                            <FormItem label="姓名" prop="name">
+                                              <Input v-model="personalinfoForm.name"></Input>
+                                            </FormItem>
+                                            <FormItem label="联系电话" prop="mobileNo">
+                                              <Input v-model="personalinfoForm.mobileNo"></Input>
+                                            </FormItem>
+                                            <FormItem label="身份证号码" prop="idcardNo">
+                                              <Input v-model="personalinfoForm.idcardNo"></Input>
+                                            </FormItem>
+                                        </Form>
+                                    </Modal>
+                                    <DropdownItem name="passwordChange">
+                                        <a @click="passwordChangeModal=true">
                                             修改密码
                                         </a>
-                                        <Modal 
-                                            v-model="passwordchange_isShowModal" 
-                                            :mask-closable="false" 
-                                            @on-ok="passwordchange_ok('passwordchangeRef')" 
-                                            @on-cancel="passwordchange_cancel('passwordchangeRef')" 
-                                            ok-text="修改"
-                                        >
-                                            <p class="modaltitle">
-                                                <span>修改密码</span>
-                                            </p>
-                                            <Form 
-                                                ref="passwordchangeRef" 
-                                                :model="passwordchangeForm" 
-                                                :rules="passwordchangeRule" 
-                                                :label-width="80"
-                                            >
-                                                <FormItem label="旧密码" prop="oldpassword">
-                                                    <Input type="password" v-model="passwordchangeForm.oldpassword"></Input>
-                                                </FormItem>
-                                                <FormItem label="新密码" prop="newpassword">
-                                                    <Input type="password" v-model="passwordchangeForm.newpassword"></Input>
-                                                </FormItem>
-                                                <FormItem label="确认密码" prop="renewpassword">
-                                                    <Input type="password" v-model="passwordchangeForm.renewpassword"></Input>
-                                                </FormItem>
-                                            </Form>
-                                        </Modal>
                                     </DropdownItem>
+                                    <Modal 
+                                        v-model="passwordChangeModal" 
+                                        :mask-closable="false" 
+                                        @on-ok="passwordchange_ok('passwordchangeRef')" 
+                                        @on-cancel="passwordchange_cancel('passwordchangeRef')" 
+                                        ok-text="修改"
+                                    >
+                                        <p class="modaltitle">
+                                            <span>修改密码</span>
+                                        </p>
+                                        <Form 
+                                            ref="passwordchangeRef" 
+                                            :model="passwordchangeForm" 
+                                            :rules="passwordchangeRule" 
+                                            :label-width="80"
+                                        >
+                                            <FormItem label="旧密码" prop="oldpassword">
+                                                <Input type="password" v-model="passwordchangeForm.oldpassword"></Input>
+                                            </FormItem>
+                                            <FormItem label="新密码" prop="newpassword">
+                                                <Input type="password" v-model="passwordchangeForm.newpassword"></Input>
+                                            </FormItem>
+                                            <FormItem label="确认密码" prop="renewpassword">
+                                                <Input type="password" v-model="passwordchangeForm.renewpassword"></Input>
+                                            </FormItem>
+                                        </Form>
+                                    </Modal>
                                 </DropdownMenu>
                             </Dropdown>
                         </MenuItem>
@@ -150,11 +150,11 @@ export default {
       // 时间
       TheDate: '',
       // 退出登录
-      loginout_isShowModal: false,
+      loginOutModal: false,
       // 基本信息修改框
-      personalinfo_isShowModal: false,
+      personalInfoModal: false,
       // 忘记密码修改框
-      passwordchange_isShowModal: false,
+      passwordChangeModal: false,
       // 用户基本信息
       personalinfoForm: {
         userId: '',
@@ -236,13 +236,13 @@ export default {
       localStorage.removeItem("userId")
       localStorage.removeItem("role")
       this.$store.dispatch('setUserId', '')
-      this.loginout_isShowModal = false;
+      this.loginOutModal = false;
       this.$Message.info('已退出登录')
       this.$router.push({name: 'login'})
     },
     loginout_cancel () {
       this.$Message.info('取消退出')
-      this.loginout_isShowModal = false;
+      this.loginOutModal = false;
     },
     // 基本信息按钮
     personalinfochange () {
@@ -251,7 +251,7 @@ export default {
       }).then(data => {
         if(data.code == '200'){
           this.personalinfoForm=data.users
-          this.personalinfo_isShowModal = true
+          this.personalInfoModal = true
         }
         if(data.code == "500") {
           //获取信息失败
@@ -266,7 +266,7 @@ export default {
           updateUser(this.personalinfoForm).then(data => {
             if(data.code == '200'){
               this.$Message.info('基本信息修改成功')
-              this.personalinfo_isShowModal = false;
+              this.personalInfoModal = false;
             }
             if(data.code == "500") {
               //保存信息失败
@@ -281,7 +281,7 @@ export default {
     personalinfo_cancel (personalinfoRef) {
       this.$refs[personalinfoRef].resetFields()
       this.$Message.info('取消基本信息修改')
-      this.personalinfo_isShowModal = false;
+      this.personalInfoModal = false;
     },
     // 忘记密码提示框
     passwordchange_ok (passwordchangeRef) {
@@ -302,7 +302,7 @@ export default {
                     if(data.code == '200'){
                       this.$Message.info('密码修改成功')
                       this.$refs[passwordchangeRef].resetFields()
-                      this.passwordchange_isShowModal = false;
+                      this.passwordChangeModal = false;
                     }
                     if(data.code == "500") {
                       //保存信息失败
@@ -327,7 +327,7 @@ export default {
     passwordchange_cancel (passwordchangeRef) {
       this.$refs[passwordchangeRef].resetFields()
       this.$Message.info('取消密码修改')
-      this.passwordchange_isShowModal = false;
+      this.passwordChangeModal = false;
     }
   }
 }
@@ -339,7 +339,7 @@ export default {
     position: relative;
     border: 1px solid #d7dde4;
     background: #f5f7f9;
-    overflow: scroll;
+    overflow: hidden;
     border-radius: 4px;
 }
 .layout-logo{

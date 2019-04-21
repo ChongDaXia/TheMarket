@@ -1,9 +1,9 @@
 <template>
-    <div class="layout">
+    <div class="layout" value="name1" @on-click="selectTab">
         <!-- tabs列表 -->
-        <Tabs class="tabstyle">
+        <Tabs class="tabstyle" @on-click="selectTab">
             <!-- 添加新用户功能 -->
-            <TabPane label="添加">
+            <TabPane label="添加" name="name1">
                 <!-- 添加新用户 -->
                 <div class="formtext">
                     <Form 
@@ -73,7 +73,7 @@
             </TabPane>
             
             <!-- 用户列表 -->
-            <TabPane label="列表">
+            <TabPane label="列表" name="name2">
                 <div class="header">
                     <!-- 搜索条件 -->
                     <Select 
@@ -199,7 +199,7 @@
             </TabPane>
             
             <!-- 删除用户 -->
-            <TabPane label="删除">
+            <TabPane label="删除" name="name3">
                 <div class="header">
                     <!-- 搜索条件 -->
                     <Select 
@@ -248,16 +248,6 @@
                     />
                 </div>
             </TabPane>
-
-            <!-- <TabPane label="统计">
-                111
-                <!-- <echarts
-                    style="width: 300px; height: 400px;"
-                    refName="line"
-                    type="line"
-                    :chartsData="echartDataLine"
-                /> -->
-            <!-- </TabPane> --> 
         </Tabs>
         <vue-particles 
             color="#7b7d7d" 
@@ -286,9 +276,6 @@ import echarts from '../../echarts'
 export default {
   components: {
     echarts
-  },
-  mounted() {
-    this.getAllUserInfo()
   },
   data() {
     return {
@@ -508,6 +495,19 @@ export default {
   },
 
   methods: {
+    // tab函数
+    selectTab(name){
+      if(name === 'name2'){
+        this.getAllUserInfo()
+        this.selectUserRole=''
+        this.selectUserId=''
+      }
+      if(name === 'name3'){
+        this.getAllUserInfo()
+        this.selectUserRole=''
+        this.selectUserId=''
+      }
+    },
     // 添加新用户按钮
     submitAddUser(name) {
       this.$refs[name].validate(valid => {
@@ -529,7 +529,6 @@ export default {
           this.newUserModal=false
           this.$Message.info('新用户添加成功')
           this.$refs['newUserRef'].resetFields()
-          this.getAllUserInfo()
         }
         if(data.code == '500') {
           this.$Message.error('新用户添加失败')

@@ -16,9 +16,9 @@
                     <Icon type="ios-people" class="iconstyle"/>
                     员工管理
                 </MenuItem>
-                <MenuItem name="AddMemberPage">
+                <MenuItem name="MemberManager">
                     <Icon type="md-happy" class="iconstyle"/>
-                    添加会员
+                    会员管理
                 </MenuItem>
                 <MenuItem name="GoodsPage">
                     <Icon type="md-cart"  class="iconstyle"/>
@@ -68,12 +68,9 @@ export default {
             path: '/staffmanager'
           })
           break;
-        case 'AddMemberPage':
+        case 'MemberManager':
           this.$router.push({
-            path: '/addsome',
-            query: {
-              theid: AddMemberPage
-            }
+            path: '/membermanager'
           })
           break;
         case 'GoodsPage':

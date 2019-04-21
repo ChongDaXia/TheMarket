@@ -2,7 +2,7 @@
     <div class="layout">
         <!-- tabs列表 -->
         <Tabs class="tabstyle" value="name1" @on-click="selectTab">
-             <!-- 添加员工功能 -->
+            <!-- 添加员工功能 -->
             <TabPane label="添加" name="name1">
                 <div class="formtext">
                     <Form 
@@ -53,6 +53,16 @@
             <TabPane label="列表" name="name2">
                 <div class="header">
                     <!-- 搜索条件 -->
+                    <Select 
+                        v-model="selectStaffId"
+                        @on-change="changeSelectStaffId"
+                        style="width:200px;margin-right:30px" 
+                        placeholder="请选择姓名"
+                    >
+                        <Option v-for="(item,index) in TheSelectStaffList" :value="item.staffId" :key="index">
+                            {{item.name}}
+                        </Option>
+                    </Select>
                 </div>
                 <!-- 数据列表 -->
                 <div class="content">
@@ -233,8 +243,8 @@ export default {
       },
       // 添加新员工二次确认框
       addStaffModal: false,
-      
-
+      // 筛选员工姓名
+      selectStaffId: '',
       // 表格表头
       tableTitle: [
         {
@@ -332,10 +342,11 @@ export default {
   },
 
   methods: {
-      // tab函数
+    // tab函数
     selectTab(name){
       if(name === 'name2'){
         this.getAllStaffInfo()
+        this.selectStaffId=''
       }
     },
     // 添加新员工
@@ -360,7 +371,7 @@ export default {
           this.$Message.info('新员工添加成功')
           this.$refs['newStaffRef'].resetFields()
         }
-        if(data.code == "500") {
+        if(data.code == '500') {
           this.$Message.error('新员工添加失败')
         }
       })
@@ -396,6 +407,11 @@ export default {
           this.$Message.info('无员工信息')
         }
       })
+    },
+    // 姓名筛选
+    changeSelectStaffId() {
+      let selectList=this.TheSelectStaffList.filter(item => item.staffId == this.selectStaffId)
+      this.selectStaffList=selectList
     },
     // 获取员工详情
     staffDetail(row,index) {
@@ -434,7 +450,7 @@ export default {
           this.getAllStaffInfo()
         }
         if(data.code == '500'){
-          this.$Message.info('员工信息更新失败')
+          this.$Message.error('员工信息更新失败')
         }
       })
     },
@@ -443,8 +459,6 @@ export default {
       this.restaffDetailModal=false
       this.$Message.info('取消员工信息修改')
     },
-
-
     // 获取员工薪资详情
     wagesDetail(row,indx) {
       this.staffWagesForm=JSON.parse(JSON.stringify(row))

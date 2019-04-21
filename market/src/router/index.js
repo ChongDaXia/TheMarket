@@ -4,12 +4,13 @@ import Router from 'vue-router'
 import login from '@/components/login'
 import home from '@/components/home'
 import addsome from '@/components/addsome'
-import goodsmanager from '@/components/goods/index'
 import usermanager from '@/components/user/index'
 import shopmanager from '@/components/shop/index'
+import goodsmanager from '@/components/goods/index'
+import staffmanager from '@/components/staff/index'
+import membermanager from '@/components/member/index'
 import repairmanager from '@/components/repair/index'
 import informmanager from '@/components/inform/index'
-import staffmanager from '@/components/staff/index'
 
 Vue.use(Router)
 
@@ -64,6 +65,22 @@ export default new Router({
           }
         },
         {
+          path: '/staffmanager',
+          name: 'staffmanager',
+          component: staffmanager,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/membermanager',
+          name: 'membermanager',
+          component: membermanager,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
           path: '/repairmanager',
           name: 'repairmanager',
           component: repairmanager,
@@ -75,14 +92,6 @@ export default new Router({
           path: '/informmanager',
           name: 'informmanager',
           component: informmanager,
-          meta: {
-            isLogin: true
-          }
-        },
-        {
-          path: '/staffmanager',
-          name: 'staffmanager',
-          component: staffmanager,
           meta: {
             isLogin: true
           }

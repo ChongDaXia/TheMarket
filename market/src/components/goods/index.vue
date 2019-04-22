@@ -13,8 +13,7 @@
                     :mask-closable="false"  
                     :footer-hide="true"
                     @on-cancel="cancelNewItem"
-                    width="400"
-                >
+                    width="400">
                     <p class="modaltitle">
                         <span>添加商品</span>
                     </p>
@@ -22,8 +21,7 @@
                         ref="newItemRef" 
                         :model="newItemForm" 
                         :rules="newItemRules" 
-                        :label-width="80"
-                    >
+                        :label-width="80" >
                         <FormItem label="名称" prop="name">
                             <Input v-model="newItemForm.name" placeholder="请输入商品名称" />
                         </FormItem>
@@ -45,8 +43,7 @@
                     v-model="selectStaffModal" 
                     :mask-closable="false"  
                     :footer-hide="true"
-                    width="400"
-                >
+                    width="400" >
                     <p class="modaltitle">
                         <span>采购员</span>
                     </p>
@@ -56,8 +53,7 @@
                         :columns="staffTabletitle" 
                         :data="allSelectStaff" 
                         :highlight-row=true
-                        @on-current-change="selectStaffList"
-                    />
+                        @on-current-change="selectStaffList" />
                 </Modal>
                 <!-- 数据列表 -->
                 <div class="content">
@@ -66,8 +62,7 @@
                         border 
                         stripe 
                         :columns="newTableTitle" 
-                        :data="newGoodsForm"
-                    >
+                        :data="newGoodsForm" >
                         <template slot-scope="{row}" slot="name">
                             <Input v-model="row.name" />
                         </template>
@@ -149,8 +144,7 @@
                         v-model="addNewSupplierModal" 
                         :mask-closable="false" 
                         :footer-hide="true"
-                        @on-cancel="cancelNewSupplier('newSupplierRef')"
-                    >
+                        @on-cancel="cancelNewSupplier('newSupplierRef')" >
                         <p class="modaltitle">
                             <span>供应商信息</span>
                         </p>
@@ -158,8 +152,7 @@
                             ref="newSupplierRef" 
                             :model="newSupplierForm" 
                             :rules="newSupplierRule" 
-                            :label-width="80"
-                        >
+                            :label-width="80" >
                             <FormItem label="名称" prop="name">
                                 <Input v-model="newSupplierForm.name" />
                             </FormItem>
@@ -174,8 +167,7 @@
                                   type="textarea" 
                                   v-model="newSupplierForm.address" 
                                   placeholder="请输入供应商详细地址" 
-                                  :autosize="{minRows: 2,maxRows: 5}"
-                              />
+                                  :autosize="{minRows: 2,maxRows: 5}" />
                             </FormItem>
                             <div class="form-item">
                                 <Button class="login-btn" shape="circle" @click="resetAdd('newSupplierRef')">重置</Button>
@@ -189,8 +181,7 @@
                         :mask-closable="false" 
                         title="确认提示" 
                         @on-ok="resubmitNewSupplier" 
-                        @on-cancel="recancelNewSupplier"
-                    >
+                        @on-cancel="recancelNewSupplier" >
                         <p>是否确认添加该供应商？</p>
                     </Modal>
                     <!-- 删除供应商二次确认框 -->
@@ -199,8 +190,7 @@
                         :mask-closable="false" 
                         title="确认提示" 
                         @on-ok="resubmitDeleteSupplier" 
-                        @on-cancel="recancelDeleteSupplier"
-                    >
+                        @on-cancel="recancelDeleteSupplier" >
                         <p>是否确认删除所选供应商？</p>
                     </Modal>
                 </div>
@@ -224,8 +214,7 @@
                     v-model="supplierDetailModal" 
                     :mask-closable="false" 
                     :footer-hide="true"
-                    @on-cancel="cancelSupplierDetail('supplierRef')" 
-                >
+                    @on-cancel="cancelSupplierDetail('supplierRef')" >
                     <p class="modaltitle">
                         <span>供应商信息</span>
                     </p>
@@ -233,8 +222,7 @@
                         ref="supplierRef" 
                         :model="supplierForm" 
                         :rules="supplierRule" 
-                        :label-width="80"
-                    >
+                        :label-width="80" >
                         <FormItem label="名称" prop="name">
                             <Input v-model="supplierForm.name" />
                         </FormItem>
@@ -249,8 +237,7 @@
                               type="textarea" 
                               v-model="supplierForm.address" 
                               placeholder="请输入供应商详细地址" 
-                              :autosize="{minRows: 2,maxRows: 5}"
-                          />
+                              :autosize="{minRows: 2,maxRows: 5}" />
                         </FormItem>
                         <div class="form-item">
                             <Button class="login-btn" shape="circle" @click="cancelSupplierDetail('supplierRef')">取消</Button>
@@ -264,8 +251,7 @@
                     :mask-closable="false" 
                     title="确认提示" 
                     @on-ok="reSubmitSupplierDetail" 
-                    @on-cancel="reCancelSupplierDetail"
-                >
+                    @on-cancel="reCancelSupplierDetail" >
                     <p>是否确认修改该供应商信息？</p>
                 </Modal>
             </TabPane>
@@ -278,16 +264,14 @@
                             style="width: 450px; height: 400px;"
                             refName="goodsline"
                             type="line"
-                            :chartsData="echartDataLine"
-                          />
+                            :chartsData="echartDataLine" />
                     </Col>
                     <Col span="12" class="echartsbox">
                         <echarts
                             style="width: 400px; height: 400px;"
                             refName="goodsbar"
                             type="bar"
-                            :chartsData="echartDataLine"
-                          />
+                            :chartsData="echartDataLine" />
                     </Col>
                 </Row>
             </TabPane>

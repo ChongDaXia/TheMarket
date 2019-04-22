@@ -9,8 +9,7 @@
                         ref="newRepairRef" 
                         :model="newRepairForm" 
                         :rules="newRepairRules" 
-                        :label-width="80" 
-                    >
+                        :label-width="80" >
                         <FormItem label="标题" prop="title">
                             <Input v-model="newRepairForm.title" placeholder="请输入标题" />
                         </FormItem>
@@ -28,8 +27,7 @@
                             :mask-closable="false"  
                             @on-ok="submitSelectRecipients"  
                             @on-cancel="cancelSelectRecipients" 
-                            width="400"
-                        >
+                            width="400" >
                             <p class="modaltitle">
                                 <span>基本信息</span>
                             </p>
@@ -51,8 +49,7 @@
                                 :key="index" 
                                 :name="index" 
                                 closable 
-                                @on-close="recipientsClose"
-                            >
+                                @on-close="recipientsClose" >
                                 {{item.name}}
                             </Tag>
                         </div>
@@ -85,8 +82,7 @@
                         placeholder="选择日期" 
                         style="width: 200px" 
                         split-panels 
-                        :editable="false"
-                    />
+                        :editable="false" />
                 </div>
                 <!-- 数据列表 -->
                 <div class="content">
@@ -96,8 +92,7 @@
                             :value="item.repairId" 
                             :key="index" 
                             v-if="theUserRole"
-                            class="cardstyle"
-                        >
+                            class="cardstyle" >
                             <div @click="userGetRepairDetail(item)">
                                 <div style="float: right">
                                     {{item.createTime}}
@@ -115,8 +110,7 @@
                             :value="item.repairId" 
                             :key="index" 
                             v-if="theAdminRole"
-                            class="cardstyle"
-                        >
+                            class="cardstyle" >
                             <div @click="adminGetRepairDetail(item)">
                                 <div style="float: right">
                                     {{item.createTime}}
@@ -136,8 +130,7 @@
                     v-model="repairDetailModal" 
                     :mask-closable="false" 
                     :footer-hide="true"
-                    @on-cancel="usercancelrepairdetail"
-                >
+                    @on-cancel="usercancelrepairdetail" >
                     <p class="modaltitle">
                         <span>维修信息详情</span>
                     </p>
@@ -152,8 +145,7 @@
                     v-model="otherRepairDetailModal" 
                     :mask-closable="false" 
                     :footer-hide="true"
-                    @on-cancel="admincancelrepairdetail"
-                >
+                    @on-cancel="admincancelrepairdetail" >
                     <p class="modaltitle">
                         <span>维修信息详情</span>
                     </p>

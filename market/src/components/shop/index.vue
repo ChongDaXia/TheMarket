@@ -1,23 +1,18 @@
 <template>
     <div class="layout">
         <!-- tabs列表 -->
-        <Tabs class="tabstyle">
+        <Tabs class="tabstyle" value="name1" @on-click="selectTab">
             <!-- 添加新店铺功能 -->
-            <TabPane label="添加">
+            <TabPane label="添加" name="name1">
                 <!-- 添加新店铺 -->
                 <div class="formtext">
                     <Form 
                         ref="newStoreRef" 
                         :model="newStoreForm" 
                         :rules="newStoreRules" 
-                        :label-width="80"
-                    >
+                        :label-width="80">
                         <FormItem label="编号" prop="storeNo">
-                            <Input 
-                                v-model="newStoreForm.storeNo" 
-                                placeholder="请输入门店编号" 
-                                icon="ios-clock-outline"
-                            />
+                            <Input v-model="newStoreForm.storeNo" placeholder="请输入门店编号" />
                         </FormItem>
                         <FormItem label="租赁状态" prop="rentStatus" style="text-align:left">
                             <RadioGroup v-model="newStoreForm.rentStatus">
@@ -26,10 +21,7 @@
                             </RadioGroup>
                         </FormItem>
                         <FormItem label="面积" prop="area" style="text-align:left">
-                            <Input 
-                                v-model="newStoreForm.area" 
-                                style="width:100px;margin-right:10px"
-                            />
+                            <Input v-model="newStoreForm.area" style="width:100px;margin-right:10px" />
                             <span>平方米</span>
                         </FormItem>
                         <FormItem label="地址" prop="address">
@@ -37,8 +29,7 @@
                                 type="textarea" 
                                 v-model="newStoreForm.address" 
                                 placeholder="请输入门店详细地址" 
-                                :autosize="{minRows: 2,maxRows: 5}"
-                            />
+                                :autosize="{minRows: 2,maxRows: 5}" />
                         </FormItem>
                         <div class="form-item">
                             <Button class="login-btn" shape="circle" @click="resetAdd('newStoreRef')">重置</Button>
@@ -56,15 +47,14 @@
             </TabPane>
 
             <!-- 门店列表 -->
-            <TabPane label="列表">
+            <TabPane label="列表" name="name2">
                 <div class="header">
                     <!-- 搜索条件 -->
                     <Select 
                         v-model="selectStoreStatus" 
                         @on-change="changeSelectStoreStatus"
                         style="width:200px;margin-right:30px" 
-                        placeholder="请选择租赁状态"
-                    >
+                        placeholder="请选择租赁状态" >
                         <Option v-for="(item,index) in selectStoreStatusList" :value="item" :key="index">
                             {{item}}
                         </Option>
@@ -73,9 +63,8 @@
                         v-model="selectStoreId"
                         @on-change="changeSelectStoreId"
                         style="width:200px;margin-right:30px" 
-                        placeholder="请选择店铺编号"
-                    >
-                        <Option v-for="(item,index) in selectStoreIdList" :value="item.storeId" :key="index">
+                        placeholder="请选择店铺编号" >
+                        <Option v-for="(item,index) in TheselectStoreList" :value="item.storeId" :key="index">
                             {{item.storeNo}}
                         </Option>
                     </Select>
@@ -87,15 +76,19 @@
                         border 
                         stripe 
                         :columns="tableTitle" 
-                        :data="selectStoreList"
-                    />
+                        :data="selectStoreList" >
+                        <template slot-scope="{row,index}" slot="action">
+                            <Button type="primary" size="small" @click="showStoreDetail(row,index)" >信息修改</Button>
+                            <Button type="primary" size="small" @click="addStoreUser(row,index)" v-if="row.rentStatus == '0'">添加租户</Button>
+                            <Button type="primary" size="small" @click="updateStoreUser(row,index)" v-if="row.rentStatus == '1'">修改租户</Button>
+                        </template>
+                    </Table>
                 </div>
                 <!-- 信息详情 -->
                 <Modal 
                     v-model="selectStoreDetailModal" 
                     :mask-closable="false" 
-                    :footer-hide="true"
-                >
+                    :footer-hide="true" >
                     <p class="modaltitle">
                         <span>基本信息</span>
                     </p>
@@ -103,8 +96,7 @@
                         ref="storeDetailRef" 
                         :model="selectStoreDetailForm" 
                         :rules="selectStoreDetailRule" 
-                        :label-width="80"
-                    >
+                        :label-width="80" >
                         <FormItem label="门店ID" prop="storeId">
                             <Input v-model="selectStoreDetailForm.storeId" disabled />
                         </FormItem>
@@ -141,22 +133,107 @@
                     @on-ok="resubmitNewStoreDetail" 
                     @on-cancel="recancelStoreDetail"
                     title="确认提示" 
-                    :mask-closable="false" 
-                >
+                    :mask-closable="false" >
                     <p>是否确认修改该门店信息？</p>
+                </Modal>
+                <!-- 添加租户 -->
+                <Modal 
+                    v-model="addRentModal" 
+                    :mask-closable="false" 
+                    :footer-hide="true" 
+                    @on-cancel="canceladdRent">
+                    <p class="modaltitle">
+                        <span>租赁信息</span>
+                    </p>
+                    <Form 
+                        ref="addRentRef" 
+                        :model="addRentForm" 
+                        :rules="addRentRule" 
+                        :label-width="80" >
+                        <FormItem label="租金" prop="rent">
+                            <Input v-model="addRentForm.rent" />
+                        </FormItem>
+                        <FormItem label="租赁人" prop="userId" style="text-align:left">
+                            <Button class="login-btn" shape="circle" @click="selectAddUser">选择</Button>
+                        </FormItem>
+                        <div>租户：{{selectUser.name}}</div>
+                        <div class="form-item">
+                            <Button class="login-btn" shape="circle" @click="canceladdRent">取消</Button>
+                            <Button class="login-btn" shape="circle" @click="submitNewRent('addRentRef')">添加</Button>
+                        </div>
+                    </Form>
+                </Modal>
+                <!-- 租户选择列表 -->
+                <Modal 
+                    v-model="selectUserModal" 
+                    :mask-closable="false"  
+                    :footer-hide="true"
+                    width="400" >
+                    <p class="modaltitle">
+                        <span>租户</span>
+                    </p>
+                    <Table 
+                        ref="userTableRef" 
+                        height="300" border 
+                        :columns="userTabletitle" 
+                        :data="allSelectUser" 
+                        :highlight-row=true
+                        @on-current-change="selectUserList" />
+                </Modal>
+                <!-- 添加租户二次确认框 -->
+                <Modal 
+                    v-model="readdRentModal" 
+                    @on-ok="resubmitNewRent" 
+                    @on-cancel="recanceladdRent"
+                    title="确认提示" 
+                    :mask-closable="false" >
+                    <p>是否确认添加该租赁信息？</p>
+                </Modal>
+                <!-- 修改租户 -->
+                <Modal 
+                    v-model="updateRentModal" 
+                    :mask-closable="false" 
+                    :footer-hide="true" >
+                    <p class="modaltitle">
+                        <span>租赁信息</span>
+                    </p>
+                    <Form 
+                        ref="addRentRef" 
+                        :model="addRentForm" 
+                        :rules="addRentRule" 
+                        :label-width="80" >
+                        <FormItem label="租金" prop="rent">
+                            <Input v-model="addRentForm.rent" disabled />
+                        </FormItem>
+                        <FormItem label="租赁人" prop="userId" style="text-align:left">
+                            <Button class="login-btn" shape="circle" @click="selectUpdateUser">选择</Button>
+                        </FormItem>
+                        <div class="form-item">
+                            <Button class="login-btn" shape="circle" @click="cancelupdateRent">取消</Button>
+                            <Button class="login-btn" shape="circle" @click="submitupdateRent('addRentRef')">修改</Button>
+                        </div>
+                    </Form>
+                </Modal>
+                <!-- 修改租户二次确认框 -->
+                <Modal 
+                    v-model="reupdateRentModal" 
+                    @on-ok="resubmitupdateRent" 
+                    @on-cancel="recancelupdateRent"
+                    title="确认提示" 
+                    :mask-closable="false" >
+                    <p>是否确认修改该租赁信息？</p>
                 </Modal>
             </TabPane>
 
             <!-- 删除门店 -->
-            <TabPane label="删除">
+            <TabPane label="删除" name="name3">
                 <div class="header">
                     <!-- 搜索条件 -->
                     <Select 
                         v-model="selectStoreStatus" 
                         @on-change="changeSelectStoreStatus"
                         style="width:200px;margin-right:30px" 
-                        placeholder="请选择租赁状态"
-                    >
+                        placeholder="请选择租赁状态" >
                         <Option v-for="(item,index) in selectStoreStatusList" :value="item" :key="index">
                             {{item}}
                         </Option>
@@ -165,9 +242,8 @@
                         v-model="selectStoreId"
                         @on-change="changeSelectStoreId"
                         style="width:200px;margin-right:30px" 
-                        placeholder="请选择店铺编号"
-                    >
-                        <Option v-for="(item,index) in selectStoreIdList" :value="item.storeId" :key="index">
+                        placeholder="请选择店铺编号">
+                        <Option v-for="(item,index) in TheselectStoreList" :value="item.storeId" :key="index">
                             {{item.storeNo}}
                         </Option>
                     </Select>
@@ -179,8 +255,7 @@
                     @on-ok="submitDeleteStore" 
                     @on-cancel="cancelDeleteStore"
                     title="确认提示" 
-                    :mask-closable="false" 
-                >
+                    :mask-closable="false" >
                     <p>是否确认删除所选用户？</p>
                 </Modal>
                 <div class="content">
@@ -193,11 +268,11 @@
                         @on-select="selectDeleted"
                         @on-select-cancel="cancelselectDeleted"
                         @on-select-all="selectDeleted"
-                        @on-select-all-cancel="cancelselectDeleted"
-                    />
+                        @on-select-all-cancel="cancelselectDeleted"/>
                 </div>
             </TabPane>
         </Tabs>
+
         <vue-particles 
             color="#7b7d7d" 
             :particleOpacity="0.7" 
@@ -220,11 +295,9 @@
 </template>
 
 <script>
-import {addnewstore,getAllStore,getOneStore,getAllRent,getOneRent,getStoreRent,deleteOneStore,updateStore} from '@/http/moudules/store'
+import {getAllUser} from '@/http/moudules/user'
+import {addnewstore,getStoreRent,deleteOneStore,updateStore,saveNewRent,updateRent} from '@/http/moudules/store'
 export default {
-  mounted() {
-    this.getAllStoreInfo()
-  },
   data() {
     return {
       // 添加新门店
@@ -269,9 +342,10 @@ export default {
       ],
       // 编号筛选（店铺Id）
       selectStoreId: '',
-      selectStoreIdList: [],
-      // 所有店铺
+      // 变化的所有店铺
       selectStoreList: [],
+      // 固定的所有店铺
+      TheselectStoreList: [],
       // 表格表头
       tableTitle: [
         {
@@ -294,46 +368,19 @@ export default {
           key: 'rent'
         }, {
           title: '操作',
-          key: 'action',
-          align: 'center',
-          render: (h,params) => {
-            return h('div',[
-              h('Button', {
-                props: {
-                  type: 'primary',
-                  size: 'small'
-                },
-                on: {
-                  click: () => {
-                    this.showStoreDetail(params.index)
-                  }
-                }
-              }, '信息修改'),
-              h('Button', {
-                props: {
-                  type: 'primary',
-                  size: 'small'
-                },
-                on: {
-                  click: () => {
-                    this.addStoreUser(params.index)
-                  }
-                }
-              }, '添加租户')
-            ])           
-          }
+          slot: 'action',
+          align: 'center'
         }
       ],
       // 门店信息详情
       selectStoreDetailForm: {
         storeId: '',
         storeNo: '',
-        rentStatus: '0',
+        rentStatus: '',
         area: '',
         address: ''
       },
-      // 门店信息详情弹框
-      selectStoreDetailModal: false,
+      // 门店信息详情校验
       selectStoreDetailRule: {
         storeNo: [{
           required: true,
@@ -357,8 +404,57 @@ export default {
           message: '格式错误'
         }]
       },
+      // 门店信息详情弹框
+      selectStoreDetailModal: false,
       // 门店信息二次确认弹框
       reselectStoreDetailModal: false,
+
+
+
+      // 新增租户数据
+      addRentForm: {
+        storeId: '',
+        userId: '',
+        rent: ''
+      },
+      // 新增租户数据校验
+      addRentRule: {
+        userId:[{
+          required: true,
+          trigger: 'blur, change',
+          message: '请选择租户'
+        }],
+        rent: [{
+          required: true,
+          trigger: 'blur, change',
+          pattern:/^[0-9]\d*|[0-9]\d*\.\d*$/,
+          message: '格式错误'
+        }]
+      },
+      // 新增租户弹框
+      addRentModal:false,
+      // 新增租户二次确认框
+      readdRentModal: false,
+      // 租户选择弹框
+      selectUserModal: false,
+      // 租户选择表格表头
+      userTabletitle: [
+        {
+          type: 'index',
+          width: 60,
+          align: 'center'
+        },{
+          title: '租户',
+          key: 'name'
+        }
+      ],
+      // 租户选择表格数据
+      allSelectUser: [],
+      // 选择租户
+      selectUser: '',
+
+
+      
       // 删除表头
       deleteTableTitle: [
         {
@@ -393,6 +489,20 @@ export default {
   },
 
   methods: {
+    // tab函数
+    selectTab(name){
+      if(name === 'name2'){
+        this.selectStoreId = ''
+        this.selectStoreStatus = ''
+        this.getAllStoreInfo() 
+        this.getAllUserInfo()
+      }
+      if(name === 'name3'){
+        this.selectStoreId = ''
+        this.selectStoreStatus = ''
+        this.getAllStoreInfo() 
+      }
+    },
     // 添加新门店按钮
     submitAddStore (name) {
       this.$refs[name].validate(valid => {
@@ -403,6 +513,10 @@ export default {
         }
       })
     },
+    // 重置按钮
+    resetAdd(name) {
+      this.$refs[name].resetFields()
+    },
     // 添加新门店二次确认框确认按钮
     resubmitAddStore () {
       addnewstore(this.newStoreForm).then(data => {
@@ -410,16 +524,11 @@ export default {
           this.newStoreModal=false
           this.$Message.info('新门店添加成功')
           this.$refs['newStoreRef'].resetFields()
-          this.getAllStoreInfo()
         }
         if(data.code == '500') {
           this.$Message.error('新门店添加失败')
         }
       })
-    },
-    // 重置按钮
-    resetAdd(name) {
-      this.$refs[name].resetFields()
     },
     // 添加新门店二次确认框取消按钮
     cancelAddStore () {
@@ -430,23 +539,30 @@ export default {
     getAllStoreInfo() {
       getStoreRent().then(data => {
         if(data.code == '200'){
-          this.selectStoreList = data.stores;
-          this.selectStoreIdList = data.stores;
+          this.TheselectStoreList = data.stores;
           let StoreRent = data.rents;
-          this.selectStoreList.forEach((i,index) => {
+          this.TheselectStoreList.forEach((i,index) => {
             StoreRent.forEach(item => {
               if(i.storeId == item.storeId){
                 i['rent']=item.rent
               }
             })
           })
+          this.selectStoreList=this.TheselectStoreList.map(item => {
+            return {
+              ...item
+            }
+          })
         }
         if(data.code == '300') {
-          this.selectStoreList = data.stores;
-          this.selectStoreIdList = data.stores;
+          this.TheselectStoreList = data.stores;
+          this.selectStoreList=this.TheselectStoreList.map(item => {
+            return {
+              ...item
+            }
+          })
         }
         if(data.code == '500') {
-          this.selectStoreList = []
           this.$Message.info('无门店信息')
         }
       })
@@ -454,93 +570,35 @@ export default {
     // 租赁状态筛选
     changeSelectStoreStatus() {
       if (this.selectStoreStatus === '所有店铺') {
-        this.getAllStoreInfo()
+        this.selectStoreList=this.TheselectStoreList.map(item => {
+          return {
+            ...item
+          }
+        })
       } 
       if (this.selectStoreStatus === '已租出'){
-        getStoreRent({rentStatus: '1'}).then(data => {
-          if(data.code == '200'){
-            this.selectStoreList = data.stores;
-            let StoreRent = data.rents;
-            this.selectStoreList.forEach((i,index) => {
-              StoreRent.forEach(item => {
-                if(i.storeId == item.storeId){
-                  i.push(item.rent)
-                }
-              })
-            })
-          }
-          if(data.code == '300') {
-            this.selectStoreList = data.stores;
-          }
-          if(data.code == '500') {
-            this.selectStoreList = []
-            this.$Message.info('无门店信息')
-          }
-        })
+        let selectList=this.TheselectStoreList.filter(item => item.rentStatus == '1')
+        this.selectStoreList=selectList
       }
       if (this.selectStoreStatus === '未租出') {
-        getStoreRent({rentStatus: '0'}).then(data => {
-          if(data.code == '200'){
-            this.selectStoreList = data.stores;
-            let StoreRent = data.rents;
-            this.selectStoreList.forEach((i,index) => {
-              StoreRent.forEach(item => {
-                if(i.storeId == item.storeId){
-                  i.push(item.rent)
-                }
-              })
-            })
-          }
-          if(data.code == '300') {
-            this.selectStoreList = data.stores;
-          }
-          if(data.code == '500') {
-            this.selectStoreList = []
-            this.$Message.info('无门店信息')
-          }
-        })
+        let selectList=this.TheselectStoreList.filter(item => item.rentStatus == '0')
+        this.selectStoreList=selectList
       }
     },
     // 店铺编号筛选
     changeSelectStoreId() {
-      getStoreRent({storeId: this.selectStoreId}).then(data => {
-        if(data.code == '200'){
-          this.selectStoreList = data.stores;
-          let StoreRent = data.rents;
-          this.selectStoreList.forEach((i,index) => {
-            StoreRent.forEach(item => {
-              if(i.storeId == item.storeId){
-                i.push(item.rent)
-              }
-            })
-          })
-        }
-        if(data.code == '300') {
-          this.selectStoreList = data.stores;
-        }
-        if(data.code == '500') {
-          this.selectStoreList = []
-          this.$Message.info('无门店信息')
-        }
-      })
+      let selectList=this.TheselectStoreList.filter(item => item.storeId == this.selectStoreId)
+      this.selectStoreList=selectList
     },
     // 店铺信息详情
-    showStoreDetail(index) {
-      getOneStore({storeId: this.selectStoreList[index].storeId}).then(data => {
-        if(data.code == '200'){
-          this.selectStoreDetailForm=data.store
-          if(data.store.rentStatus == 0){
-            this.selectStoreDetailForm.rentStatus='0'
-          }else{
-            this.selectStoreDetailForm.rentStatus='1'
-          }
-          this.selectStoreDetailModal=true
-        }
-        if(data.code == '500') {
-          //获取信息失败
-          this.$Message.error('门店详情获取失败')
-        }
-      })
+    showStoreDetail(row,index) {
+      this.selectStoreDetailForm=JSON.parse(JSON.stringify(row))
+      if(this.selectStoreDetailForm.rentStatus == 0){
+        this.selectStoreDetailForm.rentStatus='0'
+      }else{
+        this.selectStoreDetailForm.rentStatus='1'
+      }
+      this.selectStoreDetailModal=true
     },
     // 门店信息详情修改
     submitNewStoreDetail(name) {
@@ -552,6 +610,7 @@ export default {
         }
       })
     },
+    // 取消门店信息详情修改
     cancelStoreDetail() {
       this.$refs['storeDetailRef'].resetFields()
       this.selectStoreDetailModal=false
@@ -570,23 +629,80 @@ export default {
         }
       })
     },
+    // 取消门店信息详情修改二次确认
     recancelStoreDetail() {
       this.reselectStoreDetailModal=false
       this.$Message.info('取消修改门店信息')
     },
-    addStoreUser(index) {
+    // 添加租户
+    addStoreUser(row,index) {
+      this.addRentModal=true
+      this.addRentForm.storeId=row.storeId
+    },
+    // 获取所有租户
+    getAllUserInfo() {
+      getAllUser({role: '用户'}).then(data => {
+        if(data.code == '200'){
+          this.allSelectUser = data.users;
+        }
+        if(data.code == '500') {
+          this.$Message.info('无用户信息')
+        }
+      })
+    },
+    // 选择租户按钮
+    selectAddUser() {
+      this.selectUserModal=true
+    },
+    // 选择租户
+    selectUserList(currentRow, oldCurrentRow) {
+      if(currentRow){
+        this.allSelectUser.forEach(item => {
+          if(item.userId === currentRow.userId) {
+            item['_highlight'] = true
+            this.selectUser=item
+            this.addRentForm.userId=item.userId
+          }else{
+            item['_highlight'] = false
+          }
+        })
+      }
+    },
+    // 添加租户确认
+    submitNewRent(name) {
+      this.$refs[name].validate(valid => {
+        if(valid){
+          this.readdRentModal=true
+        } else {
+          this.$Message.error('填写内容不符合规范')
+        }
+      })
+    },
+    // 取消添加租户确认
+    canceladdRent() {
+      this.readdRentModal=false
+      this.$refs['addRentRef'].resetFields()
+    },
+    // 添加租户二次确认
+
+    // 取消添加租户二次确认
+
+
+
+    // 修改租户
+    updateStoreUser(row,index){
 
     },
     // 表格选择
     selectDeleted(selection, row) {
       // 全选
       if (!row && selection && selection.length > 0) {
-        this.selectStoreList.forEach(item => {
+        this.TheselectStoreList.forEach(item => {
           item['_checked'] = true
         })
       } else {
         // 单选
-        this.selectStoreList.forEach(item => {
+        this.TheselectStoreList.forEach(item => {
           if(item.storeId === row.storeId) {
             item['_checked'] = true
           }
@@ -597,12 +713,12 @@ export default {
     cancelselectDeleted(selection, row) {
       // 全不选
       if (!row && selection && selection.length == 0) {
-        this.selectStoreList.forEach(item => {
+        this.TheselectStoreList.forEach(item => {
           item['_checked'] = false
         })
       } else {
         // 单不选
-        this.selectStoreList.forEach(item => {
+        this.TheselectStoreList.forEach(item => {
           if(item.storeId === row.storeId) {
             item['_checked'] = false
           }
@@ -615,7 +731,7 @@ export default {
     },
     // 店铺删除二次确认框
     submitDeleteStore() {
-      let list=this.selectStoreList.filter(item => item['_checked'])
+      let list=this.TheselectStoreList.filter(item => item['_checked'])
       let tempList=[]
       list.forEach(item => {
           tempList.push({
@@ -637,6 +753,7 @@ export default {
         }
       })
     },
+    // 取消店铺删除二次确认框
     cancelDeleteStore() {
       this.deleteStoreModal=false
       this.$Message.info('取消店铺用户')

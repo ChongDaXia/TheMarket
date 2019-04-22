@@ -1,7 +1,7 @@
 <template>
-    <div class="layout" value="name1" @on-click="selectTab">
+    <div class="layout">
         <!-- tabs列表 -->
-        <Tabs class="tabstyle" @on-click="selectTab">
+        <Tabs class="tabstyle" value="name1" @on-click="selectTab">
             <!-- 添加新用户功能 -->
             <TabPane label="添加" name="name1">
                 <!-- 添加新用户 -->
@@ -10,27 +10,15 @@
                         ref="newUserRef" 
                         :model="newUserForm" 
                         :rules="newUserRules" 
-                        :label-width="80"
-                    >
+                        :label-width="80">
                         <FormItem label="用户名" prop="userName">
-                            <Input 
-                                v-model="newUserForm.userName" 
-                                placeholder="请输入用户名"
-                            />
+                            <Input v-model="newUserForm.userName" placeholder="请输入用户名" />
                         </FormItem>
                         <FormItem label="密码" prop="password">
-                            <Input 
-                                type="password" 
-                                v-model="newUserForm.password" 
-                                placeholder="请输入密码"
-                            />
+                            <Input type="password" v-model="newUserForm.password" placeholder="请输入密码" />
                         </FormItem>
                         <FormItem label="确认密码" prop="repassword">
-                            <Input 
-                                type="password" 
-                                v-model="newUserForm.repassword" 
-                                placeholder="请输入确认密码"
-                            />
+                            <Input type="password" v-model="newUserForm.repassword" placeholder="请输入确认密码" />
                         </FormItem>
                         <FormItem label="角色权限" prop="role" style="text-align:left">
                             <RadioGroup v-model="newUserForm.role" style="width:200px">
@@ -39,22 +27,13 @@
                             </RadioGroup>
                         </FormItem>
                         <FormItem label="姓名" prop="name">
-                            <Input 
-                                v-model="newUserForm.name" 
-                                placeholder="请输入真实姓名"
-                            />
+                            <Input v-model="newUserForm.name" placeholder="请输入真实姓名" />
                         </FormItem>
                         <FormItem label="联系电话" prop="mobileNo">
-                            <Input 
-                                v-model="newUserForm.mobileNo" 
-                                placeholder="请输入11位手机号码"
-                            />
+                            <Input v-model="newUserForm.mobileNo" placeholder="请输入11位手机号码" />
                         </FormItem>
                         <FormItem label="身份证号码" prop="idcardNo">
-                            <Input 
-                                v-model="newUserForm.idcardNo" 
-                                placeholder="请输入18位身份证号码"
-                            />
+                            <Input v-model="newUserForm.idcardNo" placeholder="请输入18位身份证号码" />
                         </FormItem>
                         <div class="form-item">
                             <Button class="login-btn" shape="circle" @click="resetAdd('newUserRef')">重置</Button>
@@ -66,8 +45,7 @@
                     v-model="newUserModal" 
                     title="确认提示" 
                     @on-ok="resubmitAddUser" 
-                    @on-cancel="cancelAddUser"
-                >
+                    @on-cancel="cancelAddUser">
                     <p>是否确认保存该用户？</p>
                 </Modal>
             </TabPane>
@@ -80,8 +58,7 @@
                         v-model="selectUserRole" 
                         @on-change="changeSelectUserRole"
                         style="width:200px;margin-right:30px" 
-                        placeholder="请选择角色"
-                    >
+                        placeholder="请选择角色">
                         <Option v-for="(item,index) in selectUserRoleList" :value="item" :key="index">
                             {{item}}
                         </Option>
@@ -90,9 +67,8 @@
                         v-model="selectUserId"
                         @on-change="changeSelectUserId"
                         style="width:200px;margin-right:30px" 
-                        placeholder="请选择姓名"
-                    >
-                        <Option v-for="(item,index) in selectUserIdList" :value="item.userId" :key="index">
+                        placeholder="请选择姓名" >
+                        <Option v-for="(item,index) in TheselectUserList" :value="item.userId" :key="index">
                             {{item.name}}
                         </Option>
                     </Select>
@@ -104,15 +80,19 @@
                         border 
                         stripe 
                         :columns="tableTitle" 
-                        :data="selectUserList"
-                    />
+                        :data="selectUserList" >
+                        <template slot-scope="{row,index}" slot="action">
+                            <Button type="primary" size="small" @click="showUserDetail(row,index)" >用户详情</Button>
+                            <Button type="primary" size="small" @click="updateUserPassword(row,index)" >密码修改</Button>
+                        </template>
+                    </Table>
                 </div>
                 <!-- 信息详情 -->
                 <Modal 
                     v-model="selectUserDetailModal" 
                     :mask-closable="false" 
                     :footer-hide="true"
-                >
+                    @on-cancel="cancelUserDetail" >
                     <p class="modaltitle">
                         <span>基本信息</span>
                     </p>
@@ -120,8 +100,7 @@
                         ref="userDetailRef" 
                         :model="selectUserDetailForm" 
                         :rules="selectUserDetailRule" 
-                        :label-width="80"
-                    >
+                        :label-width="80" >
                         <FormItem label="用户Id" prop="userId">
                             <Input v-model="selectUserDetailForm.userId" disabled></Input>
                         </FormItem>
@@ -152,8 +131,7 @@
                     @on-ok="resubmitNewUserDetail" 
                     @on-cancel="recancelUserDetail"
                     title="确认提示" 
-                    :mask-closable="false" 
-                >
+                    :mask-closable="false" >
                     <p>是否确认修改该用户信息？</p>
                 </Modal>
                 <!-- 修改密码 -->
@@ -161,7 +139,7 @@
                     v-model="changePasswordModal" 
                     :mask-closable="false" 
                     :footer-hide="true"
-                >
+                    @on-cancel="cancelPassword" >
                     <p class="modaltitle">
                         <span>修改密码</span>
                     </p>
@@ -169,8 +147,7 @@
                         ref="passwordRef" 
                         :model="passwordForm" 
                         :rules="passwordRule" 
-                        :label-width="80"
-                    >
+                        :label-width="80" >
                         <FormItem label="旧密码" prop="oldpassword">
                             <Input v-model="passwordForm.oldpassword" disabled></Input>
                         </FormItem>
@@ -192,8 +169,7 @@
                     @on-ok="resubmitPassword" 
                     @on-cancel="recancelPassword"
                     title="确认提示" 
-                    :mask-closable="false" 
-                >
+                    :mask-closable="false" >
                     <p>是否确认修改该用户密码？</p>
                 </Modal>
             </TabPane>
@@ -206,8 +182,7 @@
                         v-model="selectUserRole" 
                         @on-change="changeSelectUserRole"
                         style="width:200px;margin-right:30px" 
-                        placeholder="请选择角色"
-                    >
+                        placeholder="请选择角色" >
                         <Option v-for="(item,index) in selectUserRoleList" :value="item" :key="index">
                             {{item}}
                         </Option>
@@ -216,22 +191,22 @@
                         v-model="selectUserId"
                         @on-change="changeSelectUserId"
                         style="width:200px;margin-right:30px" 
-                        placeholder="请选择姓名"
-                    >
-                        <Option v-for="(item,index) in selectUserIdList" :value="item.userId" :key="index">
+                        placeholder="请选择姓名" >
+                        <Option v-for="(item,index) in TheselectUserList" :value="item.userId" :key="index">
                             {{item.name}}
                         </Option>
                     </Select>
+                    <Button @click="deleteUser">
+                        删除
+                    </Button>
                 </div>
-                <Button @click="deleteUser" style="margin: 10px 50px;">删除</Button>
                 <!-- 删除用户二次确认框 -->
                 <Modal 
                     v-model="deleteUserModal"
                     @on-ok="submitDeleteUser" 
                     @on-cancel="cancelDeleteUser"
                     title="确认提示" 
-                    :mask-closable="false" 
-                >
+                    :mask-closable="false" >
                     <p>是否确认删除所选用户？</p>
                 </Modal>
                 <div class="content">
@@ -244,11 +219,11 @@
                         @on-select="selectDeleted"
                         @on-select-cancel="cancelselectDeleted"
                         @on-select-all="selectDeleted"
-                        @on-select-all-cancel="cancelselectDeleted"
-                    />
+                        @on-select-all-cancel="cancelselectDeleted" />
                 </div>
             </TabPane>
         </Tabs>
+
         <vue-particles 
             color="#7b7d7d" 
             :particleOpacity="0.7" 
@@ -271,7 +246,7 @@
 </template>
 
 <script>
-import {addnewuser,getAllUser, getOnceUser, updateUser,deleteOnceUser} from '@/http/moudules/user'
+import {addnewuser,getAllUser,updateUser,deleteOnceUser} from '@/http/moudules/user'
 import echarts from '../../echarts'
 export default {
   components: {
@@ -301,13 +276,13 @@ export default {
           required: true,
           trigger: 'blur, change',
           pattern: /^[a-zA-Z0-9]{6,12}$/,
-          message: '仅支持6-12位大小写字母或数字'
+          message: '仅支持6-12位大小写字母、数字'
         }],
         repassword: [{
           required: true,
           trigger: 'blur, change',
           pattern: /^[a-zA-Z0-9]{6,12}$/,
-          message: '仅支持6-12位大小写字母或数字'
+          message: '仅支持6-12位大小写字母、数字'
         }],
         role: [{
           required: true,
@@ -341,9 +316,10 @@ export default {
       ],
       // 姓名筛选（用户Id）
       selectUserId: '',
-      selectUserIdList: [],
-      // 所有用户
+      // 变化的所有用户
       selectUserList: [],
+      // 固定的所有用户
+      TheselectUserList: [],
       // 表格表头
       tableTitle: [
         {
@@ -366,34 +342,8 @@ export default {
           key: 'role'
         }, {
           title: '操作',
-          key: 'action',
-          align: 'center',
-          render: (h,params) => {
-            return h('div',[
-              h('Button', {
-                props: {
-                  type: 'primary',
-                  size: 'small'
-                },
-                on: {
-                  click: () => {
-                    this.showUserDetail(params.index)
-                  }
-                }
-              }, '信息修改'),
-              h('Button', {
-                props: {
-                  type: 'primary',
-                  size: 'small'
-                },
-                on: {
-                  click: () => {
-                    this.updateUserPassword(params.index)
-                  }
-                }
-              }, '密码修改')
-            ])           
-          }
+          slot: 'action',
+          align: 'center'
         }
       ],
       // 用户信息详情
@@ -405,8 +355,6 @@ export default {
         mobileNo: '',
         idcardNo: ''
       },
-      // 用户信息详情弹框
-      selectUserDetailModal: false,
       // 用户信息校验
       selectUserDetailRule: {
         userName: [{
@@ -432,15 +380,16 @@ export default {
           message: '请输入18位正确的身份证号码'
         }]
       },
+      // 用户信息详情弹框
+      selectUserDetailModal: false,
       // 用户信息详情修改二次确认框
       reselectUserDetailModal: false,
-      // 修改密码弹窗
-      changePasswordModal: false,
       // 修改密码数据
       passwordForm: {
         oldpassword: '',
         newpassword: '',
-        renewpassword: ''
+        renewpassword: '',
+        userId: ''
       },
       // 修改密码数据校验
       passwordRule: {
@@ -457,9 +406,10 @@ export default {
           message: '仅支持6-12位大小写字母、数字'
         }]
       },
+      // 修改密码弹窗
+      changePasswordModal: false,
       // 修改密码弹窗修改二次确认框
       rechangePasswordModal: false,
-      tempid: '',
       // 删除表头
       deleteTableTitle: [
         {
@@ -498,14 +448,14 @@ export default {
     // tab函数
     selectTab(name){
       if(name === 'name2'){
-        this.getAllUserInfo()
         this.selectUserRole=''
         this.selectUserId=''
+        this.getAllUserInfo()
       }
       if(name === 'name3'){
-        this.getAllUserInfo()
         this.selectUserRole=''
         this.selectUserId=''
+        this.getAllUserInfo()
       }
     },
     // 添加新用户按钮
@@ -522,6 +472,10 @@ export default {
         }
       })
     },
+    // 重置按钮
+    resetAdd(name) {
+      this.$refs[name].resetFields()
+    },
     // 添加新用户二次确认框确认按钮
     resubmitAddUser() {
       addnewuser(this.newUserForm).then(data => {
@@ -535,10 +489,6 @@ export default {
         }
       })
     },
-    // 重置按钮
-    resetAdd(name) {
-      this.$refs[name].resetFields()
-    },
     // 添加新用户二次确认框取消按钮
     cancelAddUser() {
       this.newUserModal=false
@@ -548,11 +498,14 @@ export default {
     getAllUserInfo() {
       getAllUser().then(data => {
         if(data.code == '200'){
-          this.selectUserList = data.users;
-          this.selectUserIdList = data.users;
+          this.TheselectUserList = data.users;
+          this.selectUserList = this.TheselectUserList.map(item => {
+            return {
+              ...item
+            }
+          })
         }
         if(data.code == '500') {
-          this.selectUserList = []
           this.$Message.info('无用户信息')
         }
       })
@@ -560,55 +513,25 @@ export default {
     // 角色筛选
     changeSelectUserRole() {
       if (this.selectUserRole === '所有人') {
-        this.getAllUserInfo()
-      } 
-      if (this.selectUserRole === '管理员'){
-        getAllUser({role: '管理员'}).then(data => {
-          if(data.code == '200'){
-            this.selectUserList = data.users;
-          }
-          if(data.code == '500') {
-            this.selectUserList = []
-            this.$Message.info('无管理员信息')
+        this.selectUserList = this.TheselectUserList.map(item => {
+          return {
+            ...item
           }
         })
-      }
-      if (this.selectUserRole === '用户') {
-        getAllUser({role: '用户'}).then(data => {
-          if(data.code == '200'){
-            this.selectUserList = data.users;
-          }
-          if(data.code == '500') {
-            this.selectUserList = []
-            this.$Message.info('无用户信息')
-          }
-        })
+      } else {
+        let selectList=this.TheselectUserList.filter(item => item.role == this.selectUserRole)
+        this.selectUserList=selectList
       }
     },
     // 姓名筛选
     changeSelectUserId() {
-      getAllUser({userId: this.selectUserId}).then(data => {
-        if(data.code == '200'){
-          this.selectUserList = data.users;
-        }
-        if(data.code == '500') {
-          this.selectUserList = []
-          this.$Message.info('无该用户信息')
-        }
-      })
+      let selectList=this.TheselectUserList.filter(item => item.userId == this.selectUserId)
+      this.selectUserList=selectList
     },
     // 用户信息详情
-    showUserDetail(index) {
-      getOnceUser({userId: this.selectUserList[index].userId}).then(data => {
-        if(data.code == '200'){
-          this.selectUserDetailForm=data.users
-          this.selectUserDetailModal=true
-        }
-        if(data.code == '500') {
-          //获取信息失败
-          this.$Message.error('用户信息详情获取失败')
-        }
-      })
+    showUserDetail(row,index) {
+      this.selectUserDetailForm=JSON.parse(JSON.stringify(row))
+      this.selectUserDetailModal=true
     },
     // 用户信息详情修改
     submitNewUserDetail(name) {
@@ -620,9 +543,10 @@ export default {
         }
       })
     },
+    // 用户信息详情取消
     cancelUserDetail() {
-        this.$refs['userDetailRef'].resetFields()
         this.selectUserDetailModal=false
+        this.$refs['userDetailRef'].resetFields()
     },
     // 用户信息详情修改二次确认
     resubmitNewUserDetail() {
@@ -638,24 +562,18 @@ export default {
         }
       })
     },
+    // 取消用户信息详情修改二次确认
     recancelUserDetail() {
       this.reselectUserDetailModal=false
       this.$Message.info('取消修改基本信息')
     },
     // 修改密码
-    updateUserPassword(index) {
-      getOnceUser({userId: this.selectUserList[index].userId}).then(data => {
-        if(data.code == '200'){
-          this.passwordForm.oldpassword=data.users.password
-          this.tempid=data.users.userId
-          this.changePasswordModal=true
-        }
-        if(data.code == '500') {
-          //获取信息失败
-          this.$Message.error('旧密码获取失败')
-        }
-      })
+    updateUserPassword(row,index) {
+      this.passwordForm.oldpassword=row.password
+      this.passwordForm.userId=row.userId
+      this.changePasswordModal=true
     },
+    // 修改密码确认
     submitPassword() {
       this.$refs[name].validate(valid => {
         if(valid){
@@ -669,6 +587,7 @@ export default {
         }
       })
     },
+    // 取消修改密码确认
     cancelPassword() {
       this.changePasswordModal=false
       this.$refs['passwordRef'].resetFields()
@@ -677,19 +596,20 @@ export default {
     resubmitPassword() {
       updateUser({
         password: this.passwordForm.newpassword,
-        userId: this.tempid
+        userId: this.passwordForm.userId
       }).then(data => {
         if(data.code == '200'){
-          this.$refs['passwordRef'].resetFields()
           this.rechangePasswordModal=false
           this.$Message.info('密码修改成功')
           this.changePasswordModal=false
+          this.getAllUserInfo()
         }
         if(data.code == '500') {
           this.$Message.error('密码修改失败')
         }
       })
     },
+    // 取消修改密码二次确认框
     recancelPassword() {
       this.rechangePasswordModal=false
       this.$Message.info('取消修改密码')
@@ -754,6 +674,7 @@ export default {
         }
       })
     },
+    // 取消用户删除二次确认框
     cancelDeleteUser() {
         this.deleteUserModal=false
         this.$Message.info('取消删除用户')

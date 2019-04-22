@@ -75,3 +75,25 @@ export const updateStore = params => {
         }
     })
 }
+
+// 更保存新租赁表
+export const saveNewRent = params => {
+    return axios ({
+        url: '/store/home/addnewrent',
+        method: 'post',
+        data: {
+            ...params
+        }
+    })
+}
+
+// 更新租赁表
+export const updateRent = params => {
+    return axios ({
+        url: '/store/home/updateRent',
+        method: 'post',
+        data: {
+            ...params
+        }
+    })
+}

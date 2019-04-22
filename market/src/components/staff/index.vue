@@ -9,8 +9,7 @@
                         ref="newStaffRef" 
                         :model="newStaffForm" 
                         :rules="newStaffRules" 
-                        :label-width="80"
-                    >
+                        :label-width="80">
                         <FormItem label="姓名" prop="name">
                             <Input v-model="newStaffForm.name" placeholder="请输入姓名" />
                         </FormItem>
@@ -37,16 +36,15 @@
                             <Button class="login-btn" shape="circle" @click="resetAdd('newStaffRef')">重置</Button>
                             <Button class="login-btn" shape="circle" @click="submitAddStaff('newStaffRef')">添加</Button>
                         </div>
-                        <Modal 
-                            v-model="addStaffModal" 
-                            title="确认提示" 
-                            @on-ok="resubmitAddStaff" 
-                            @on-cancel="cancelAddStaff"
-                        >
-                            <p>是否确认保存该员工？</p>
-                        </Modal>
                     </Form>
-                    </div>
+                </div>
+                <Modal 
+                    v-model="addStaffModal" 
+                    title="确认提示" 
+                    @on-ok="resubmitAddStaff" 
+                    @on-cancel="cancelAddStaff">
+                    <p>是否确认保存该员工？</p>
+                </Modal>
             </TabPane>
 
             <!-- 员工列表 -->
@@ -57,8 +55,7 @@
                         v-model="selectStaffId"
                         @on-change="changeSelectStaffId"
                         style="width:200px;margin-right:30px" 
-                        placeholder="请选择姓名"
-                    >
+                        placeholder="请选择姓名" >
                         <Option v-for="(item,index) in TheSelectStaffList" :value="item.staffId" :key="index">
                             {{item.name}}
                         </Option>
@@ -71,8 +68,7 @@
                         border 
                         stripe 
                         :columns="tableTitle" 
-                        :data="selectStaffList"
-                    >
+                        :data="selectStaffList" >
                         <template slot-scope="{row,index}" slot="action">
                           <Button type="primary" size="small" @click="staffDetail(row,index)" >员工详情</Button>
                           <Button type="primary" size="small" @click="wagesDetail(row,index)" >薪资详情</Button>
@@ -85,8 +81,7 @@
                     :mask-closable="false"  
                     :footer-hide="true"
                     @on-cancel="cancelUpdateStaff"
-                    width="400"
-                >
+                    width="400">
                     <p class="modaltitle">
                         <span>员工信息</span>
                     </p>
@@ -94,8 +89,7 @@
                         ref="staffDetailRef" 
                         :model="staffDetailForm" 
                         :rules="staffDetailRules" 
-                        :label-width="80"
-                    >
+                        :label-width="80" >
                         <FormItem label="姓名" prop="name">
                             <Input v-model="staffDetailForm.name" placeholder="请输入姓名" />
                         </FormItem>
@@ -123,8 +117,7 @@
                     :mask-closable="false" 
                     title="确认提示" 
                     @on-ok="resubmitUpdateStaff" 
-                    @on-cancel="recancelUpdateStaff"
-                >
+                    @on-cancel="recancelUpdateStaff" >
                     <p>是否确认修改该员工信息？</p>
                 </Modal>
 
@@ -134,8 +127,7 @@
                     :mask-closable="false"  
                     :footer-hide="true"
                     @on-cancel="cancelUpdateStaffWages"
-                    width="400"
-                >
+                    width="400" >
                     <p class="modaltitle">
                         <span>员工薪资信息</span>
                     </p>
@@ -143,8 +135,7 @@
                         ref="staffWagesRef" 
                         :model="staffWagesForm" 
                         :rules="staffWagesRules" 
-                        :label-width="80"
-                    >
+                        :label-width="80" >
                         <FormItem label="工资" prop="wages">
                             <Input v-model="staffWagesForm.wages" style="width:100px;margin-right:10px"/>
                             <span>元</span>
@@ -164,8 +155,7 @@
                     :mask-closable="false" 
                     title="确认提示" 
                     @on-ok="resubmitUpdateStaffWages" 
-                    @on-cancel="recancelUpdateStaffWages"
-                >
+                    @on-cancel="recancelUpdateStaffWages" >
                     <p>是否确认修改该员工薪资信息？</p>
                 </Modal>
             </TabPane>

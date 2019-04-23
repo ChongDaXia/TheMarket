@@ -65,6 +65,15 @@ export const deleteOneStore = params => {
     })
 }
 
+// 删除租赁表
+export const deleteRent = params => {
+    return axios ({
+        url: '/store/home/deleteRent',
+        method: 'get',
+        params: params
+    })
+}
+
 // 更新门店信息
 export const updateStore = params => {
     return axios ({

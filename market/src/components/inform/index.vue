@@ -9,8 +9,7 @@
                       ref="newInformRef" 
                       :model="newInformForm" 
                       :rules="newInformRules" 
-                      :label-width="80" 
-                  >
+                      :label-width="80" >
                       <FormItem label="标题" prop="title">
                           <Input v-model="newInformForm.title" placeholder="请输入标题"></Input>
                       </FormItem>
@@ -25,8 +24,7 @@
                           :mask-closable="false"  
                           @on-ok="submitSelectAddressee"  
                           @on-cancel="cancelSelectAddressee" 
-                          width="400"
-                      >
+                          width="400" >
                           <p class="modaltitle">
                               <span>基本信息</span>
                           </p>
@@ -48,8 +46,7 @@
                               :key="index" 
                               :name="index" 
                               closable 
-                              @on-close="addresseeClose"
-                          >
+                              @on-close="addresseeClose" >
                               {{item.name}}
                           </Tag>
                       </div>
@@ -82,8 +79,7 @@
                         placeholder="选择日期" 
                         style="width: 200px" 
                         split-panels 
-                        :editable="false"
-                    />
+                        :editable="false"/>
                 </div>
                 <!-- 数据列表 -->
                 <div class="content">
@@ -92,8 +88,7 @@
                         <Card v-for="(item,index) in informlist" 
                             :value="item.informId" 
                             :key="index" 
-                            v-if="theAdminRole"
-                        >
+                            v-if="theAdminRole" >
                             <div @click="adminGetInformDetail(item)">
                                 <div style="float: right">
                                     {{item.createTime}}
@@ -108,8 +103,7 @@
                         <Card v-for="(item,index) in informlist" 
                             :value="item.informId" 
                             :key="index" 
-                            v-if="theUserRole"
-                        >
+                            v-if="theUserRole" >
                             <div @click="userGetInformDetail(item)">
                                 <div style="float: right">
                                     {{item.createTime}}
@@ -126,8 +120,7 @@
                 <Modal v-model="informDetailModal" 
                     :mask-closable="false" 
                     :footer-hide="true"
-                    @on-cancel="adminCancelInformDetail"
-                >
+                    @on-cancel="adminCancelInformDetail" >
                     <p class="modaltitle">
                         <span>通知信息详情</span>
                     </p>
@@ -141,8 +134,7 @@
                     v-model="otherInformDetailModal" 
                     :mask-closable="false" 
                     :footer-hide="true"
-                    @on-cancel="userCancelInformDetail"
-                >
+                    @on-cancel="userCancelInformDetail" >
                     <p class="modaltitle">
                         <span>通知信息详情</span>
                     </p>
@@ -180,9 +172,6 @@ import moment from 'moment'
 import {getAllUser} from '@/http/moudules/user'
 import {addnewinform,getalljoborder,getjoborderadmin} from '@/http/moudules/inform'
 export default {
-  mounted() {
-    this.getPublicRole()
-  },
   data() {
     return {
       // 发送通知信息

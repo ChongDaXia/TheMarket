@@ -17,7 +17,7 @@
                         <FormItem label="租赁状态" prop="rentStatus" style="text-align:left">
                             <RadioGroup v-model="newStoreForm.rentStatus">
                                 <Radio label='0'><span>未出租</span></Radio>
-                                <Radio label='1'><span>已出租</span></Radio>
+                                <Radio label='1' disabled><span>已出租</span></Radio>
                             </RadioGroup>
                         </FormItem>
                         <FormItem label="面积" prop="area" style="text-align:left">
@@ -159,11 +159,9 @@
                         <div>租户：{{selectUser.name}}</div>
                         <div class="form-item">
                             <Button class="login-btn" shape="circle" @click="canceladdRent">取消</Button>
-                            <Button class="login-btn" shape="circle" @click="submitNewRent('addRentRef')">添加</Button>
+                            <Button class="login-btn" shape="circle" @click="submitNewRent">添加</Button>
                         </div>
-                    </Form>
-                </Modal>
-                <!-- 租户选择列表 -->
+                          <!-- 租户选择列表 -->
                 <Modal 
                     v-model="selectUserModal" 
                     :mask-closable="false"  
@@ -180,6 +178,9 @@
                         :highlight-row=true
                         @on-current-change="selectUserList" />
                 </Modal>
+                    </Form>
+                </Modal>
+              
                 <!-- 添加租户二次确认框 -->
                 <Modal 
                     v-model="readdRentModal" 
@@ -193,24 +194,26 @@
                 <Modal 
                     v-model="updateRentModal" 
                     :mask-closable="false" 
-                    :footer-hide="true" >
+                    :footer-hide="true" 
+                    @on-cancel="cancelupdateRent" >
                     <p class="modaltitle">
                         <span>租赁信息</span>
                     </p>
                     <Form 
-                        ref="addRentRef" 
-                        :model="addRentForm" 
-                        :rules="addRentRule" 
+                        ref="updateRentRef" 
+                        :model="updateRentForm" 
+                        :rules="updateRentRule" 
                         :label-width="80" >
                         <FormItem label="租金" prop="rent">
-                            <Input v-model="addRentForm.rent" disabled />
+                            <Input v-model="updateRentForm.rent" />
                         </FormItem>
                         <FormItem label="租赁人" prop="userId" style="text-align:left">
                             <Button class="login-btn" shape="circle" @click="selectUpdateUser">选择</Button>
                         </FormItem>
+                        <div>租户：{{selectUser.name}}</div>
                         <div class="form-item">
                             <Button class="login-btn" shape="circle" @click="cancelupdateRent">取消</Button>
-                            <Button class="login-btn" shape="circle" @click="submitupdateRent('addRentRef')">修改</Button>
+                            <Button class="login-btn" shape="circle" @click="submitupdateRent()">修改</Button>
                         </div>
                     </Form>
                 </Modal>
@@ -242,14 +245,14 @@
                         v-model="selectStoreId"
                         @on-change="changeSelectStoreId"
                         style="width:200px;margin-right:30px" 
-                        placeholder="请选择店铺编号">
+                        placeholder="请选择店铺编号" >
                         <Option v-for="(item,index) in TheselectStoreList" :value="item.storeId" :key="index">
                             {{item.storeNo}}
                         </Option>
                     </Select>
+                    <Button @click="deleteStore">删除</Button>
                 </div>
-                <Button @click="deleteStore" style="margin: 10px 50px;">删除</Button>
-                <!-- 删除用户二次确认框 -->
+                <!-- 删除店铺二次确认框 -->
                 <Modal 
                     v-model="deleteStoreModal"
                     @on-ok="submitDeleteStore" 
@@ -268,8 +271,21 @@
                         @on-select="selectDeleted"
                         @on-select-cancel="cancelselectDeleted"
                         @on-select-all="selectDeleted"
-                        @on-select-all-cancel="cancelselectDeleted"/>
+                        @on-select-all-cancel="cancelselectDeleted" >
+                        <template slot-scope="{row,index}" slot="action">
+                            <Button type="primary" size="small" @click="remoteStoreUser(row,index)" v-if="row.rentStatus == '1'">移除租户</Button>
+                        </template>
+                    </Table>
                 </div>
+                <!-- 删除用户二次确认框 -->
+                <Modal 
+                    v-model="removeUserModal"
+                    @on-ok="submitRemoveUser" 
+                    @on-cancel="cancelRemoveUser"
+                    title="确认提示" 
+                    :mask-closable="false" >
+                    <p>是否确认移除该店铺租户？</p>
+                </Modal>
             </TabPane>
         </Tabs>
 
@@ -296,7 +312,7 @@
 
 <script>
 import {getAllUser} from '@/http/moudules/user'
-import {addnewstore,getStoreRent,deleteOneStore,updateStore,saveNewRent,updateRent} from '@/http/moudules/store'
+import {addnewstore,getStoreRent,deleteOneStore,updateStore,saveNewRent,updateRent,deleteRent} from '@/http/moudules/store'
 export default {
   data() {
     return {
@@ -408,9 +424,6 @@ export default {
       selectStoreDetailModal: false,
       // 门店信息二次确认弹框
       reselectStoreDetailModal: false,
-
-
-
       // 新增租户数据
       addRentForm: {
         storeId: '',
@@ -421,7 +434,6 @@ export default {
       addRentRule: {
         userId:[{
           required: true,
-          trigger: 'blur, change',
           message: '请选择租户'
         }],
         rent: [{
@@ -435,8 +447,32 @@ export default {
       addRentModal:false,
       // 新增租户二次确认框
       readdRentModal: false,
+      // 修改租户数据
+      updateRentForm: {
+        rentId: '',
+        storeId: '',
+        userId: '',
+        rent: ''
+      },
+      // 修改租户数据校验
+      updateRentRule: {
+        userId:[{
+          required: true,
+          message: '请选择租户'
+        }],
+        rent: [{
+          required: true,
+          trigger: 'blur, change',
+          pattern:/^[0-9]\d*|[0-9]\d*\.\d*$/,
+          message: '格式错误'
+        }]
+      },
+      // 修改租户弹框
+      updateRentModal: false,
       // 租户选择弹框
       selectUserModal: false,
+      // 租户选择二次确认框
+      reupdateRentModal: false,
       // 租户选择表格表头
       userTabletitle: [
         {
@@ -452,9 +488,15 @@ export default {
       allSelectUser: [],
       // 选择租户
       selectUser: '',
-
-
-      
+      // 移除租户弹框
+      removeUserModal: false,
+      // 修改租户数据
+      removeRentForm: {
+        rentId: '',
+        storeId: '',
+        userId: '',
+        rent: ''
+      },
       // 删除表头
       deleteTableTitle: [
         {
@@ -479,6 +521,11 @@ export default {
         }, {
           title: '租金（元/月）',
           key: 'rent'
+        }, {
+          title: '操作',
+          slot: 'action',
+          width: 80,
+          align: 'center'
         }
       ],
       // 删除店铺二次确认框
@@ -545,6 +592,8 @@ export default {
             StoreRent.forEach(item => {
               if(i.storeId == item.storeId){
                 i['rent']=item.rent
+                i['rentId']=item.rentId
+                i['userId']=item.userId
               }
             })
           })
@@ -637,7 +686,23 @@ export default {
     // 添加租户
     addStoreUser(row,index) {
       this.addRentModal=true
+      this.$refs['addRentRef'].resetFields()
+      this.selectUser=''
+      this.allSelectUser.forEach(item => item['_highlight'] = false)
       this.addRentForm.storeId=row.storeId
+    },
+    // 修改租户
+    updateStoreUser(row,index){
+      this.updateRentModal=true
+      this.updateRentForm=JSON.parse(JSON.stringify(row))
+      this.allSelectUser.forEach(item => {
+        if(item.userId === row.userId) {
+          item['_highlight'] = true
+          this.selectUser=item
+        }else{
+          item['_highlight'] = false
+        }
+      })
     },
     // 获取所有租户
     getAllUserInfo() {
@@ -654,6 +719,10 @@ export default {
     selectAddUser() {
       this.selectUserModal=true
     },
+    // 更新租户按钮
+    selectUpdateUser() {
+      this.selectUserModal=true
+    },
     // 选择租户
     selectUserList(currentRow, oldCurrentRow) {
       if(currentRow){
@@ -661,7 +730,6 @@ export default {
           if(item.userId === currentRow.userId) {
             item['_highlight'] = true
             this.selectUser=item
-            this.addRentForm.userId=item.userId
           }else{
             item['_highlight'] = false
           }
@@ -669,29 +737,78 @@ export default {
       }
     },
     // 添加租户确认
-    submitNewRent(name) {
-      this.$refs[name].validate(valid => {
+    submitNewRent() {
+      this.addRentForm.userId=this.selectUser.userId
+      this.$refs['addRentRef'].validate(valid => {
         if(valid){
           this.readdRentModal=true
         } else {
           this.$Message.error('填写内容不符合规范')
         }
       })
+      console.log("信息：",this.addRentForm)
     },
     // 取消添加租户确认
     canceladdRent() {
-      this.readdRentModal=false
+      this.addRentModal=false
       this.$refs['addRentRef'].resetFields()
+      this.selectUser=''
     },
     // 添加租户二次确认
-
+    resubmitNewRent() {
+      saveNewRent(this.addRentForm).then(data => {
+        if(data.code == '200'){
+          this.readdRentModal=false
+          this.$Message.info('该租户信息添加成功')
+          this.addRentModal=false
+          this.getAllStoreInfo()
+        }
+        if(data.code == '500'){
+          this.$Message.error('租户信息添加失败')
+        }
+      })
+    },
     // 取消添加租户二次确认
-
-
-
-    // 修改租户
-    updateStoreUser(row,index){
-
+    recanceladdRent() {
+      this.readdRentModal=false
+      this.$Message.info('取消租户信息添加')
+    },
+    // 修改租户确认
+    submitupdateRent() {
+      this.updateRentForm.userId=this.selectUser.userId
+      this.$refs['updateRentRef'].validate(valid => {
+        if(valid){
+          this.reupdateRentModal=true
+        } else {
+          this.$Message.error('填写内容不符合规范')
+        }
+      })
+      console.log("信息：",this.updateRentForm)
+    },
+    // 取消修改租户确认
+    cancelupdateRent() {
+      this.updateRentModal=false
+      this.$refs['updateRentRef'].resetFields()
+      this.selectUser=''
+    },
+    // 修改租户二次确认
+    resubmitupdateRent() {
+      updateRent(this.updateRentForm).then(data => {
+        if(data.code == '200'){
+          this.reupdateRentModal=false
+          this.$Message.info('该租户信息修改成功')
+          this.updateRentModal=false
+          this.getAllStoreInfo()
+        }
+        if(data.code == '500'){
+          this.$Message.error('租户信息修改失败')
+        }
+      })
+    },
+    // 取消修改租户二次确认
+    recancelupdateRent() {
+      this.reupdateRentModal=false
+      this.$Message.info('取消租户信息添加')
     },
     // 表格选择
     selectDeleted(selection, row) {
@@ -745,9 +862,6 @@ export default {
           this.$Message.info('店铺删除成功')
           this.getAllStoreInfo()
         }
-        if(data.code == '300') {
-          this.$Message.error('部分店铺删除失败')
-        }
         if(data.code == '500') {
           this.$Message.info('无删除店铺')
         }
@@ -756,7 +870,30 @@ export default {
     // 取消店铺删除二次确认框
     cancelDeleteStore() {
       this.deleteStoreModal=false
-      this.$Message.info('取消店铺用户')
+      this.$Message.info('取消删除店铺及租户信息')
+    },
+    // 移除租户
+    remoteStoreUser(row,index) {
+      this.removeUserModal=true
+      this.removeRentForm=JSON.parse(JSON.stringify(row))
+    },
+    // 移除租户二次确认
+    submitRemoveUser() {
+      deleteRent(this.removeRentForm).then(data => {
+        if(data.code == '200'){
+          this.removeUserModal=false
+          this.$Message.info('租户信息移除成功')
+          this.getAllStoreInfo()
+        }
+        if(data.code == "500") {
+          this.$Message.error('租户信息移除失败')
+        }
+      })
+    },
+    // 取消移除租户二次确认
+    cancelRemoveUser() {
+      this.removeUserModal=false
+      this.$Message.info('取消移除该店铺租户信息')
     }
   }
 }

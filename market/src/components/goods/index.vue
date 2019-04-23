@@ -6,7 +6,25 @@
                     <Button @click="btnSelectGoods">选择商品</Button>
                     <Button @click="btnAddGoods">添加商品</Button>
                     <Button @click="btnSelectStaff">请选择采购员身份</Button>
+                    <Button @click="btnAddPurchase">添加采购单</Button>
                 </div>
+                <!-- 选择商品 -->
+                <Modal 
+                    v-model="selectItemModal" 
+                    :mask-closable="false"  
+                    :footer-hide="true"
+                    width="400" >
+                    <p class="modaltitle">
+                        <span>选择商品</span>
+                    </p>
+                    <Table 
+                        ref="goodsTableRef" 
+                        height="300" border 
+                        :columns="goodsTabletitle" 
+                        :data="allGoodsList" 
+                        :highlight-row=true
+                        @on-current-change="selectGoodsList" />
+                </Modal>
                 <!-- 添加商品 -->
                 <Modal 
                     v-model="addNewItemModal" 
@@ -64,13 +82,21 @@
                         :columns="newTableTitle" 
                         :data="newGoodsForm" >
                         <template slot-scope="{row}" slot="name">
-                            <Input v-model="row.name" />
+                            <Input v-model="row.name" disabled/>
                         </template>
                         <template slot-scope="{row}" slot="amount">
-                            <InputNumber v-model="row.amount" :min="1" />
+                            <InputNumber v-model="row.amount" :min="1" v-if="row.unchange"/>
+                            <InputNumber v-model="row.amount" :min="1" disabled v-if="!row.unchange"/>
                         </template>
-                        <template slot-scope="{row}" slot="price">
-                            <Input v-model="row.price" prefix="logo-usd" style="width:100px;margin-right:10px" />
+                        <template slot-scope="{row, index}" slot="price">
+                            <Input v-model="newGoodsForm[index].price" 
+                                prefix="logo-usd" 
+                                style="width:100px;margin-right:10px" 
+                                v-if="row.unchange"/>
+                            <Input v-model="newGoodsForm[index].price" 
+                                prefix="logo-usd" 
+                                style="width:100px;margin-right:10px" 
+                                disabled v-if="!row.unchange"/>
                             <span>元</span>
                         </template>
                         <template slot-scope="{row,index}" slot="action">
@@ -78,6 +104,14 @@
                         </template>
                     </Table>
                 </div>
+                <!-- 采购单添加表 -->
+                <Modal 
+                    v-model="newPurchaseModal" 
+                    title="确认提示" 
+                    @on-ok="resubmitAddPurchase" 
+                    @on-cancel="cancelAddPurchase">
+                    <p>是否确认保存该采购单？</p>
+                </Modal>
             </TabPane>
             
             <!-- 列表 -->
@@ -357,12 +391,27 @@ export default {
           message: '格式错误'
         }]
       },
-      // 采购单中商品列表
-      newGoodsForm: [],
-      
-      // 选取商品
-      selectGoods: [],
-      // 添加商品表格表头
+      // 选择商品弹框
+      selectItemModal: false,
+      // 选择商品表格表头
+      goodsTabletitle: [
+        {
+          type: 'index',
+          width: 60,
+          align: 'center'
+        },{
+          title: '商品名称',
+          key: 'name'
+        }
+      ],
+      // （固定）选择商品表格数据
+      allGoodsList: [],
+      // 选择的商品
+      selectGoods: '',
+
+
+
+      // 商品表格表头
       newTableTitle: [
         {
           type: 'index',
@@ -384,12 +433,15 @@ export default {
           align: 'center'
         }
       ],
+      // 商品表格数据列表
+      newGoodsForm: [],
+      // 添加采购单弹框
+      newPurchaseModal: false,
 
       // 列表界面
       // 商品名称筛选（goodsId）
       selectGoodsId: '',
-      // 商品名称筛选所有列表
-      selectGoodsIdList: [],
+      
 
 
       // 图表显示数据
@@ -487,12 +539,11 @@ export default {
         this.getAllsupplierlist()
       }
     },
-    // 获取所有商品
+    // 获取所有商品\采购员\报表
     getAllgoods() {
       selectGoods({userId: this.$store.state.userId}).then(res => {
         if(res.code == '200'){
-          this.selectGoods=res.allgoods
-          this.selectGoodsIdList=res.allgoods
+          this.allGoodsList=res.allgoods
           this.allSelectStaff=res.allstaff
           let StaffName=res.allstaffname
           this.allSelectStaff.forEach((i, index) => {
@@ -530,10 +581,7 @@ export default {
         }
       })
     },
-    // 选取商品
-    btnSelectGoods() {
-      
-    },
+    
     // 添加商品
     btnAddGoods() {
       this.newItemForm={
@@ -545,14 +593,18 @@ export default {
     },
     // 确认添加商品
     submitNewItem(name) {
-      this.$refs[name].validate(valid => {
-        if(valid){
-          this.newGoodsForm.push(this.newItemForm)
-          this.addNewItemModal=false
-        } else {
-          this.$Message.error('填写内容不符合规范')
-        }
-      })
+      if(this.newItemForm.price == 0){
+        this.$Message.error('请输入采购单价')
+      }else{
+        this.$refs[name].validate(valid => {
+          if(valid){
+            this.newGoodsForm.push(this.newItemForm)
+            this.addNewItemModal=false
+          } else {
+            this.$Message.error('填写内容不符合规范')
+          }
+        })
+      }
     },
     // 取消添加商品
     cancelNewItem() {
@@ -571,19 +623,65 @@ export default {
       this.selectStaffModal=true
     },
     // 选择采购员
-    selectStaffList(currentRow, oldCurrentRow){
+    selectStaffList(currentRow, oldCurrentRow) {
       if(currentRow){
         this.allSelectStaff.forEach(item => {
           if(item.staffId === currentRow.staffId) {
             item['_highlight'] = true
             this.selectStaff=item
+            this.selectStaffModal=false
           }else{
             item['_highlight'] = false
           }
         })
       }
     },
+    // 选取商品按钮
+    btnSelectGoods() {
+      this.selectItemModal=true
+    },
+    // 选择商品
+    selectGoodsList(currentRow, oldCurrentRow) {
+      if(currentRow){
+        this.allGoodsList.forEach(item => {
+          if(item.goodsId === currentRow.goodsId) {
+            item['_highlight'] = true
+            this.selectItemModal=false
+            this.selectGoods=item
+            this.selectGoods.amount=1
+            this.selectGoods.price=0
+            this.selectGoods['unchange']=true
+            this.newGoodsForm.push(this.selectGoods)
+          }else{
+            item['_highlight'] = false
+          }
+        })
+      }
+    },
+    // 添加采购单
+    btnAddPurchase() {
+      var reg=new RegExp(/^[0-9]\d*|[0-9]\d*\.\d*$/)
+      let ischecked=true
+      for (const key in this.newGoodsForm) {
+        const item = this.newGoodsForm[key];
+        if((item.price === 0) || (!reg.test(item.price))) {
+          this.$Message.error('请输入正确的单价')
+          ischecked=false
+          return
+        }
+      }
+      if(ischecked) {
+        this.newPurchaseModal=true
+      }
+    },
+    // 添加采购单确认
+    resubmitAddPurchase(){
 
+    },
+    // 取消添加采购单确认
+    cancelAddPurchase() {
+
+    },
     
 
     // 获取所有供应商数据

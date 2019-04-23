@@ -156,6 +156,7 @@ export default {
   z-index: 10;
   left: 0;
   top: 0;
+  /* background-image: url('../assets/images/bg.jpg'); */
   background: -webkit-linear-gradient(left, #3cbac8 , #93edd4);
   box-sizing: border-box;
   padding: 50px 60px;

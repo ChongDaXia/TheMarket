@@ -9,8 +9,7 @@
                         ref="newMemberRef" 
                         :model="newMemberForm" 
                         :rules="newMemberRules" 
-                        :label-width="80"
-                    >
+                        :label-width="80" >
                         <FormItem label="姓名" prop="name">
                             <Input v-model="newMemberForm.name" placeholder="仅支持2-20位大小写字母或数字、中文"></Input>
                         </FormItem>
@@ -35,8 +34,7 @@
                             v-model="addMemberModal" 
                             title="确认提示" 
                             @on-ok="resubmitAddMember" 
-                            @on-cancel="cancelAddMember"
-                        >
+                            @on-cancel="cancelAddMember" >
                             <p>是否确认保存该会员？</p>
                         </Modal>
                     </Form>
@@ -51,8 +49,7 @@
                         v-model="selectMemberId"
                         @on-change="changeSelectMemberId"
                         style="width:200px;margin-right:30px" 
-                        placeholder="请选择姓名"
-                    >
+                        placeholder="请选择姓名" >
                         <Option v-for="(item,index) in TheSelectMemberList" :value="item.memberId" :key="index">
                             {{item.name}}
                         </Option>
@@ -65,8 +62,7 @@
                         border 
                         stripe 
                         :columns="tableTitle" 
-                        :data="selectMemberList"
-                    >
+                        :data="selectMemberList" >
                         <template slot-scope="{row,index}" slot="action">
                           <Button type="primary" size="small" @click="memberDetail(row,index)" >会员详情</Button>
                         </template>
@@ -78,8 +74,7 @@
                     :mask-closable="false"  
                     :footer-hide="true"
                     @on-cancel="cancelUpdateMember"
-                    width="400"
-                >
+                    width="400" >
                     <p class="modaltitle">
                         <span>会员信息</span>
                     </p>
@@ -87,8 +82,7 @@
                         ref="memberDetailRef" 
                         :model="memberDetailForm" 
                         :rules="memberDetailRules" 
-                        :label-width="80"
-                    >
+                        :label-width="80" >
                         <FormItem label="姓名" prop="name">
                             <Input v-model="memberDetailForm.name" placeholder="仅支持2-20位大小写字母或数字、中文"></Input>
                         </FormItem>
@@ -117,8 +111,7 @@
                     :mask-closable="false" 
                     title="确认提示" 
                     @on-ok="resubmitUpdateMember" 
-                    @on-cancel="recancelUpdateMember"
-                >
+                    @on-cancel="recancelUpdateMember" >
                     <p>是否确认修改该会员信息？</p>
                 </Modal>
             </TabPane>

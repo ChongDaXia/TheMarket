@@ -90,3 +90,23 @@ export const deleteSupplier = params => {
         params: params
     })
 }
+
+// 保存采购单
+export const addnewpurchase = params => {
+    return axios ({
+        url: '/goods/home/addnewpurchase',
+        method: 'post',
+        data: {
+            ...params
+        }
+    })
+}
+
+//获取采购单
+export const getAllPurchase = params => {
+    return axios ({
+        url: '/goods/home/getAllPurchase',
+        method: 'get',
+        params: params
+    })
+}

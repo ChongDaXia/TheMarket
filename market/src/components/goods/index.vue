@@ -6,6 +6,7 @@
                     <Button @click="btnSelectGoods">选择商品</Button>
                     <Button @click="btnAddGoods">添加商品</Button>
                     <Button @click="btnSelectStaff">请选择采购员身份</Button>
+                    <Button @click="btnSelectSupplier">请选择供应商</Button>
                     <Button @click="btnAddPurchase">添加采购单</Button>
                 </div>
                 <!-- 选择商品 -->
@@ -69,9 +70,26 @@
                         ref="staffTableRef" 
                         height="300" border 
                         :columns="staffTabletitle" 
-                        :data="allSelectStaff" 
+                        :data="allSelectOffice" 
                         :highlight-row=true
                         @on-current-change="selectStaffList" />
+                </Modal>
+                <!-- 供应商选择列表 -->
+                <Modal 
+                    v-model="selectSupplierModal" 
+                    :mask-closable="false"  
+                    :footer-hide="true"
+                    width="400" >
+                    <p class="modaltitle">
+                        <span>供应商</span>
+                    </p>
+                    <Table 
+                        ref="staffTableRef" 
+                        height="300" border 
+                        :columns="supplierTabletitle" 
+                        :data="supplierList" 
+                        :highlight-row=true
+                        @on-current-change="selectSupplierList" />
                 </Modal>
                 <!-- 数据列表 -->
                 <div class="content">
@@ -84,9 +102,9 @@
                         <template slot-scope="{row}" slot="name">
                             <Input v-model="row.name" disabled/>
                         </template>
-                        <template slot-scope="{row}" slot="amount">
-                            <InputNumber v-model="row.amount" :min="1" v-if="row.unchange"/>
-                            <InputNumber v-model="row.amount" :min="1" disabled v-if="!row.unchange"/>
+                        <template slot-scope="{row,index}" slot="amount">
+                            <InputNumber v-model="newGoodsForm[index].amount" :min="1" v-if="row.unchange"/>
+                            <InputNumber v-model="newGoodsForm[index].amount" :min="1" disabled v-if="!row.unchange"/>
                         </template>
                         <template slot-scope="{row, index}" slot="price">
                             <Input v-model="newGoodsForm[index].price" 
@@ -100,7 +118,7 @@
                             <span>元</span>
                         </template>
                         <template slot-scope="{row,index}" slot="action">
-                            <Button type="primary" @click="removeGoodsItem(index)" >删除</Button>
+                            <Button type="primary" @click="removeGoodsItem(row,index)" >删除</Button>
                         </template>
                     </Table>
                 </div>
@@ -118,35 +136,57 @@
             <TabPane label="列表" name="name2">
                 <Row>
                     <!-- 商品列表 -->
-                    <Col span="12">
+                    <Col span="10">
                         <div class="header">
                             <!-- 搜索条件 -->
-                            <!-- <Select 
+                            <Select 
                                 v-model="selectGoodsId" 
                                 @on-change="changeSelectGoodsName"
                                 style="width:200px;margin-right:30px" 
-                                placeholder="请选择商品名称"
-                            >
-                                <Option v-for="(item,index) in selectGoodsIdList" :value="item.goodsId" :key="index">
+                                placeholder="请选择商品名称">
+                                <Option v-for="(item,index) in TheallGoodsList" :value="item.goodsId" :key="index">
                                     {{item.name}}
                                 </Option>
-                            </Select> -->
+                            </Select>
                         </div>
                         <!-- 数据列表 -->
-                        <!-- <div class="content">
+                        <div class="content">
                             <Table 
                                 height="330" 
                                 border 
                                 stripe 
-                                :columns="tableTitle" 
-                                :data="selectUserList"
-                            />
-                        </div> -->
+                                :columns="changedGoodsTableTitle" 
+                                :data="changedGoodsList">
+                            </Table>
+                        </div>
                     </Col>
 
                     <!-- 采购单列表 -->
-                    <Col span="12">
-                    
+                    <Col span="14">
+                        <div class="header">
+                            <!-- 搜索条件 -->
+                            <DatePicker 
+                                type="daterange" 
+                                :value="searchTimes" 
+                                :options="optionsDatetime" 
+                                @on-change="updateByTime" 
+                                :clearable="false"
+                                placement="bottom-start" 
+                                placeholder="请选择采购单日期" 
+                                style="width: 200px" 
+                                split-panels 
+                                :editable="false" />
+                        </div>
+                        <!-- 数据列表 -->
+                        <div class="content">
+                            <Table 
+                                height="330" 
+                                border 
+                                stripe 
+                                :columns="changedPurchaseTableTitle" 
+                                :data="changedPurchaseList">
+                            </Table>
+                        </div>
                     </Col>
                 </Row>
             </TabPane>
@@ -237,7 +277,7 @@
                                     <Checkbox :label="item.supplierId">删除</Checkbox>
                                 </Col>
                                 <Col span="18">{{item.name}}</Col>
-                                <Col span="4"><a @click="getSupplierDetail(item.supplierId)">编辑</a></Col>
+                                <Col span="4"><a @click="getSupplierDetail(item,index)">编辑</a></Col>
                             </Row>
                         </Card>
                         </Scroll>
@@ -332,7 +372,8 @@
 </template>
 
 <script>
-import {selectGoods,getAllgoods} from '@/http/moudules/goods'
+import moment from 'moment'
+import {selectGoods,getAllgoods,addnewpurchase,getAllPurchase} from '@/http/moudules/goods'
 import {selectPurchaseStaff} from '@/http/moudules/staff'
 import echarts from '../../echarts'
 import {addnewsupplier, getAllsupplier, getOnesupplier, updatesupplier,deleteSupplier} from '@/http/moudules/goods'
@@ -343,34 +384,32 @@ export default {
 
   data () {
     return {
-      // 选择采购员弹框
-      selectStaffModal: false,
-      // 选择采购员表格表头
-      staffTabletitle: [
+      // 选择商品弹框
+      selectItemModal: false,
+      // 选择商品表格表头
+      goodsTabletitle: [
         {
           type: 'index',
           width: 60,
           align: 'center'
         },{
-          title: '采购员',
+          title: '商品名称',
           key: 'name'
         }
       ],
-      // 选择采购员表格数据
-      allSelectStaff: [],
-      // 选中的采购员
-      selectStaff: '',
-
-
-      // 新增商品弹框
+      // 选择商品表格数据
+      allGoodsList: [],
+      // 选择的商品
+      selectGoods: '',
+      // 添加商品弹框
       addNewItemModal: false,
-      // 新增商品项数据
+      // 添加商品项数据
       newItemForm: {
         name: '',
         amount: 1,
         price: 0
       },
-      // 新增商品项数据校验
+      // 添加商品项数据校验
       newItemRules: {
         name: [{
           required: true,
@@ -391,27 +430,41 @@ export default {
           message: '格式错误'
         }]
       },
-      // 选择商品弹框
-      selectItemModal: false,
-      // 选择商品表格表头
-      goodsTabletitle: [
+      // 选择采购员弹框
+      selectStaffModal: false,
+      // 选择采购员表格表头
+      staffTabletitle: [
         {
           type: 'index',
           width: 60,
           align: 'center'
         },{
-          title: '商品名称',
+          title: '采购员',
           key: 'name'
         }
       ],
-      // （固定）选择商品表格数据
-      allGoodsList: [],
-      // 选择的商品
-      selectGoods: '',
-
-
-
-      // 商品表格表头
+      // 选择采购员表格数据
+      allSelectOffice: [],
+      // 选中的采购员
+      selectStaff: '',
+      // 选择供应商弹框
+      selectSupplierModal: false,
+      // 选择供应商表格数据
+      supplierTabletitle: [
+        {
+          type: 'index',
+          width: 60,
+          align: 'center'
+        },{
+          title: '供应商',
+          key: 'name'
+        }
+      ],
+      // 选择的供应商
+      selectSupplier: '',
+      // 采购单确认弹框
+      newPurchaseModal: false,
+      // 采购单表格表头
       newTableTitle: [
         {
           type: 'index',
@@ -433,19 +486,106 @@ export default {
           align: 'center'
         }
       ],
-      // 商品表格数据列表
+      // 采购单表格数据
       newGoodsForm: [],
-      // 添加采购单弹框
-      newPurchaseModal: false,
-
-      // 列表界面
       // 商品名称筛选（goodsId）
       selectGoodsId: '',
+      // 固定商品列表
+      TheallGoodsList: [],
+      // 变化商品列表
+      changedGoodsList: [],
+      // 商品列表表头
+      changedGoodsTableTitle: [
+        {
+          title: '商品ID',
+          key: 'goodsId',
+          width: 80,
+          align: 'center'
+        },{
+          title: '商品名称',
+          key: 'name'
+        },{
+          title: '库存数量',
+          key: 'amount'
+        }
+      ],
+      // 所有商品
+      temp: {
+        name: '所有商品',
+        goodsId: 0
+      },
+      // 选中时间
+      searchTimes: [
+        moment().subtract(30,'days').format('YYYY-MM-DD'),
+        moment().format('YYYY-MM-DD')
+      ],
+      // 时间快捷选项
+      optionsDatetime: {
+        shortcuts: [
+          {
+            text: '最近一周',
+            value () {
+              const end=new Date();
+              const start=new Date();
+              start.setTime(start.getTime()-3600*1000*24*7);
+              return [start, end]
+            }
+          },
+          {
+            text: '最近一个月',
+            value () {
+              const end=new Date();
+              const start=new Date();
+              start.setTime(start.getTime()-3600*1000*24*30);
+              return [start, end]
+            }
+          },
+          {
+            text: '最近一季度',
+            value () {
+              const end=new Date();
+              const start=new Date();
+              start.setTime(start.getTime()-3600*1000*24*90);
+              return [start, end]
+            }
+          }
+        ],
+        disabledDate (data) {
+          return data&&data.valueOf()>Date.now()
+        }
+      },
+      // 采购单列表表头
+      changedPurchaseTableTitle: [
+        {
+          title: '采购单ID',
+          key: 'purchaseId',
+          width: 100,
+          align: 'center'
+        },{
+          title: '采购员',
+          key: 'staffname'
+        },{
+          title: '供应商',
+          key: 'suppliername'
+        },{
+          title: '采购金额',
+          key: 'totalPrice'
+        },{
+          title: '采购日期',
+          key: 'createTime'
+        }
+      ],
+      // 转化前的采购单列表
+      ThePurchaseList: [],
+      // 固定采购单列表
+      ThechangedPurchaseList: [],
+      // 变化采购单列表
+      changedPurchaseList: [],
+      
       
 
 
-      // 图表显示数据
-      echartDataLine: {},
+      
       // 供应商数据列表
       supplierList: [],
       // 供应商信息
@@ -484,14 +624,14 @@ export default {
       addNewSupplierModal: false,
       // 添加新供应商弹窗二次确认框
       readdNewSupplierModal: false,
-      // 数据详情
+      // 供应商详情
       supplierForm: {
         name: '',
         contacts: '',
         mobileNo: '',
         address: ''
       },
-      // 数据详情校验
+      // 供应商详情校验
       supplierRule: {
         name: [{
           required: true,
@@ -516,38 +656,60 @@ export default {
           message: '格式错误'
         }]
       },
-      // 数据详情弹窗
+      // 供应商详情弹窗
       supplierDetailModal: false,
-      // 数据详情弹窗二次确认框
+      // 供应商详情弹窗二次确认框
       resupplierDetailModal: false,
-      // 删除选择器
+      // 供应商删除列表
       selectdelete: [],
+      // 供应商选择删除
       deleteable: false,
-      // 删除二次确认按钮
+      // 供应商删除二次确认按钮
       redeleteSupplierModal: false,
+      // 图表显示数据
+      echartDataLine: {}
     }
   },
 
   mounted() {
     this.getAllgoods()
+    this.getAllsupplierlist()
   },
 
   methods: {
     // tab函数
     selectTab(name){
+      if(name === 'name1'){
+        this.getAllgoods()
+        this.getAllsupplierlist()
+      }
+      if(name === 'name2'){
+        this.getAllPurchases()
+      }
       if(name === 'name4'){
         this.getAllsupplierlist()
       }
     },
-    // 获取所有商品\采购员\报表
+    // 获取所有商品\采购员\采购单\报表
     getAllgoods() {
       selectGoods({userId: this.$store.state.userId}).then(res => {
         if(res.code == '200'){
           this.allGoodsList=res.allgoods
-          this.allSelectStaff=res.allstaff
-          let StaffName=res.allstaffname
-          this.allSelectStaff.forEach((i, index) => {
-            StaffName.forEach(item => {
+          this.TheallGoodsList=res.allgoods
+          this.changedGoodsList=this.TheallGoodsList.map(item => {
+            return {
+              ...item
+            }
+          })
+          this.TheallGoodsList.push(this.temp)
+          this.ThePurchaseList=res.allpurchase
+          this.ThePurchaseList.forEach(item => {
+            item['createTime']=moment(item.createTime).format('YYYY-MM-DD')
+          })
+          this.allSelectOffice=res.alloffice
+          let Staff=res.allstaff
+          this.allSelectOffice.forEach((i, index) => {
+            Staff.forEach(item => {
               if(i.staffId == item.staffId) {
                 i['name']=item.name
               }
@@ -565,10 +727,10 @@ export default {
           }
         }
         if(res.code == '300'){
-          this.allSelectStaff=res.allstaff
-          let StaffName=res.allstaffname
-          this.allSelectStaff.forEach((i, index) => {
-            StaffName.forEach(item => {
+          this.allSelectOffice=res.alloffice
+          let Staff=res.allstaff
+          this.allSelectOffice.forEach((i, index) => {
+            Staff.forEach(item => {
               if(i.staffId == item.staffId) {
                 i['name']=item.name
               }
@@ -581,8 +743,39 @@ export default {
         }
       })
     },
-    
-    // 添加商品
+    // 获取所有供应商数据
+    getAllsupplierlist () {
+      getAllsupplier().then(data => {
+        this.supplierList=data.suppliers
+      })
+    },
+    // 选择商品按钮
+    btnSelectGoods() {
+      let selectList=this.TheallGoodsList.filter(item => item.goodsId != 0)
+      this.allGoodsList=selectList
+      this.selectItemModal=true
+    },
+    // 选择商品
+    selectGoodsList(currentRow, oldCurrentRow) {
+      if(currentRow){
+        this.allGoodsList.forEach((item,index) => {
+          if(item.goodsId === currentRow.goodsId) {
+            item['_highlight'] = true
+            this.selectItemModal=false
+            this.selectGoods=item
+            this.selectGoods.amount=1
+            this.selectGoods.price=0
+            this.selectGoods['unchange']=true
+            this.selectItemModal=false
+            this.newGoodsForm.push(this.selectGoods)
+            this.allGoodsList.splice(index,1)
+          }else{
+            item['_highlight'] = false
+          }
+        })
+      }
+    },
+    // 添加商品按钮
     btnAddGoods() {
       this.newItemForm={
         name: '',
@@ -611,13 +804,6 @@ export default {
       this.$refs['newItemRef'].resetFields()
       this.addNewItemModal=false
     },
-    // 删除商品列表中的商品项
-    removeGoodsItem(index) {
-      this.newGoodsForm.splice(index,1)
-    },
-
-
-
     // 选择采购员按钮
     btnSelectStaff() {
       this.selectStaffModal=true
@@ -625,7 +811,7 @@ export default {
     // 选择采购员
     selectStaffList(currentRow, oldCurrentRow) {
       if(currentRow){
-        this.allSelectStaff.forEach(item => {
+        this.allSelectOffice.forEach(item => {
           if(item.staffId === currentRow.staffId) {
             item['_highlight'] = true
             this.selectStaff=item
@@ -636,27 +822,28 @@ export default {
         })
       }
     },
-    // 选取商品按钮
-    btnSelectGoods() {
-      this.selectItemModal=true
+    // 选择供应商按钮
+    btnSelectSupplier() {
+      this.selectSupplierModal=true
     },
-    // 选择商品
-    selectGoodsList(currentRow, oldCurrentRow) {
+    // 选择供应商
+    selectSupplierList(currentRow, oldCurrentRow) {
       if(currentRow){
-        this.allGoodsList.forEach(item => {
-          if(item.goodsId === currentRow.goodsId) {
+        this.supplierList.forEach(item => {
+          if(item.supplierId === currentRow.supplierId) {
             item['_highlight'] = true
-            this.selectItemModal=false
-            this.selectGoods=item
-            this.selectGoods.amount=1
-            this.selectGoods.price=0
-            this.selectGoods['unchange']=true
-            this.newGoodsForm.push(this.selectGoods)
+            this.selectSupplier=item
+            this.selectSupplierModal=false
           }else{
             item['_highlight'] = false
           }
         })
       }
+    },
+    // 删除商品列表中的商品项
+    removeGoodsItem(row,index) {
+      this.allGoodsList.push(row)
+      this.newGoodsForm.splice(index,1)
     },
     // 添加采购单
     btnAddPurchase() {
@@ -664,32 +851,131 @@ export default {
       let ischecked=true
       for (const key in this.newGoodsForm) {
         const item = this.newGoodsForm[key];
+        console.log("信息",item)
         if((item.price === 0) || (!reg.test(item.price))) {
           this.$Message.error('请输入正确的单价')
           ischecked=false
           return
         }
+        if(item.amount === null) {
+          this.$Message.error('请输入采购数量')
+          ischecked=false
+          return
+        }
+      }
+      if(this.selectStaff.staffId == null){
+        this.$Message.error('请选择采购员')
+        ischecked=false
+      }
+      if(this.selectSupplier.supplierId == null){
+        this.$Message.error('请选择供应商')
+        ischecked=false
       }
       if(ischecked) {
         this.newPurchaseModal=true
       }
+      let totalPrice=0
+      this.newGoodsForm.forEach(item => {
+        totalPrice=totalPrice+item.amount*item.price
+      })
+      this.newGoodsForm.totalPrice=totalPrice
+      console.log("采购单：",this.newGoodsForm)
     },
+    // 新建采购单：采购员Id+供应商Id+总价格+时间
+    // （选择商品）更新商品表：商品Id+数量
+    // （选择商品）新建采购项：采购单Id+商品Id+数量+价格
+    // （新建商品）新建商品表：商品名称+数量
+    // （新建商品）新建采购项：采购单Id+商品Id+数量+价格
     // 添加采购单确认
     resubmitAddPurchase(){
-
+      let purchase={
+        staffId: this.selectStaff.staffId,
+        supplierId: this.selectSupplier.supplierId,
+        totalPrice: this.newGoodsForm.totalPrice,
+        newGoodsForm: JSON.stringify(this.newGoodsForm)
+      }
+      console.log("传递的数据",purchase)
+      addnewpurchase(purchase).then(data => {
+        if(data.code == '200'){
+          this.$Message.info('添加新采购单成功')
+          this.newPurchaseModal=false
+          this.clearPurchase()
+        }
+        if(data.code == '500') {
+          this.$Message.info('添加新采购单失败')
+        }
+      })
     },
     // 取消添加采购单确认
     cancelAddPurchase() {
-
+      this.newPurchaseModal=false
+      this.$Message.info('取消添加新采购单')
     },
-    
-
-    // 获取所有供应商数据
-    getAllsupplierlist () {
-      getAllsupplier().then(data => {
-        this.supplierList=data.suppliers
+    // 清空采购单
+    clearPurchase(){
+      this.newGoodsForm=[]
+      this.selectSupplier=''
+      this.selectStaff=''
+      this.supplierList.forEach(item => {
+        item['_highlight'] = false
+      })
+      this.allSelectOffice.forEach(item => {
+        item['_highlight'] = false
       })
     },
+
+
+    // 名称筛选商品
+    changeSelectGoodsName() {
+      if(this.selectGoodsId == 0){
+        let selectList=this.TheallGoodsList.filter(item => item.goodsId != this.selectGoodsId)
+        this.changedGoodsList=selectList.map(item => {
+          return {
+            ...item
+          }
+        })
+      }else{
+        let selectList=this.TheallGoodsList.filter(item => item.goodsId == this.selectGoodsId)
+        this.changedGoodsList=selectList
+      }
+    },
+    // 时间筛选采购单
+    updateByTime (val) {
+      this.searchTimes=val
+      let starttime=new Date(this.searchTimes[0]).getTime();
+      let endtime=new Date(this.searchTimes[1]).getTime();
+      this.changedPurchaseList=this.ThechangedPurchaseList.map(item => {
+        return {
+          ...item
+        }
+      })
+      this.changedPurchaseList=this.changedPurchaseList.filter(item => {
+        let createTimestap=new Date(item.createTime).getTime()
+        return createTimestap>=starttime && createTimestap<=endtime
+      })
+    },
+    // 获取所有采购单
+    getAllPurchases() {
+      let purchase={purchase: JSON.stringify(this.ThePurchaseList)}
+      getAllPurchase(purchase).then(data => {
+        if(data.code == '200'){
+          this.ThechangedPurchaseList=data.newpurchase
+          this.ThechangedPurchaseList.forEach(item => {
+            item['createTime']=moment(item.createTime).format('YYYY-MM-DD')
+          })
+          this.changedPurchaseList=this.ThechangedPurchaseList.map(item => {
+            return {
+              ...item
+            }
+          })
+        }
+        if(data.code == '500'){
+          this.$Message.info('无采购单或信息转换失败')
+        }
+      })
+    },
+
+    
     // 右上角添加新供应商按钮
     addNewSupplier() {
       this.addNewSupplierModal=true
@@ -708,6 +994,7 @@ export default {
         }
       })
     },
+    // 添加新供应商取消按钮
     cancelNewSupplier(name) {
       this.$refs[name].resetFields()
       this.addNewSupplierModal=false
@@ -718,7 +1005,7 @@ export default {
         if(data.code == '200'){
           this.readdNewSupplierModal=false
           this.cancelNewSupplier('newSupplierRef')
-          this.getAllsupplierlist ()
+          this.getAllsupplierlist()
           this.$Message.info('供应商信息添加成功')
         }
         if(data.code == "500") {
@@ -726,13 +1013,14 @@ export default {
         }
       })
     },
+    // 添加新供应商二次取消按钮
     recancelNewSupplier() {
       this.readdNewSupplierModal=false
       this.$Message.info('取消添加供应商')
     },
     // 获取供应商详细信息
-    getSupplierDetail(name) {
-      getOnesupplier({supplierId: name}).then(data => {
+    getSupplierDetail(item,index) {
+      getOnesupplier({supplierId: item.supplierId}).then(data => {
         if(data.code == "200"){
           this.supplierForm=data.suppliers
           this.supplierDetailModal=true
@@ -752,6 +1040,7 @@ export default {
         }
       })
     },
+    // 修改供应商取消按钮
     cancelSupplierDetail(name) {
       this.$refs[name].resetFields()
       this.supplierDetailModal=false
@@ -770,6 +1059,7 @@ export default {
         }
       })
     },
+    // 修改供应商二次取消按钮
     reCancelSupplierDetail() {
       this.resupplierDetailModal=false
       this.$Message.info('取消修改供应商')
@@ -793,12 +1083,15 @@ export default {
         }
         if(data.code == '300') {
           this.$Message.error('部分供应商删除失败')
+          this.deleteable=false
         }
         if(data.code == '500') {
           this.$Message.info('无删除供应商')
+          this.deleteable=false
         }
       })
     },
+    // 二次取消删除按钮
     recancelDeleteSupplier() {
       this.redeleteSupplierModal=false
       this.$Message.info('取消删除供应商')

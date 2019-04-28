@@ -152,7 +152,7 @@
                         <!-- 数据列表 -->
                         <div class="content">
                             <Table 
-                                height="330" 
+                                height="400" 
                                 border 
                                 stripe 
                                 :columns="changedGoodsTableTitle" 
@@ -180,7 +180,7 @@
                         <!-- 数据列表 -->
                         <div class="content">
                             <Table 
-                                height="330" 
+                                height="400" 
                                 border 
                                 stripe 
                                 :columns="changedPurchaseTableTitle" 
@@ -199,18 +199,23 @@
             <TabPane label="供应商" name="name4">
                 <div class="header">
                     <div class="btnstyle">
-                        <Button @click="addNewSupplier">
-                            添加新供应商
+                        <Button @click="deleteBtn">
+                            删除供应商
                         </Button>
                     </div>
                     <div class="btnstyle">
-                        <Button @click="deleteBtn">
-                            删除供应商
+                        <Button @click="addNewSupplier">
+                            添加新供应商
                         </Button>
                     </div>
                     <div class="leftbtn">
                         <Button @click="deleteSelectedSupplier" v-if="deleteable">
                             确认删除
+                        </Button>
+                    </div>
+                    <div class="leftbtn">
+                        <Button @click="canceldeleteBtn" v-if="deleteable">
+                            取消删除
                         </Button>
                     </div>
                     <!-- 新增供应商 -->
@@ -270,16 +275,23 @@
                 </div>
                 <div class="content">
                     <CheckboxGroup v-model="selectdelete">
-                        <Scroll :on-reach-bottom="handleReachBottom">
-                        <Card v-for="(item,index) in supplierList" :value="item.supplierId" :key="index" class="cardstyle">
-                            <Row>
-                                <Col span="2" v-if="deleteable">
-                                    <Checkbox :label="item.supplierId">删除</Checkbox>
-                                </Col>
-                                <Col span="18">{{item.name}}</Col>
-                                <Col span="4"><a @click="getSupplierDetail(item,index)">编辑</a></Col>
-                            </Row>
-                        </Card>
+                        <Scroll :on-reach-bottom="handleReachBottom"  height="400">
+                            <Card v-for="(item,index) in supplierList" 
+                                :value="item.supplierId" 
+                                :key="index" 
+                                class="cardstyle">
+                                <Row>
+                                    <Col span="2" v-if="deleteable">
+                                        <Checkbox :label="item.supplierId">删除</Checkbox>
+                                    </Col>
+                                    <Col span="20">{{item.name}}</Col>
+                                    <Col span="2">
+                                        <Button 
+                                            icon="md-open" 
+                                            @click="getSupplierDetail(item,index)" ></Button>
+                                    </Col>
+                                </Row>
+                            </Card>
                         </Scroll>
                     </CheckboxGroup>
                 </div>
@@ -497,16 +509,18 @@ export default {
       // 商品列表表头
       changedGoodsTableTitle: [
         {
-          title: '商品ID',
-          key: 'goodsId',
+          type: 'index',
           width: 80,
           align: 'center'
         },{
           title: '商品名称',
-          key: 'name'
+          key: 'name',
+          align: 'center'
         },{
           title: '库存数量',
-          key: 'amount'
+          key: 'amount',
+          align: 'center',
+          sortable: true
         }
       ],
       // 所有商品
@@ -563,16 +577,22 @@ export default {
           align: 'center'
         },{
           title: '采购员',
-          key: 'staffname'
+          key: 'staffname',
+          align: 'center'
         },{
           title: '供应商',
-          key: 'suppliername'
+          key: 'suppliername',
+          align: 'center'
         },{
           title: '采购金额',
-          key: 'totalPrice'
+          key: 'totalPrice',
+          align: 'center',
+          sortable: true
         },{
           title: '采购日期',
-          key: 'createTime'
+          key: 'createTime',
+          align: 'center',
+          sortable: true
         }
       ],
       // 转化前的采购单列表
@@ -1068,6 +1088,10 @@ export default {
     deleteBtn() {
       this.deleteable=true
     },
+    // 隐藏删除供应商按钮
+    canceldeleteBtn() {
+      this.deleteable=false
+    },
     // 确认删除按钮
     deleteSelectedSupplier() {
       this.redeleteSupplierModal=true
@@ -1078,16 +1102,13 @@ export default {
         if(data.code == '200'){
           this.redeleteSupplierModal=false
           this.$Message.info('供应商删除成功')
-          this.deleteable=false
           this.getAllsupplierlist()
         }
         if(data.code == '300') {
           this.$Message.error('部分供应商删除失败')
-          this.deleteable=false
         }
         if(data.code == '500') {
           this.$Message.info('无删除供应商')
-          this.deleteable=false
         }
       })
     },
@@ -1126,8 +1147,10 @@ export default {
 }
 .header{
   width: 100%;
-  height: 100px;
-  padding: 50px;
+  height: 50px;
+  padding-left: 50px;
+  padding-right: 40px;
+  padding-top: 20px;
 }
 .modaltitle{
   width: 100%;
@@ -1138,7 +1161,7 @@ export default {
 }
 .content{
   width: 100%;
-  padding: 50px;
+  padding: 30px 50px;
 }
 .lizi{
   width: 100%;
@@ -1161,6 +1184,7 @@ export default {
 .btnstyle{
   float: right;
   width: 100px;
+  margin: 10px;
 }
 .leftbtn{
   float: left;
@@ -1168,5 +1192,6 @@ export default {
 }
 .cardstyle{
   margin-bottom: 10px;
+  border-color: #66a9c9;
 }
 </style>

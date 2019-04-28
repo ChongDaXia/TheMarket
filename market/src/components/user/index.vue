@@ -76,14 +76,13 @@
                 <!-- 数据列表 -->
                 <div class="content">
                     <Table 
-                        height="330" 
-                        border 
+                        height="400" 
                         stripe 
                         :columns="tableTitle" 
                         :data="selectUserList" >
                         <template slot-scope="{row,index}" slot="action">
-                            <Button type="primary" size="small" @click="showUserDetail(row,index)" >用户详情</Button>
-                            <Button type="primary" size="small" @click="updateUserPassword(row,index)" >密码修改</Button>
+                            <Button icon="md-open" @click="showUserDetail(row,index)" ></Button>
+                            <Button @click="updateUserPassword(row,index)" >密码修改</Button>
                         </template>
                     </Table>
                 </div>
@@ -211,7 +210,7 @@
                 </Modal>
                 <div class="content">
                     <Table 
-                        height="330" 
+                        height="400" 
                         border 
                         stripe 
                         :columns="deleteTableTitle" 
@@ -224,7 +223,7 @@
             </TabPane>
         </Tabs>
 
-        <vue-particles 
+        <!-- <vue-particles 
             color="#7b7d7d" 
             :particleOpacity="0.7" 
             :particlesNumber="80" 
@@ -241,7 +240,7 @@
             :clickEffect="true" 
             clickMode="push" 
             class="lizi">
-        </vue-particles>  
+        </vue-particles>   -->
     </div>
 </template>
 
@@ -252,6 +251,7 @@ export default {
   components: {
     echarts
   },
+
   data() {
     return {
       // 添加新用户
@@ -324,22 +324,29 @@ export default {
       tableTitle: [
         {
           title: '用户ID',
-          key: 'userId'
+          key: 'userId',
+          width: 80,
+          align: 'center'
         }, {
           title: '用户名',
-          key: 'userName'
+          key: 'userName',
+          align: 'center'
         }, {
           title: '姓名',
-          key: 'name'
+          key: 'name',
+          align: 'center'
         }, {
           title: '联系电话',
-          key: 'mobileNo'
+          key: 'mobileNo',
+          align: 'center'
         }, {
           title: '身份证号码',
-          key: 'idcardNo'
+          key: 'idcardNo',
+          align: 'center'
         }, {
           title: '角色',
-          key: 'role'
+          key: 'role',
+          align: 'center'
         }, {
           title: '操作',
           slot: 'action',
@@ -697,8 +704,9 @@ export default {
 }
 .header{
   width: 100%;
-  height: 60px;
-  padding: 50px;
+  height: 50px;;
+  padding-left: 50px;
+  padding-top: 20px;
 }
 .modaltitle{
     width: 100%;
@@ -709,7 +717,15 @@ export default {
 }
 .content{
   width: 100%;
-  padding: 50px;
+  padding: 30px 50px;
+}
+/deep/ .ivu-table th{
+  background-color: #f0faff;
+  color: #2d8cf0;
+}
+/deep/ .ivu-table-wrapper{
+  border: 10px solid #f0faff;
+  border-radius: 10px;
 }
 .lizi{
   width: 100%;

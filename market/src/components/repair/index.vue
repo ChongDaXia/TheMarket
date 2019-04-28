@@ -86,7 +86,7 @@
                 </div>
                 <!-- 数据列表 -->
                 <div class="content">
-                    <Scroll :on-reach-bottom="handleReachBottom">
+                    <Scroll :on-reach-bottom="handleReachBottom" height="400">
                         <!-- 用户权限 -->
                         <Card v-for="(item,index) in repairlists" 
                             :value="item.repairId" 
@@ -94,14 +94,14 @@
                             v-if="theUserRole"
                             class="cardstyle" >
                             <div @click="userGetRepairDetail(item)">
-                                <div style="float: right">
+                                <div class="time-style">
                                     {{item.createTime}}
                                 </div>
                                 <Divider orientation="left">
                                     {{item.title}}
                                 </Divider>
                                 <div>
-                                    {{item.content}}
+                                    <p class="ffont">{{item.content}}</p>
                                 </div>
                             </div>
                         </Card>
@@ -112,49 +112,53 @@
                             v-if="theAdminRole"
                             class="cardstyle" >
                             <div @click="adminGetRepairDetail(item)">
-                                <div style="float: right">
+                                <div class="time-style">
                                     {{item.createTime}}
                                 </div>
                                 <Divider orientation="left">
                                     {{item.title}}
                                 </Divider>
                                 <div>
-                                    {{item.content}}
+                                    <p class="ffont">{{item.content}}</p>
                                 </div>
                             </div>
                         </Card>
                     </Scroll>
                 </div>               
                 <!-- 用户维修详情 -->
-                <Modal 
-                    v-model="repairDetailModal" 
-                    :mask-closable="false" 
-                    :footer-hide="true"
-                    @on-cancel="usercancelrepairdetail" >
-                    <p class="modaltitle">
-                        <span>维修信息详情</span>
+                <Drawer v-model="repairDetailDrawer" :closable="false">
+                    <p class="drawertitle">
+                        维修信息详情
                     </p>
-                    <p>标题：{{repairdetail.title}}</p>
-                    <p>内容：{{repairdetail.content}}</p>
-                    <p>类型：{{repairdetail.style}}</p>
-                    <p>时间：{{repairdetail.createTime}}</p>
-                    <p>收件人：{{sentUsers}}</p>
-                </Modal>
+                    <Divider />
+                    <p class="sfont">[标题]</p>
+                    <p class="ffont">{{repairdetail.title}}</p>
+                    <p class="sfont">[内容]</p>
+                    <p class="ffont">{{repairdetail.content}}</p>
+                    <p class="sfont">[类型]</p>
+                    <p class="ffont">{{repairdetail.style}}</p>
+                    <p class="sfont">[时间]</p>
+                    <p class="ffont">{{repairdetail.createTime}}</p>
+                    <p class="sfont">[收件]</p>
+                    <p class="ffont">{{sentUsers}}</p>
+                </Drawer>
                 <!-- 管理员维修详情 -->
-                <Modal 
-                    v-model="otherRepairDetailModal" 
-                    :mask-closable="false" 
-                    :footer-hide="true"
-                    @on-cancel="admincancelrepairdetail" >
-                    <p class="modaltitle">
-                        <span>维修信息详情</span>
+                <Drawer v-model="otherRepairDetailDrawer" :closable="false">
+                    <p class="drawertitle">
+                        维修信息详情
                     </p>
-                    <p>标题：{{repairdetail.title}}</p>
-                    <p>内容：{{repairdetail.content}}</p>
-                    <p>类型：{{repairdetail.style}}</p>
-                    <p>时间：{{repairdetail.createTime}}</p>
-                    <p>发件人：{{sentUser}}</p>
-                </Modal>
+                    <Divider />
+                    <p class="sfont">[标题]</p>
+                    <p class="ffont">{{repairdetail.title}}</p>
+                    <p class="sfont">[内容]</p>
+                    <p class="ffont">{{repairdetail.content}}</p>
+                    <p class="sfont">[类型]</p>
+                    <p class="ffont">{{repairdetail.style}}</p>
+                    <p class="sfont">[时间]</p>
+                    <p class="ffont">{{repairdetail.createTime}}</p>
+                    <p class="sfont">[发件人]</p>
+                    <p class="ffont">{{sentUser}}</p>
+                </Drawer>
             </TabPane>
         </Tabs>
 
@@ -187,6 +191,7 @@ export default {
   mounted() {
     this.getAdminRole()
   },
+
   data() {
     return {
       // 申请维修数据
@@ -287,8 +292,8 @@ export default {
       theAdminRole: false,
       theUserRole: false,
       // 信息详情弹框
-      repairDetailModal:false,
-      otherRepairDetailModal:false,
+      repairDetailDrawer:false,
+      otherRepairDetailDrawer:false,
       // 信息详情数据
       repairdetail: [],
       // 收信人
@@ -508,15 +513,12 @@ export default {
       getrepairorder({sentUserId: this.$store.state.userId, repairId: name.repairId}).then(data => {
         if(data.code == '200'){
           this.sentUsers=data.users.map(item => item.name)
-          this.repairDetailModal=true
+          this.repairDetailDrawer=true
         }
         if(data.code == '500') {
           this.$Message.error('无法获取维修单信息')
         }
       })
-    },
-    usercancelrepairdetail() {
-      this.repairDetailModal=false
     },
     // 维修详情（管理员）
     adminGetRepairDetail (name) {
@@ -525,15 +527,12 @@ export default {
       getrepairorder({userId: this.$store.state.userId, repairId: name.repairId}).then(data => {
         if(data.code == '200'){
           this.sentUser=data.users.name
-          this.otherRepairDetailModal=true
+          this.otherRepairDetailDrawer=true
         }
         if(data.code == '500') {
           this.$Message.error('无法获取维修单信息')
         }
       })
-    },
-    admincancelrepairdetail() {
-      this.otherRepairDetailModal=false
     }
   }
 }
@@ -553,8 +552,9 @@ export default {
 }
 .header{
   width: 100%;
-  height: 60px;
-  padding: 50px;
+  height: 50px;
+  padding-left: 50px;
+  padding-top: 20px;
 }
 .modaltitle{
     width: 100%;
@@ -565,7 +565,33 @@ export default {
 }
 .content{
   width: 100%;
-  padding: 50px;
+  padding: 20px 50px;
+}
+.time-style{
+  float: right;
+  color: #66a9c9;
+}
+.cardstyle{
+  margin-bottom: 10px;
+  border-color: #66a9c9;
+}
+.drawertitle{
+  width: 100%;
+  height: 60px;
+  text-align: center;
+  font-size: 24px;
+  padding-top: 25px;
+}
+.ffont{
+  color: #657180;
+  font-size: 14px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+.sfont{
+  color: #9ea7b4;
+  font-size: 12px;
 }
 .lizi{
   width: 100%;
@@ -580,8 +606,5 @@ export default {
 }
 .tabstyle{
   z-index: 2;
-}
-.cardstyle{
-  margin-bottom: 10px;
 }
 </style>

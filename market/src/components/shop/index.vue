@@ -72,15 +72,15 @@
                 <!-- 数据列表 -->
                 <div class="content">
                     <Table 
-                        height="330" 
+                        height="400" 
                         border 
                         stripe 
                         :columns="tableTitle" 
                         :data="selectStoreList" >
                         <template slot-scope="{row,index}" slot="action">
-                            <Button type="primary" size="small" @click="showStoreDetail(row,index)" >信息修改</Button>
-                            <Button type="primary" size="small" @click="addStoreUser(row,index)" v-if="row.rentStatus == '0'">添加租户</Button>
-                            <Button type="primary" size="small" @click="updateStoreUser(row,index)" v-if="row.rentStatus == '1'">修改租户</Button>
+                            <Button icon="md-open" @click="showStoreDetail(row,index)" ></Button>
+                            <Button @click="addStoreUser(row,index)" v-if="row.rentStatus == '0'">添加租户</Button>
+                            <Button @click="updateStoreUser(row,index)" v-if="row.rentStatus == '1'">修改租户</Button>
                         </template>
                     </Table>
                 </div>
@@ -263,7 +263,7 @@
                 </Modal>
                 <div class="content">
                     <Table 
-                        height="330" 
+                        height="400" 
                         border 
                         stripe 
                         :columns="deleteTableTitle" 
@@ -273,7 +273,7 @@
                         @on-select-all="selectDeleted"
                         @on-select-all-cancel="cancelselectDeleted" >
                         <template slot-scope="{row,index}" slot="action">
-                            <Button type="primary" size="small" @click="remoteStoreUser(row,index)" v-if="row.rentStatus == '1'">移除租户</Button>
+                            <Button @click="remoteStoreUser(row,index)" v-if="row.rentStatus == '1'">移除租户</Button>
                         </template>
                     </Table>
                 </div>
@@ -366,13 +366,15 @@ export default {
       tableTitle: [
         {
           title: '店铺ID',
-          key: 'storeId'
+          key: 'storeId',
+          sortable: true
         }, {
           title: '店铺编号',
           key: 'storeNo'
         }, {
           title: '面积（平方米）',
-          key: 'area'
+          key: 'area',
+          sortable: true
         }, {
           title: '地址',
           key: 'address'
@@ -381,7 +383,8 @@ export default {
           key: 'rentStatus'
         }, {
           title: '租金（元/月）',
-          key: 'rent'
+          key: 'rent',
+          sortable: true
         }, {
           title: '操作',
           slot: 'action',
@@ -505,13 +508,15 @@ export default {
           align: 'center'
         },{
           title: '店铺ID',
-          key: 'storeId'
+          key: 'storeId',
+          sortable: true
         }, {
           title: '店铺编号',
           key: 'storeNo'
         }, {
           title: '面积（平方米）',
-          key: 'area'
+          key: 'area',
+          sortable: true
         }, {
           title: '地址',
           key: 'address'
@@ -520,11 +525,11 @@ export default {
           key: 'rentStatus'
         }, {
           title: '租金（元/月）',
-          key: 'rent'
+          key: 'rent',
+          sortable: true
         }, {
           title: '操作',
           slot: 'action',
-          width: 80,
           align: 'center'
         }
       ],
@@ -913,8 +918,9 @@ export default {
 }
 .header{
   width: 100%;
-  height: 60px;
-  padding: 50px;
+  height: 50px;;
+  padding-left: 50px;
+  padding-top: 20px;
 }
 .modaltitle{
     width: 100%;
@@ -925,7 +931,7 @@ export default {
 }
 .content{
   width: 100%;
-  padding: 50px;
+  padding: 30px 50px;
 }
 .lizi{
   width: 100%;

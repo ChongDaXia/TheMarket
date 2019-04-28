@@ -64,14 +64,14 @@
                 <!-- 数据列表 -->
                 <div class="content">
                     <Table 
-                        height="330" 
+                        height="400" 
                         border 
                         stripe 
                         :columns="tableTitle" 
                         :data="selectStaffList" >
                         <template slot-scope="{row,index}" slot="action">
-                          <Button type="primary" size="small" @click="staffDetail(row,index)" >员工详情</Button>
-                          <Button type="primary" size="small" @click="wagesDetail(row,index)" >薪资详情</Button>
+                          <Button icon="md-open" @click="staffDetail(row,index)" ></Button>
+                          <Button @click="wagesDetail(row,index)" >薪资详情</Button>
                         </template>
                     </Table>
                 </div>
@@ -260,7 +260,6 @@ export default {
         {
           title: '操作',
           slot: 'action',
-          width: 160,
           align: 'center'
         }
       ],
@@ -511,8 +510,9 @@ export default {
 }
 .header{
   width: 100%;
-  height: 60px;
-  padding: 50px;
+  height: 50px;;
+  padding-left: 50px;
+  padding-top: 20px;
 }
 .modaltitle{
     width: 100%;
@@ -523,7 +523,7 @@ export default {
 }
 .content{
   width: 100%;
-  padding: 50px;
+  padding: 30px 50px;
 }
 .lizi{
   width: 100%;

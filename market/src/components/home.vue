@@ -6,13 +6,13 @@
                 <Menu mode="horizontal" theme="dark">
                     <!-- logo -->
                     <div class="layout-logo">
-
+                        商业中心管理系统
                     </div>
 
                     <!-- 头部菜单 -->
                     <div class="layout-nav">
                         <MenuItem name="loginOut">
-                            <a class="a" @click="loginOutModal=true">
+                            <a @click="loginOutModal=true" class="head-astyle" >
                                 <Icon type="md-power" />
                                 退出登录
                             </a>
@@ -21,19 +21,19 @@
                             v-model="loginOutModal" 
                             title="退出登录提示" 
                             @on-ok="loginout_ok" 
-                            @on-cancel="loginout_cancel"
-                        >
+                            @on-cancel="loginout_cancel" >
                             <p>是否确认退出登录？</p>
                         </Modal>
                         <MenuItem name="2">
                             <Dropdown>
-                                <a class="a" href="javascript:void(0)">
+                                <a href="javascript:void(0)" class="head-astyle" >
                                     <Icon type="md-person" />
                                     个人信息管理
                                 </a>
                                 <DropdownMenu slot="list">
                                     <DropdownItem name="publicInfo">
-                                        <a @click="personalinfochange">
+                                        <a @click="personalinfochange" class="head-aistyle">
+                                            <Icon type="md-open" />
                                             基本信息
                                         </a>
                                     </DropdownItem>
@@ -42,8 +42,7 @@
                                         :mask-closable="false" 
                                         @on-ok="personalinfo_ok('personalinfoRef')" 
                                         @on-cancel="personalinfo_cancel('personalinfoRef')" 
-                                        ok-text="保存"
-                                    >
+                                        ok-text="保存" >
                                         <p class="modaltitle">
                                           <span>基本信息</span>
                                         </p>
@@ -51,8 +50,7 @@
                                             ref="personalinfoRef" 
                                             :model="personalinfoForm" 
                                             :rules="personalinfoRule" 
-                                            :label-width="80"
-                                        >
+                                            :label-width="80" >
                                             <FormItem label="用户Id" prop="userId">
                                               <Input v-model="personalinfoForm.userId" disabled></Input>
                                             </FormItem>
@@ -74,7 +72,8 @@
                                         </Form>
                                     </Modal>
                                     <DropdownItem name="passwordChange">
-                                        <a @click="passwordChangeModal=true">
+                                        <a @click="passwordChangeModal=true" class="head-aistyle">
+                                            <Icon type="md-lock" />
                                             修改密码
                                         </a>
                                     </DropdownItem>
@@ -83,8 +82,7 @@
                                         :mask-closable="false" 
                                         @on-ok="passwordchange_ok('passwordchangeRef')" 
                                         @on-cancel="passwordchange_cancel('passwordchangeRef')" 
-                                        ok-text="修改"
-                                    >
+                                        ok-text="修改" >
                                         <p class="modaltitle">
                                             <span>修改密码</span>
                                         </p>
@@ -92,8 +90,7 @@
                                             ref="passwordchangeRef" 
                                             :model="passwordchangeForm" 
                                             :rules="passwordchangeRule" 
-                                            :label-width="80"
-                                        >
+                                            :label-width="80" >
                                             <FormItem label="旧密码" prop="oldpassword">
                                                 <Input type="password" v-model="passwordchangeForm.oldpassword"></Input>
                                             </FormItem>
@@ -115,7 +112,7 @@
             <!-- 中间内容 -->
             <Layout>
                 <!-- 左侧导航栏 -->
-                <Sider hide-trigger :style="{backgroud: '#fff'}">
+                <Sider hide-trigger :style="{background: '#66a9c9'}">
                     <v-menu></v-menu>
                 </Sider>
 
@@ -128,7 +125,7 @@
                         </BreadcrumbItem>
                         <BreadcrumbItem>菜单名</BreadcrumbItem>
                     </Breadcrumb>
-                    <div>{{this.TheDate}}</div>
+                    <!-- <div>{{this.TheDate}}</div> -->
 
                     <!-- 主体页面 -->
                     <Content class="content">
@@ -145,6 +142,15 @@ import menu from './menutree.vue'
 import {getOnceUser, updateUser} from '../http/moudules/user'
 import moment from 'moment'
 export default {
+  components: {
+    // 导航菜单
+    'v-menu': menu
+  },
+
+  mounted() {
+    this.getDate ()
+  },
+
   data () {
     return {
       // 时间
@@ -218,13 +224,7 @@ export default {
       }
     }
   },
-  components: {
-    // 导航菜单
-    'v-menu': menu
-  },
-  mounted() {
-    this.getDate ()
-  },
+
   methods: {
     getDate () {
       let toDate=moment().format('YYYY-MM-DD')
@@ -338,30 +338,45 @@ export default {
     height: 100%;
     position: relative;
     border: 1px solid #d7dde4;
-    background: #f5f7f9;
+    background: #f1f0ed;
     overflow: hidden;
     border-radius: 4px;
 }
 .layout-logo{
-    width: 100px;
+    width: 300px;
     height: 30px; 
     float: left;
     position: relative;
     top: 15px;
     left: 20px;
-    background: #5b6270;
     border-radius: 3px;
+    color: #ffde20;
+    text-align: center;
+    background: #ffffff;
 }
 .layout-nav{
     width: 270px;
     margin: 0 auto;
     margin-right: 0px;
 }
-.a{
-    color: rgba(255,255,255,.7);
+.ivu-layout-header{
+  background: #66a9c9;
 }
-.a:hover{
-    color: #fff;
+.ivu-menu-dark{
+  background: #66a9c9;
+}
+.head-astyle{
+    color: #ffffff;
+}
+.head-astyle:hover{
+    color: #ffde20;
+}
+.head-aistyle{
+    color: #66a9c9;
+    font-size: 14px;
+}
+.head-aistyle:hover{
+    color: #ffde20;
 }
 .modaltitle{
   width: 100%;

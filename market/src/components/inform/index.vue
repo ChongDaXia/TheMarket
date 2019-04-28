@@ -83,66 +83,71 @@
                 </div>
                 <!-- 数据列表 -->
                 <div class="content">
-                    <Scroll :on-reach-bottom="handleReachBottom">
+                    <Scroll :on-reach-bottom="handleReachBottom" height="400">
                         <!-- 管理员权限 -->
                         <Card v-for="(item,index) in informlist" 
                             :value="item.informId" 
                             :key="index" 
-                            v-if="theAdminRole" >
+                            v-if="theAdminRole"
+                            class="cardstyle" >
                             <div @click="adminGetInformDetail(item)">
-                                <div style="float: right">
+                                <div class="time-style">
                                     {{item.createTime}}
                                 </div>
                                 <Divider orientation="left">
                                     {{item.title}}
                                 </Divider>
-                                <p>内容:{{item.content}}</p>
+                                <p class="ffont">{{item.content}}</p>
                             </div>
                         </Card>
                         <!-- 用户权限 -->
                         <Card v-for="(item,index) in informlist" 
                             :value="item.informId" 
                             :key="index" 
-                            v-if="theUserRole" >
+                            v-if="theUserRole"
+                            class="cardstyle" >
                             <div @click="userGetInformDetail(item)">
-                                <div style="float: right">
+                                <div class="time-style">
                                     {{item.createTime}}
                                 </div>
                                 <Divider orientation="left">
                                     {{item.title}}
                                 </Divider>
-                                <p>内容:{{item.content}}</p>
+                                <p class="ffont">{{item.content}}</p>
                             </div>
                         </Card>
                     </Scroll>
                 </div>
                 <!-- 管理员通知详情 -->
-                <Modal v-model="informDetailModal" 
-                    :mask-closable="false" 
-                    :footer-hide="true"
-                    @on-cancel="adminCancelInformDetail" >
-                    <p class="modaltitle">
-                        <span>通知信息详情</span>
+                <Drawer v-model="informDetailDrawer" :closable="false" class="drawer-style">
+                    <p class="drawertitle">
+                        通知信息详情
                     </p>
-                    <p>标题：{{informdetail.title}}</p>
-                    <p>内容：{{informdetail.content}}</p>
-                    <p>时间：{{informdetail.createTime}}</p>
-                    <p>收件人：{{sentUsers}}</p>
-                </Modal>
+                    <Divider />
+                    <p class="sfont">[标题]</p>
+                    <p class="ffont">{{informdetail.title}}</p>
+                    <p class="sfont">[内容]</p>
+                    <p class="ffont">{{informdetail.content}}</p>
+                    <p class="sfont">[发送时间]</p>
+                    <p class="ffont">{{informdetail.createTime}}</p>
+                    <p class="sfont">[收件人]</p>
+                    <p class="ffont">{{sentUsers}}</p>
+                </Drawer>
                 <!-- 用户通知详情 -->
-                <Modal 
-                    v-model="otherInformDetailModal" 
-                    :mask-closable="false" 
-                    :footer-hide="true"
-                    @on-cancel="userCancelInformDetail" >
-                    <p class="modaltitle">
-                        <span>通知信息详情</span>
+                <Drawer v-model="otherInformDetailDrawer" :closable="false"  class="drawer-style">
+                    <p class="drawertitle">
+                        通知信息详情
                     </p>
-                    <p>标题：{{informdetail.title}}</p>
-                    <p>内容：{{informdetail.content}}</p>
-                    <p>时间：{{informdetail.createTime}}</p>
-                    <p>发件人: {{sentUser}}</p>
-                </Modal>
+                    <Divider />
+                    <p class="sfont">[标题]</p>
+                    <p class="ffont">{{informdetail.title}}</p>
+                    <p class="sfont">[内容]</p>
+                    <p class="ffont">{{informdetail.content}}</p>
+                    <p class="sfont">[发送时间]</p>
+                    <p class="ffont">{{informdetail.createTime}}</p>
+                    <p class="sfont">[发件人]</p>
+                    <p class="ffont">{{sentUser}}</p>
+                </Drawer>
             </TabPane>
         </Tabs>
         
@@ -172,6 +177,10 @@ import moment from 'moment'
 import {getAllUser} from '@/http/moudules/user'
 import {addnewinform,getalljoborder,getjoborderadmin} from '@/http/moudules/inform'
 export default {
+  mounted() {
+    this.getPublicRole()
+  },
+
   data() {
     return {
       // 发送通知信息
@@ -266,8 +275,8 @@ export default {
       theAdminRole: false,
       theUserRole: false,
       // 信息详情弹框
-      informDetailModal: false,
-      otherInformDetailModal: false,
+      informDetailDrawer: false,
+      otherInformDetailDrawer: false,
       // 信息详情数据
       informdetail: [],
       // 收信人列表
@@ -490,15 +499,12 @@ export default {
       getalljoborder({sentUserId: this.$store.state.userId, informId: name.informId}).then(data => {
         if(data.code == '200'){
           this.sentUsers=data.users.map(item => item.name)
-          this.informDetailModal=true
+          this.informDetailDrawer=true
         }
         if(data.code == '500') {
           this.$Message.error('无法获取通知单信息')
         }
       })
-    },
-    adminCancelInformDetail () {
-      this.informDetailModal=false
     },
     // 通知详情（用户）
     userGetInformDetail (name) {
@@ -507,15 +513,12 @@ export default {
       getalljoborder({userId: this.$store.state.userId, informId: name.informId}).then(data => {
         if(data.code == '200'){
           this.sentUser=data.users.name
-          this.otherInformDetailModal=true
+          this.otherInformDetailDrawer=true
         }
         if(data.code == '500') {
           this.$Message.error('无法获取通知单信息')
         }
       })
-    },
-    userCancelInformDetail () {
-      this.otherInformDetailModal=false
     }
   }
 }
@@ -535,8 +538,9 @@ export default {
 }
 .header{
   width: 100%;
-  height: 60px;
-  padding: 50px;
+  height: 50px;
+  padding-left: 50px;
+  padding-top: 20px;
 }
 .modaltitle{
     width: 100%;
@@ -547,7 +551,37 @@ export default {
 }
 .content{
   width: 100%;
-  padding: 50px;
+  padding: 20px 50px;
+}
+.time-style{
+  float: right;
+  color: #66a9c9;
+}
+.drawer-style{
+  background-color: #eee;
+  padding: 20px;
+}
+.cardstyle{
+  margin-bottom: 10px;
+  border-color: #66a9c9;
+}
+.drawertitle{
+  width: 100%;
+  height: 60px;
+  text-align: center;
+  font-size: 24px;
+  padding-top: 25px;
+}
+.ffont{
+  color: #657180;
+  font-size: 14px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+.sfont{
+  color: #9ea7b4;
+  font-size: 12px;
 }
 .lizi{
   width: 100%;

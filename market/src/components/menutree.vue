@@ -50,6 +50,7 @@ export default {
       showManager: true
     }
   },
+
   methods: {
     menuLintTo(name) {
       switch(name) {

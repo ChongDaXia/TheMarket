@@ -6,6 +6,9 @@
             <TabPane label="添加" name="name1">
                 <!-- 添加新店铺 -->
                 <div class="formtext">
+                    <div class="formtitle">
+                        门店新建表单
+                    </div>
                     <Form 
                         ref="newStoreRef" 
                         :model="newStoreForm" 
@@ -73,7 +76,6 @@
                 <div class="content">
                     <Table 
                         height="400" 
-                        border 
                         stripe 
                         :columns="tableTitle" 
                         :data="selectStoreList" >
@@ -264,7 +266,6 @@
                 <div class="content">
                     <Table 
                         height="400" 
-                        border 
                         stripe 
                         :columns="deleteTableTitle" 
                         :data="selectStoreList"
@@ -289,7 +290,7 @@
             </TabPane>
         </Tabs>
 
-        <vue-particles 
+        <!-- <vue-particles 
             color="#7b7d7d" 
             :particleOpacity="0.7" 
             :particlesNumber="80" 
@@ -306,7 +307,7 @@
             :clickEffect="true" 
             clickMode="push" 
             class="lizi">
-        </vue-particles>
+        </vue-particles> -->
     </div>
 </template>
 
@@ -367,23 +368,29 @@ export default {
         {
           title: '店铺ID',
           key: 'storeId',
-          sortable: true
+          width: 80,
+          align: 'center'
         }, {
           title: '店铺编号',
-          key: 'storeNo'
+          key: 'storeNo',
+          align: 'center'
         }, {
           title: '面积（平方米）',
           key: 'area',
+          align: 'center',
           sortable: true
         }, {
           title: '地址',
-          key: 'address'
+          key: 'address',
+          align: 'center',
         }, {
           title: '租赁状态',
-          key: 'rentStatus'
+          key: 'rentStatus',
+          align: 'center',
         }, {
           title: '租金（元/月）',
           key: 'rent',
+          align: 'center',
           sortable: true
         }, {
           title: '操作',
@@ -484,7 +491,8 @@ export default {
           align: 'center'
         },{
           title: '租户',
-          key: 'name'
+          key: 'name',
+          align: 'center',
         }
       ],
       // 租户选择表格数据
@@ -509,23 +517,28 @@ export default {
         },{
           title: '店铺ID',
           key: 'storeId',
-          sortable: true
+          align: 'center'
         }, {
           title: '店铺编号',
-          key: 'storeNo'
+          key: 'storeNo',
+          align: 'center',
         }, {
           title: '面积（平方米）',
           key: 'area',
+          align: 'center',
           sortable: true
         }, {
           title: '地址',
-          key: 'address'
+          key: 'address',
+          align: 'center',
         }, {
           title: '租赁状态',
-          key: 'rentStatus'
+          key: 'rentStatus',
+          align: 'center'
         }, {
           title: '租金（元/月）',
           key: 'rent',
+          align: 'center',
           sortable: true
         }, {
           title: '操作',
@@ -912,13 +925,26 @@ export default {
     overflow: hidden;
     background: #fff;
 }
+.formtitle{
+  height: 80px;
+  font-size: 20px;
+  text-align: center;
+}
 .formtext{
   width: 50%;
-  margin: 60px auto;
+  margin: 50px auto;
+  padding: 30px;
+  box-shadow: 0 4px 50px rgba(80, 80, 80, 0.15);
+}
+.form-item{
+  text-align: center;
+}
+.login-btn{
+  margin: 0 20px;
 }
 .header{
   width: 100%;
-  height: 50px;;
+  height: 50px;
   padding-left: 50px;
   padding-top: 20px;
 }
@@ -931,7 +957,24 @@ export default {
 }
 .content{
   width: 100%;
-  padding: 30px 50px;
+  padding: 40px 50px;
+}
+/deep/ .ivu-table{
+  border-radius: 10px;
+}
+/deep/ .ivu-table th{
+  background-color: #66a9c9;;
+  color: #ffffff;
+}
+/deep/ .ivu-table-border th{
+  border-right: 1px solid #66a9c9;
+}
+/deep/ .ivu-table-wrapper{
+  box-shadow: 0 4px 50px rgba(80, 80, 80, 0.15);
+  border-radius: 10px;
+}
+/deep/ .ivu-table:after{
+  background-color: #f0faff;
 }
 .lizi{
   width: 100%;

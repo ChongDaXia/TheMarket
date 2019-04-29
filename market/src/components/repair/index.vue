@@ -5,6 +5,9 @@
             <!-- 维修申请功能 -->
             <TabPane label="申请" name="name1">
                 <div class="formtext">
+                    <div class="formtitle">
+                        维修申请表单
+                    </div>
                     <Form 
                         ref="newRepairRef" 
                         :model="newRepairForm" 
@@ -162,7 +165,7 @@
             </TabPane>
         </Tabs>
 
-        <vue-particles 
+        <!-- <vue-particles 
             color="#7b7d7d" 
             :particleOpacity="0.7" 
             :particlesNumber="80" 
@@ -179,7 +182,7 @@
             :clickEffect="true" 
             clickMode="push" 
             class="lizi">
-        </vue-particles>  
+        </vue-particles>   -->
     </div>
 </template>
 
@@ -546,9 +549,22 @@ export default {
     overflow: hidden;
     background: #fff;
 }
+.formtitle{
+  height: 60px;
+  font-size: 20px;
+  text-align: center;
+}
 .formtext{
   width: 50%;
-  margin: 60px auto;
+  margin: 30px auto;
+  padding: 30px;
+  box-shadow: 0 4px 50px rgba(80, 80, 80, 0.15);
+}
+.form-item{
+  text-align: center;
+}
+.login-btn{
+  margin: 0 20px;
 }
 .header{
   width: 100%;
@@ -565,7 +581,7 @@ export default {
 }
 .content{
   width: 100%;
-  padding: 20px 50px;
+  padding: 30px 50px;
 }
 .time-style{
   float: right;

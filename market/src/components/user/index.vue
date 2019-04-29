@@ -6,6 +6,9 @@
             <TabPane label="添加" name="name1">
                 <!-- 添加新用户 -->
                 <div class="formtext">
+                    <div class="formtitle">
+                        用户新建表单
+                    </div>
                     <Form 
                         ref="newUserRef" 
                         :model="newUserForm" 
@@ -211,7 +214,6 @@
                 <div class="content">
                     <Table 
                         height="400" 
-                        border 
                         stripe 
                         :columns="deleteTableTitle" 
                         :data="selectUserList"
@@ -330,7 +332,7 @@ export default {
         }, {
           title: '用户名',
           key: 'userName',
-          align: 'center'
+          align: 'center',
         }, {
           title: '姓名',
           key: 'name',
@@ -426,22 +428,28 @@ export default {
         },
         {
           title: '用户ID',
-          key: 'userId'
+          key: 'userId',
+          align: 'center'
         }, {
           title: '用户名',
-          key: 'userName'
+          key: 'userName',
+          align: 'center'
         }, {
           title: '姓名',
-          key: 'name'
+          key: 'name',
+          align: 'center'
         }, {
           title: '联系电话',
-          key: 'mobileNo'
+          key: 'mobileNo',
+          align: 'center'
         }, {
           title: '身份证号码',
-          key: 'idcardNo'
+          key: 'idcardNo',
+          align: 'center'
         }, {
           title: '角色',
-          key: 'role'
+          key: 'role',
+          align: 'center'
         }
       ],
       // 删除用户二次确认框
@@ -698,9 +706,22 @@ export default {
     overflow: hidden;
     background: #fff;
 }
+.formtitle{
+  height: 50px;
+  font-size: 20px;
+  text-align: center;
+}
 .formtext{
   width: 50%;
-  margin: 60px auto;
+  margin: 0px auto;
+  padding: 30px;
+  box-shadow: 0 4px 50px rgba(80, 80, 80, 0.15);
+}
+.form-item{
+  text-align: center;
+}
+.login-btn{
+  margin: 0 20px;
 }
 .header{
   width: 100%;
@@ -717,15 +738,24 @@ export default {
 }
 .content{
   width: 100%;
-  padding: 30px 50px;
+  padding: 40px 50px;
+}
+/deep/ .ivu-table{
+  border-radius: 10px;
 }
 /deep/ .ivu-table th{
-  background-color: #f0faff;
-  color: #2d8cf0;
+  background-color: #66a9c9;;
+  color: #ffffff;
+}
+/deep/ .ivu-table-border th{
+  border-right: 1px solid #66a9c9;
 }
 /deep/ .ivu-table-wrapper{
-  border: 10px solid #f0faff;
+  box-shadow: 0 4px 50px rgba(80, 80, 80, 0.15);
   border-radius: 10px;
+}
+/deep/ .ivu-table:after{
+  background-color: #f0faff;
 }
 .lizi{
   width: 100%;

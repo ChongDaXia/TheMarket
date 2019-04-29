@@ -95,7 +95,6 @@
                 <div class="content">
                     <Table 
                         height="330" 
-                        border 
                         stripe 
                         :columns="newTableTitle" 
                         :data="newGoodsForm" >
@@ -153,7 +152,6 @@
                         <div class="content">
                             <Table 
                                 height="400" 
-                                border 
                                 stripe 
                                 :columns="changedGoodsTableTitle" 
                                 :data="changedGoodsList">
@@ -181,7 +179,6 @@
                         <div class="content">
                             <Table 
                                 height="400" 
-                                border 
                                 stripe 
                                 :columns="changedPurchaseTableTitle" 
                                 :data="changedPurchaseList">
@@ -362,7 +359,7 @@
                 </Row>
             </TabPane>
         </Tabs>
-        <vue-particles 
+        <!-- <vue-particles 
             color="#7b7d7d" 
             :particleOpacity="0.7" 
             :particlesNumber="80" 
@@ -379,7 +376,7 @@
             :clickEffect="true" 
             clickMode="push" 
             class="lizi">
-        </vue-particles>  
+        </vue-particles>   -->
     </div>
 </template>
 
@@ -452,7 +449,8 @@ export default {
           align: 'center'
         },{
           title: '采购员',
-          key: 'name'
+          key: 'name',
+          align: 'center'
         }
       ],
       // 选择采购员表格数据
@@ -469,7 +467,8 @@ export default {
           align: 'center'
         },{
           title: '供应商',
-          key: 'name'
+          key: 'name',
+          align: 'center'
         }
       ],
       // 选择的供应商
@@ -484,13 +483,18 @@ export default {
           align: 'center'
         },{
           title: '商品名称',
-          slot: 'name'
+          slot: 'name',
+          align: 'center',
         },{
           title: '数量',
-          slot: 'amount'
+          slot: 'amount',
+          align: 'center',
+          sortable: true
         },{
           title: '单价',
-          slot: 'price'
+          slot: 'price',
+          align: 'center',
+          sortable: true
         },{
           title: '操作',
           slot: 'action',
@@ -1161,7 +1165,24 @@ export default {
 }
 .content{
   width: 100%;
-  padding: 30px 50px;
+  padding: 40px 50px;
+}
+/deep/ .ivu-table{
+  border-radius: 10px;
+}
+/deep/ .ivu-table th{
+  background-color: #66a9c9;;
+  color: #ffffff;
+}
+/deep/ .ivu-table-border th{
+  border-right: 1px solid #66a9c9;
+}
+/deep/ .ivu-table-wrapper{
+  box-shadow: 0 4px 50px rgba(80, 80, 80, 0.15);
+  border-radius: 10px;
+}
+/deep/ .ivu-table:after{
+  background-color: #f0faff;
 }
 .lizi{
   width: 100%;

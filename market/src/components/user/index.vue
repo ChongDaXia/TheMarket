@@ -58,15 +58,6 @@
                 <div class="header">
                     <!-- 搜索条件 -->
                     <Select 
-                        v-model="selectUserRole" 
-                        @on-change="changeSelectUserRole"
-                        style="width:200px;margin-right:30px" 
-                        placeholder="请选择角色">
-                        <Option v-for="(item,index) in selectUserRoleList" :value="item" :key="index">
-                            {{item}}
-                        </Option>
-                    </Select>
-                    <Select 
                         v-model="selectUserId"
                         @on-change="changeSelectUserId"
                         style="width:200px;margin-right:30px" 
@@ -81,6 +72,7 @@
                     <Table 
                         height="400" 
                         stripe 
+                        :loading="listloading"
                         :columns="tableTitle" 
                         :data="selectUserList" >
                         <template slot-scope="{row,index}" slot="action">
@@ -181,15 +173,6 @@
                 <div class="header">
                     <!-- 搜索条件 -->
                     <Select 
-                        v-model="selectUserRole" 
-                        @on-change="changeSelectUserRole"
-                        style="width:200px;margin-right:30px" 
-                        placeholder="请选择角色" >
-                        <Option v-for="(item,index) in selectUserRoleList" :value="item" :key="index">
-                            {{item}}
-                        </Option>
-                    </Select>
-                    <Select 
                         v-model="selectUserId"
                         @on-change="changeSelectUserId"
                         style="width:200px;margin-right:30px" 
@@ -215,6 +198,7 @@
                     <Table 
                         height="400" 
                         stripe 
+                        :loading="listloading"
                         :columns="deleteTableTitle" 
                         :data="selectUserList"
                         @on-select="selectDeleted"
@@ -309,19 +293,14 @@ export default {
       },
       // 添加新用户二次确认框
       newUserModal: false,
-      // 角色筛选
-      selectUserRole: '',
-      selectUserRoleList: [
-        '所有人',
-        '管理员',
-        '用户'
-      ],
       // 姓名筛选（用户Id）
       selectUserId: '',
       // 变化的所有用户
       selectUserList: [],
       // 固定的所有用户
       TheselectUserList: [],
+      // 表格加载
+      listloading: false,
       // 表格表头
       tableTitle: [
         {
@@ -348,7 +327,25 @@ export default {
         }, {
           title: '角色',
           key: 'role',
-          align: 'center'
+          align: 'center',
+          filters: [
+            {
+              label: '管理员',
+              value: 1
+            },
+            {
+              label: '用户',
+              value: 2
+            }
+          ],
+          filterMultiple: false,
+          filterMethod(value,row) {
+            if(value === 1){
+              return row.role == '管理员'
+            } else if (value === 2) {
+              return row.role == '用户'
+            }
+          }
         }, {
           title: '操作',
           slot: 'action',
@@ -449,7 +446,25 @@ export default {
         }, {
           title: '角色',
           key: 'role',
-          align: 'center'
+          align: 'center',
+          filters: [
+            {
+              label: '管理员',
+              value: 1
+            },
+            {
+              label: '用户',
+              value: 2
+            }
+          ],
+          filterMultiple: false,
+          filterMethod(value,row) {
+            if(value === 1){
+              return row.role == '管理员'
+            } else if (value === 2) {
+              return row.role == '用户'
+            }
+          }
         }
       ],
       // 删除用户二次确认框
@@ -463,12 +478,10 @@ export default {
     // tab函数
     selectTab(name){
       if(name === 'name2'){
-        this.selectUserRole=''
         this.selectUserId=''
         this.getAllUserInfo()
       }
       if(name === 'name3'){
-        this.selectUserRole=''
         this.selectUserId=''
         this.getAllUserInfo()
       }
@@ -511,6 +524,7 @@ export default {
     },
     // 获取所有用户信息
     getAllUserInfo() {
+      this.listloading=true
       getAllUser().then(data => {
         if(data.code == '200'){
           this.TheselectUserList = data.users;
@@ -519,24 +533,12 @@ export default {
               ...item
             }
           })
+          this.listloading=false
         }
         if(data.code == '500') {
           this.$Message.info('无用户信息')
         }
       })
-    },
-    // 角色筛选
-    changeSelectUserRole() {
-      if (this.selectUserRole === '所有人') {
-        this.selectUserList = this.TheselectUserList.map(item => {
-          return {
-            ...item
-          }
-        })
-      } else {
-        let selectList=this.TheselectUserList.filter(item => item.role == this.selectUserRole)
-        this.selectUserList=selectList
-      }
     },
     // 姓名筛选
     changeSelectUserId() {

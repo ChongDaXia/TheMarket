@@ -141,18 +141,24 @@
                             <Select 
                                 v-model="selectGoodsId" 
                                 @on-change="changeSelectGoodsName"
-                                style="width:200px;margin-right:30px" 
+                                style="width:200px;margin-right:20px" 
                                 placeholder="请选择商品名称">
                                 <Option v-for="(item,index) in TheallGoodsList" :value="item.goodsId" :key="index">
                                     {{item.name}}
                                 </Option>
                             </Select>
+                            <Button @click="exportgoodsData()">
+                                <Icon type="ios-download-outline" />
+                                下载商品数据
+                            </Button>
                         </div>
                         <!-- 数据列表 -->
                         <div class="content">
                             <Table 
                                 height="400" 
                                 stripe 
+                                ref='goodstablerefs'
+                                :loading="goodslistloading"
                                 :columns="changedGoodsTableTitle" 
                                 :data="changedGoodsList">
                             </Table>
@@ -174,12 +180,18 @@
                                 style="width: 200px" 
                                 split-panels 
                                 :editable="false" />
+                            <Button @click="exportpurchasetData()" style="margin-left:20px">
+                                <Icon type="ios-download-outline" />
+                                下载采购单数据
+                            </Button>
                         </div>
                         <!-- 数据列表 -->
                         <div class="content">
                             <Table 
                                 height="400" 
                                 stripe 
+                                ref='purchasetablerefs'
+                                :loading="purchaselistloading"
                                 :columns="changedPurchaseTableTitle" 
                                 :data="changedPurchaseList">
                             </Table>
@@ -188,9 +200,9 @@
                 </Row>
             </TabPane>
 
-            <TabPane label="删除" name="name3">   
+            <!-- <TabPane label="删除" name="name3">   
 
-            </TabPane>
+            </TabPane> -->
 
             <!-- 供应商 -->
             <TabPane label="供应商" name="name4">
@@ -510,6 +522,8 @@ export default {
       TheallGoodsList: [],
       // 变化商品列表
       changedGoodsList: [],
+      // 表格加载
+      goodslistloading: false,
       // 商品列表表头
       changedGoodsTableTitle: [
         {
@@ -572,6 +586,8 @@ export default {
           return data&&data.valueOf()>Date.now()
         }
       },
+      // 表格加载
+      purchaselistloading: false,
       // 采购单列表表头
       changedPurchaseTableTitle: [
         {
@@ -716,6 +732,7 @@ export default {
     },
     // 获取所有商品\采购员\采购单\报表
     getAllgoods() {
+      this.goodslistloading=true
       selectGoods({userId: this.$store.state.userId}).then(res => {
         if(res.code == '200'){
           this.allGoodsList=res.allgoods
@@ -749,6 +766,7 @@ export default {
             x: x.reverse(),
             data: [{name: '商品库存', data: echartData.reverse()}]
           }
+          this.goodslistloading=false
         }
         if(res.code == '300'){
           this.allSelectOffice=res.alloffice
@@ -947,8 +965,6 @@ export default {
         item['_highlight'] = false
       })
     },
-
-
     // 名称筛选商品
     changeSelectGoodsName() {
       if(this.selectGoodsId == 0){
@@ -978,8 +994,21 @@ export default {
         return createTimestap>=starttime && createTimestap<=endtime
       })
     },
+    // 商品下载
+    exportgoodsData() {
+      this.$refs['goodstablerefs'].exportCsv({
+        filename: '商品数据'
+      })
+    },
+    // 采购单下载
+    exportpurchasetData() {
+      this.$refs['purchasetablerefs'].exportCsv({
+        filename: '采购单数据'
+      })
+    },
     // 获取所有采购单
     getAllPurchases() {
+      this.purchaselistloading=true
       let purchase={purchase: JSON.stringify(this.ThePurchaseList)}
       getAllPurchase(purchase).then(data => {
         if(data.code == '200'){
@@ -992,14 +1021,13 @@ export default {
               ...item
             }
           })
+          this.purchaselistloading=false
         }
         if(data.code == '500'){
           this.$Message.info('无采购单或信息转换失败')
         }
       })
     },
-
-    
     // 右上角添加新供应商按钮
     addNewSupplier() {
       this.addNewSupplierModal=true

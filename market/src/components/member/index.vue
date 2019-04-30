@@ -63,6 +63,7 @@
                     <Table 
                         height="400" 
                         stripe 
+                        :loading="listloading"
                         :columns="tableTitle" 
                         :data="selectMemberList" >
                         <template slot-scope="{row,index}" slot="action">
@@ -180,6 +181,8 @@ export default {
       addMemberModal: false,
       // 筛选会员姓名
       selectMemberId: '',
+      // 表格加载
+      listloading: false,
       // 表格表头
       tableTitle: [
         {
@@ -292,6 +295,7 @@ export default {
     },
     // 获取所有会员信息
     getAllMemberInfo() {
+      this.listloading=true
       getAllMember({userId: this.$store.state.userId}).then(data => {
         if(data.code == '200'){
           this.TheSelectMemberList=data.members
@@ -300,6 +304,7 @@ export default {
                 ...item
             }
           })
+          this.listloading=false
         }
         if(data.code == '500') {
           this.$Message.info('无会员信息')

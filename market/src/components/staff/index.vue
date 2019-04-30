@@ -69,6 +69,7 @@
                     <Table 
                         height="400" 
                         stripe 
+                        :loading="listloading"
                         :columns="tableTitle" 
                         :data="selectStaffList" >
                         <template slot-scope="{row,index}" slot="action">
@@ -237,6 +238,8 @@ export default {
       addStaffModal: false,
       // 筛选员工姓名
       selectStaffId: '',
+      // 表格加载
+      listloading: false,
       // 表格表头
       tableTitle: [
         {
@@ -374,6 +377,7 @@ export default {
     },
     // 获取所有员工信息
     getAllStaffInfo() {
+      this.listloading=true
       getAllStaff({userId: this.$store.state.userId}).then( data => {
         if(data.code == '200'){
           this.takeOfficeList=data.offices
@@ -388,12 +392,13 @@ export default {
               }
             })
           })
+          this.selectStaffList=this.TheSelectStaffList.map(item => {
+            return {
+              ...item
+            }
+          })
+          this.listloading=false
         }
-        this.selectStaffList=this.TheSelectStaffList.map(item => {
-          return {
-            ...item
-          }
-        })
         if(data.code == '500') {
           this.$Message.info('无员工信息')
         }

@@ -54,15 +54,6 @@
                 <div class="header">
                     <!-- 搜索条件 -->
                     <Select 
-                        v-model="selectStoreStatus" 
-                        @on-change="changeSelectStoreStatus"
-                        style="width:200px;margin-right:30px" 
-                        placeholder="请选择租赁状态" >
-                        <Option v-for="(item,index) in selectStoreStatusList" :value="item" :key="index">
-                            {{item}}
-                        </Option>
-                    </Select>
-                    <Select 
                         v-model="selectStoreId"
                         @on-change="changeSelectStoreId"
                         style="width:200px;margin-right:30px" 
@@ -77,6 +68,7 @@
                     <Table 
                         height="400" 
                         stripe 
+                        :loading="listloading"
                         :columns="tableTitle" 
                         :data="selectStoreList" >
                         <template slot-scope="{row,index}" slot="action">
@@ -235,15 +227,6 @@
                 <div class="header">
                     <!-- 搜索条件 -->
                     <Select 
-                        v-model="selectStoreStatus" 
-                        @on-change="changeSelectStoreStatus"
-                        style="width:200px;margin-right:30px" 
-                        placeholder="请选择租赁状态" >
-                        <Option v-for="(item,index) in selectStoreStatusList" :value="item" :key="index">
-                            {{item}}
-                        </Option>
-                    </Select>
-                    <Select 
                         v-model="selectStoreId"
                         @on-change="changeSelectStoreId"
                         style="width:200px;margin-right:30px" 
@@ -267,6 +250,7 @@
                     <Table 
                         height="400" 
                         stripe 
+                        :loading="listloading"
                         :columns="deleteTableTitle" 
                         :data="selectStoreList"
                         @on-select="selectDeleted"
@@ -350,19 +334,14 @@ export default {
       },
       // 添加新门店二次确认框
       newStoreModal: false,
-      // 租赁状态筛选
-      selectStoreStatus: '',
-      selectStoreStatusList: [
-        '所有店铺',
-        '已租出',
-        '未租出'
-      ],
       // 编号筛选（店铺Id）
       selectStoreId: '',
       // 变化的所有店铺
       selectStoreList: [],
       // 固定的所有店铺
       TheselectStoreList: [],
+      // 表格加载
+      listloading: false,
       // 表格表头
       tableTitle: [
         {
@@ -382,11 +361,29 @@ export default {
         }, {
           title: '地址',
           key: 'address',
-          align: 'center',
+          align: 'center'
         }, {
           title: '租赁状态',
           key: 'rentStatus',
           align: 'center',
+          filters: [
+            {
+              label: '未租出',
+              value: 1
+            },
+            {
+              label: '已租出',
+              value: 2
+            }
+          ],
+          filterMultiple: false,
+          filterMethod(value,row) {
+            if(value === 1){
+              return row.rentStatus == '0'
+            } else if (value === 2) {
+              return row.rentStatus == '1'
+            }
+          }
         }, {
           title: '租金（元/月）',
           key: 'rent',
@@ -521,7 +518,7 @@ export default {
         }, {
           title: '店铺编号',
           key: 'storeNo',
-          align: 'center',
+          align: 'center'
         }, {
           title: '面积（平方米）',
           key: 'area',
@@ -530,11 +527,29 @@ export default {
         }, {
           title: '地址',
           key: 'address',
-          align: 'center',
+          align: 'center'
         }, {
           title: '租赁状态',
           key: 'rentStatus',
-          align: 'center'
+          align: 'center',
+          filters: [
+            {
+              label: '未租出',
+              value: 1
+            },
+            {
+              label: '已租出',
+              value: 2
+            }
+          ],
+          filterMultiple: false,
+          filterMethod(value,row) {
+            if(value === 1){
+              return row.rentStatus == '0'
+            } else if (value === 2) {
+              return row.rentStatus == '1'
+            }
+          }
         }, {
           title: '租金（元/月）',
           key: 'rent',
@@ -558,13 +573,11 @@ export default {
     selectTab(name){
       if(name === 'name2'){
         this.selectStoreId = ''
-        this.selectStoreStatus = ''
         this.getAllStoreInfo() 
         this.getAllUserInfo()
       }
       if(name === 'name3'){
         this.selectStoreId = ''
-        this.selectStoreStatus = ''
         this.getAllStoreInfo() 
       }
     },
@@ -602,6 +615,7 @@ export default {
     },
     // 获取所有门店信息
     getAllStoreInfo() {
+      this.listloading=true
       getStoreRent().then(data => {
         if(data.code == '200'){
           this.TheselectStoreList = data.stores;
@@ -620,6 +634,7 @@ export default {
               ...item
             }
           })
+          this.listloading=false
         }
         if(data.code == '300') {
           this.TheselectStoreList = data.stores;
@@ -633,24 +648,6 @@ export default {
           this.$Message.info('无门店信息')
         }
       })
-    },
-    // 租赁状态筛选
-    changeSelectStoreStatus() {
-      if (this.selectStoreStatus === '所有店铺') {
-        this.selectStoreList=this.TheselectStoreList.map(item => {
-          return {
-            ...item
-          }
-        })
-      } 
-      if (this.selectStoreStatus === '已租出'){
-        let selectList=this.TheselectStoreList.filter(item => item.rentStatus == '1')
-        this.selectStoreList=selectList
-      }
-      if (this.selectStoreStatus === '未租出') {
-        let selectList=this.TheselectStoreList.filter(item => item.rentStatus == '0')
-        this.selectStoreList=selectList
-      }
     },
     // 店铺编号筛选
     changeSelectStoreId() {

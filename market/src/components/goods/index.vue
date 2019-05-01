@@ -1,17 +1,35 @@
 <template>
     <div class="layout">
         <Tabs class="tabstyle" value="name1" @on-click="selectTab">
+
             <TabPane label="采购" name="name1">
-                <div class="header">
-                    <span>
-                        [采购员]{{selectStaff.name}}<br/>
-                        [供应商]{{selectSupplier.name}}
-                    </span>
-                    <Button @click="btnSelectGoods">选择商品</Button>
-                    <Button @click="btnAddGoods">添加商品</Button>
-                    <Button @click="btnSelectStaff">请选择采购员身份</Button>
-                    <Button @click="btnSelectSupplier">请选择供应商</Button>
-                    <Button @click="btnAddPurchase">添加采购单</Button>
+                <div class="purchaseheader">
+                    <div class="p-title">采购单</div>
+                    <Divider />
+                    <div>
+                        <Row class="rowstyle">
+                            <span class="spanstyle">[采购时间]</span>{{daytime}}
+                        </Row>
+                        <Row  class="rowstyle">
+                            <Col span="12">
+                                <Button @click="selectStaffModal=true">添加</Button>
+                                <span class="spanstyle">[采购员]</span>{{selectStaff.name}}
+                            </Col>
+                            <Col span="12">
+                                <Button @click="selectSupplierModal=true">添加</Button>
+                                <span class="spanstyle">[供应商]</span>{{selectSupplier.name}}
+                            </Col>
+                        </Row>
+                        <Row  class="rowstyle">
+                            <Col span="12">
+                                <Button @click="selectItemModal=true" class="purchasebtnstyle">选择商品</Button>
+                                <Button @click="btnAddGoods" class="purchasebtnstyle">添加商品</Button>
+                            </Col>
+                            <Col span="12">
+                                <Button @click="btnAddPurchase" class="purchasebtnstyle">添加采购单</Button>
+                            </Col>
+                        </Row>
+                    </div>
                 </div>
                 <!-- 选择商品 -->
                 <Modal 
@@ -204,9 +222,111 @@
                 </Row>
             </TabPane>
 
-            <!-- <TabPane label="删除" name="name3">   
-
-            </TabPane> -->
+            <!-- 销售 -->
+            <TabPane label="销售" name="name3">  
+                <div class="purchaseheader">
+                    <div class="p-title">销售单</div>
+                    <Divider />
+                    <div>
+                        <Row class="rowstyle">
+                            <span class="spanstyle">[销售时间]</span>{{daytime}}
+                        </Row>
+                        <Row  class="rowstyle">
+                            <Col span="12">
+                                <Button @click="saleSelectStaffModal=true">添加</Button>
+                                <span class="spanstyle">[销售员]</span>{{saleSelectStaff.name}}
+                            </Col>
+                            <Col span="12">
+                                <Button @click="selectMemberModal=true">添加</Button>
+                                <span class="spanstyle">[会员]</span>{{selectMember.name}}
+                            </Col>
+                        </Row>
+                        <Row  class="rowstyle">
+                            <Col span="12">
+                                <Button @click="saleSelectItemModal=true" class="purchasebtnstyle">选择商品</Button>
+                            </Col>
+                            <Col span="12">
+                                <Button @click="btnAddSales" class="purchasebtnstyle">添加销售单</Button>
+                            </Col>
+                        </Row>
+                    </div>
+                </div> 
+                <!-- 选择商品 -->
+                <Modal 
+                    v-model="saleSelectItemModal" 
+                    :mask-closable="false"  
+                    :footer-hide="true"
+                    width="400" >
+                    <p class="modaltitle">
+                        <span>选择商品</span>
+                    </p>
+                    <Table 
+                        ref="saleGoodsTableRef" 
+                        height="300" border 
+                        :columns="goodsTabletitle" 
+                        :data="saleAllGoodsList" 
+                        :highlight-row=true
+                        @on-current-change="saleSelectGoodsList" />
+                </Modal>
+                <!-- 销售员选择列表 -->
+                <Modal 
+                    v-model="saleSelectStaffModal" 
+                    :mask-closable="false"  
+                    :footer-hide="true"
+                    width="400" >
+                    <p class="modaltitle">
+                        <span>销售员</span>
+                    </p>
+                    <Table 
+                        ref="staffTableRef" 
+                        height="300" border 
+                        :columns="staffTabletitle" 
+                        :data="saleAllSelectOffice" 
+                        :highlight-row=true
+                        @on-current-change="saleSelectStaffList" />
+                </Modal>
+                <!-- 会员选择列表 -->
+                <Modal 
+                    v-model="selectMemberModal" 
+                    :mask-closable="false"  
+                    :footer-hide="true"
+                    width="400" >
+                    <p class="modaltitle">
+                        <span>会员</span>
+                    </p>
+                    <Table 
+                        ref="memberTableRef" 
+                        height="300" border 
+                        :columns="memberTabletitle" 
+                        :data="memberList" 
+                        :highlight-row=true
+                        @on-current-change="selectMemberList" />
+                </Modal>
+                <!-- 数据列表 -->
+                <div class="content">
+                    <Table 
+                        height="330" 
+                        stripe 
+                        :columns="newTableTitle" 
+                        :data="saleNewGoodsForm" >
+                        <template slot-scope="{row}" slot="name">
+                            <Input v-model="row.name" disabled/>
+                        </template>
+                        <template slot-scope="{row,index}" slot="amount">
+                            <InputNumber v-model="saleNewGoodsForm[index].amount" :min="1"/>
+                        </template>
+                        <template slot-scope="{row, index}" slot="price">
+                            <Input v-model="saleNewGoodsForm[index].price" 
+                                prefix="logo-usd" 
+                                style="width:100px;margin-right:10px" />
+                            <span>元</span>
+                        </template>
+                        <template slot-scope="{row,index}" slot="action">
+                            <Button type="primary" @click="saleRemoveGoodsItem(row,index)" >删除</Button>
+                        </template>
+                    </Table>
+                </div>
+            </TabPane>
 
             <!-- 供应商 -->
             <TabPane label="供应商" name="name4">
@@ -398,8 +518,9 @@
 
 <script>
 import moment from 'moment'
-import {selectGoods,getAllgoods,addnewpurchase,getAllPurchase} from '@/http/moudules/goods'
+import {selectGoods,getAllgoods,addnewpurchase,getAllPurchase,saleSelectGoods} from '@/http/moudules/goods'
 import {selectPurchaseStaff} from '@/http/moudules/staff'
+import {getAllMember} from '@/http/moudules/member'
 import echarts from '../../echarts'
 import {addnewsupplier, getAllsupplier, getOnesupplier, updatesupplier,deleteSupplier} from '@/http/moudules/goods'
 export default {
@@ -409,6 +530,7 @@ export default {
 
   data () {
     return {
+      daytime: moment().format('YYYY-MM-DD'),
       // 选择商品弹框
       selectItemModal: false,
       // 选择商品表格表头
@@ -455,6 +577,8 @@ export default {
           message: '格式错误'
         }]
       },
+
+
       // 选择采购员弹框
       selectStaffModal: false,
       // 选择采购员表格表头
@@ -626,8 +750,43 @@ export default {
       // 变化采购单列表
       changedPurchaseList: [],
       
-      
 
+
+      // 销售选择商品弹框
+      saleSelectItemModal: false,
+      // 销售选择商品表格数据
+      saleAllGoodsList: [],
+      // 销售选择的商品
+      saleSelectGoods: '',
+      // 销售单单表格数据
+      saleNewGoodsForm: [],
+
+
+      // 选择销售员弹框
+      saleSelectStaffModal: false,
+      // 选择采购员表格数据
+      saleAllSelectOffice: [],
+      // 选中的销售员
+      saleSelectStaff: '',
+      // 选择会员弹窗
+      selectMemberModal: false,
+      // 选择会员表格表头
+      memberTabletitle: [
+        {
+          type: 'index',
+          width: 60,
+          align: 'center'
+        },{
+          title: '会员',
+          key: 'name',
+          align: 'center'
+        }
+      ],
+      // 选择会员表格数据
+      memberList: [],
+      // 选择的会员
+      selectMember: '',
+      
 
       
       // 供应商数据列表
@@ -726,32 +885,70 @@ export default {
       if(name === 'name1'){
         this.getAllgoods()
         this.getAllsupplierlist()
+        this.newGoodsForm=[]
+        this.selectStaff=''
+        this.selectSupplier=''
       }
       if(name === 'name2'){
         this.getAllPurchases()
+      }
+      if(name === 'name3'){
+        this.getAllMemberInfo()
+        this.saleNewGoodsForm=[]
+        this.saleSelectStaff=''
+        this.selectMember=''
       }
       if(name === 'name4'){
         this.getAllsupplierlist()
       }
     },
-    // 获取所有商品\采购员\采购单\报表
+    // 获取所有商品\采购员\销售员\采购单\报表
     getAllgoods() {
       this.goodslistloading=true
       selectGoods({userId: this.$store.state.userId}).then(res => {
         if(res.code == '200'){
-          this.allGoodsList=res.allgoods
-          this.TheallGoodsList=res.allgoods
-          this.changedGoodsList=this.TheallGoodsList.map(item => {
+          // 采购商品
+          this.allGoodsList=res.allgoods.map(item => {
+            return {
+              ...item
+            }
+          })
+          // 销售商品
+          this.saleAllGoodsList=res.allgoods.map(item => {
+            return {
+              ...item
+            }
+          })
+          // 不变的商品列表
+          this.TheallGoodsList=res.allgoods.map(item => {
             return {
               ...item
             }
           })
           this.TheallGoodsList.push(this.temp)
+          // 变化的商品列表
+          this.changedGoodsList=res.allgoods.map(item => {
+            return {
+              ...item
+            }
+          })
+          // 采购单
           this.ThePurchaseList=res.allpurchase
           this.ThePurchaseList.forEach(item => {
             item['createTime']=moment(item.createTime).format('YYYY-MM-DD')
           })
-          this.allSelectOffice=res.alloffice
+          // 采购员
+          this.allSelectOffice=res.alloffice.map(item => {
+            return {
+              ...item
+            }
+          })
+          // 销售员
+          this.saleAllSelectOffice=res.alloffice.map(item => {
+            return {
+              ...item
+            }
+          })
           let Staff=res.allstaff
           this.allSelectOffice.forEach((i, index) => {
             Staff.forEach(item => {
@@ -760,6 +957,14 @@ export default {
               }
             })
           })
+          this.saleAllSelectOffice.forEach((i, index) => {
+            Staff.forEach(item => {
+              if(i.staffId == item.staffId) {
+                i['name']=item.name
+              }
+            })
+          })
+          // 图表
           let x=[]
           let echartData=[]
           res.allgoods.forEach(item => {
@@ -773,9 +978,27 @@ export default {
           this.goodslistloading=false
         }
         if(res.code == '300'){
-          this.allSelectOffice=res.alloffice
+          // 采购员
+          this.allSelectOffice=res.alloffice.map(item => {
+            return {
+              ...item
+            }
+          })
+          // 销售员
+          this.saleAllSelectOffice=res.alloffice.map(item => {
+            return {
+              ...item
+            }
+          })
           let Staff=res.allstaff
           this.allSelectOffice.forEach((i, index) => {
+            Staff.forEach(item => {
+              if(i.staffId == item.staffId) {
+                i['name']=item.name
+              }
+            })
+          })
+          this.saleAllSelectOffice.forEach((i, index) => {
             Staff.forEach(item => {
               if(i.staffId == item.staffId) {
                 i['name']=item.name
@@ -795,19 +1018,12 @@ export default {
         this.supplierList=data.suppliers
       })
     },
-    // 选择商品按钮
-    btnSelectGoods() {
-      let selectList=this.TheallGoodsList.filter(item => item.goodsId != 0)
-      this.allGoodsList=selectList
-      this.selectItemModal=true
-    },
     // 选择商品
     selectGoodsList(currentRow, oldCurrentRow) {
       if(currentRow){
         this.allGoodsList.forEach((item,index) => {
           if(item.goodsId === currentRow.goodsId) {
             item['_highlight'] = true
-            this.selectItemModal=false
             this.selectGoods=item
             this.selectGoods.amount=1
             this.selectGoods.price=0
@@ -850,10 +1066,6 @@ export default {
       this.$refs['newItemRef'].resetFields()
       this.addNewItemModal=false
     },
-    // 选择采购员按钮
-    btnSelectStaff() {
-      this.selectStaffModal=true
-    },
     // 选择采购员
     selectStaffList(currentRow, oldCurrentRow) {
       if(currentRow){
@@ -867,10 +1079,6 @@ export default {
           }
         })
       }
-    },
-    // 选择供应商按钮
-    btnSelectSupplier() {
-      this.selectSupplierModal=true
     },
     // 选择供应商
     selectSupplierList(currentRow, oldCurrentRow) {
@@ -888,6 +1096,7 @@ export default {
     },
     // 删除商品列表中的商品项
     removeGoodsItem(row,index) {
+      row['_highlight']=false
       this.allGoodsList.push(row)
       this.newGoodsForm.splice(index,1)
     },
@@ -1164,7 +1373,91 @@ export default {
           resolve()
         },2000)
       })
+    },
+
+
+    // 获取所有销售单
+    saleGetAllgoods() {
+      saleSelectGoods({userId: this.$store.state.userId}).then(res => {
+        if(res.code == '200'){
+          this.saleAllGoodsList=res.allgoods
+        }
+        if(res.code == '300'){
+
+        }
+        if(res.code == '500'){
+          this.$Message.info('暂时无员工')
+        }
+      })
+    },
+    // 获取所有会员信息
+    getAllMemberInfo() {
+      getAllMember({userId: this.$store.state.userId}).then(data => {
+        if(data.code == '200'){
+          this.memberList=data.members
+        }
+        if(data.code == '500') {
+          this.$Message.info('无会员信息')
+        }
+      })
+    },
+    // 选择销售员
+    saleSelectStaffList(currentRow, oldCurrentRow) {
+      if(currentRow){
+        this.saleAllSelectOffice.forEach(item => {
+          if(item.staffId === currentRow.staffId) {
+            item['_highlight'] = true
+            this.saleSelectStaff=item
+            this.saleSelectStaffModal=false
+          }else{
+            item['_highlight'] = false
+          }
+        })
+      }
+    },
+    // 选择会员
+    selectMemberList(currentRow, oldCurrentRow) {
+      if(currentRow){
+        this.memberList.forEach(item => {
+          if(item.memberId === currentRow.memberId) {
+            item['_highlight'] = true
+            this.selectMember=item
+            this.selectMemberModal=false
+          }else{
+            item['_highlight'] = false
+          }
+        })
+      }
+    },
+    // 销售选择商品
+    saleSelectGoodsList(currentRow, oldCurrentRow) {
+      if(currentRow){
+        this.saleAllGoodsList.forEach((item,index) => {
+          if(item.goodsId === currentRow.goodsId) {
+            item['_highlight'] = true
+            this.saleSelectGoods=item
+            this.saleSelectGoods.amount=1
+            this.saleSelectGoods.price=0
+            this.saleSelectItemModal=false
+            this.saleNewGoodsForm.push(this.saleSelectGoods)
+            this.saleAllGoodsList.splice(index,1)
+          }else{
+            item['_highlight'] = false
+          }
+        })
+      }
+    },
+    // 删除销售单商品列表中的商品项
+    saleRemoveGoodsItem(row,index) {
+      row['_highlight']=false
+      this.saleAllGoodsList.push(row)
+      this.saleNewGoodsForm.splice(index,1)
+    },
+    // 添加销售单
+    btnAddSales() {
+
     }
+
   }
 }
 </script>
@@ -1188,6 +1481,29 @@ export default {
   padding-right: 40px;
   padding-top: 20px;
 }
+.purchaseheader{
+  width: 100%;
+  height: 130px;
+  padding-left: 50px;
+  padding-right: 40px;
+}
+.p-title{
+  text-align: center;
+  font-size: 18px;
+}
+/deep/ .ivu-divider-horizontal{
+  margin: 15px 0;
+}
+.rowstyle{
+  margin: 8px 0;
+}
+.spanstyle{
+  margin-right: 20px;
+  color: #9ea7b4;
+}
+.purchasebtnstyle{
+  float: right;
+}
 .modaltitle{
   width: 100%;
   height: 100px;
@@ -1200,7 +1516,7 @@ export default {
   padding: 40px 50px;
 }
 /deep/ .ivu-table{
-  border-radius: 10px;
+  border-radius: 5px;
 }
 /deep/ .ivu-table th{
   background-color: #66a9c9;;
@@ -1229,6 +1545,16 @@ export default {
 }
 .tabstyle{
   z-index: 2;
+}
+/deep/ .ivu-tabs-nav .ivu-tabs-tab{
+  margin-left: 20px;
+  margin-right: 0px;
+  font-size: 16px;
+  line-height: 2;
+}
+/deep/ .ivu-tabs-ink-bar{
+  margin-left: 20px;
+  height: 3px;
 }
 .echartsbox{
   width: 50%;

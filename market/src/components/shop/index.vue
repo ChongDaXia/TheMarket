@@ -958,7 +958,7 @@ export default {
   padding: 40px 50px;
 }
 /deep/ .ivu-table{
-  border-radius: 10px;
+  border-radius: 5px;
 }
 /deep/ .ivu-table th{
   background-color: #66a9c9;;
@@ -987,5 +987,15 @@ export default {
 }
 .tabstyle{
   z-index: 2;
+}
+/deep/ .ivu-tabs-nav .ivu-tabs-tab{
+  margin-left: 20px;
+  margin-right: 0px;
+  font-size: 16px;
+  line-height: 2;
+}
+/deep/ .ivu-tabs-ink-bar{
+  margin-left: 20px;
+  height: 3px;
 }
 </style>

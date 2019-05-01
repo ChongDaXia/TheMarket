@@ -639,4 +639,14 @@ export default {
 .tabstyle{
   z-index: 2;
 }
+/deep/ .ivu-tabs-nav .ivu-tabs-tab{
+  margin-left: 20px;
+  margin-right: 0px;
+  font-size: 16px;
+  line-height: 2;
+}
+/deep/ .ivu-tabs-ink-bar{
+  margin-left: 20px;
+  height: 3px;
+}
 </style>

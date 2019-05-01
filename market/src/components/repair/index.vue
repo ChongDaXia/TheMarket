@@ -1,9 +1,9 @@
 <template>
     <div class="layout">
         <!-- tabs列表 -->
-        <Tabs class="tabstyle" value="name1" @on-click="selectTab">
+        <Tabs class="tabstyle" v-model="tabvalue" @on-click="selectTab">
             <!-- 维修申请功能 -->
-            <TabPane label="申请" name="name1">
+            <TabPane label="申请" name="name1" v-if="userRole">
                 <div class="formtext">
                     <div class="formtitle">
                         维修申请表单
@@ -192,11 +192,16 @@ import {getAllUser,getOnceUser} from '@/http/moudules/user'
 import {addnewrepair,getrepairorder,getrepair,getrepairorderadmin} from '@/http/moudules/repair'
 export default {
   mounted() {
-    this.getAdminRole()
+    this.getMumu()
+    if(this.userRole){
+      this.getAdminRole()
+    }
   },
 
   data() {
     return {
+      tabvalue: 'name1',
+      userRole: true,
       // 申请维修数据
       newRepairForm: {
         title: '',
@@ -306,6 +311,17 @@ export default {
   },
 
   methods: {
+    getMumu() {
+      let role=this.$store.state.role
+      if(role === '管理员'){
+        this.userRole=false
+        this.tabvalue='name2'
+        this.getAllRepair()
+      }else if(role === '用户'){
+        this.userRole=true
+        this.tabvalue='name1'
+      }
+    },
     // tab函数
     selectTab(name){
       if(name === 'name1'){

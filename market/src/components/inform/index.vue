@@ -1,9 +1,9 @@
 <template>
     <div class="layout">
         <!-- tabs列表 -->
-        <Tabs class="tabstyle" value="name1" @on-click="selectTab">
+        <Tabs class="tabstyle" v-model="tabvalue" @on-click="selectTab">
             <!-- 通知发送功能 -->
-            <TabPane label="添加" name="name1">
+            <TabPane label="添加" name="name1" v-if="adminRole">
                 <div class="formtext">
                   <div class="formtitle">
                       通知新建表单
@@ -181,11 +181,16 @@ import {getAllUser} from '@/http/moudules/user'
 import {addnewinform,getalljoborder,getjoborderadmin} from '@/http/moudules/inform'
 export default {
   mounted() {
-    this.getPublicRole()
+    this.getMumu()
+    if(this.adminRole){
+      this.getPublicRole()
+    }
   },
 
   data() {
     return {
+      tabvalue: 'name1',
+      adminRole: true,
       // 发送通知信息
       newInformForm: {
         title: '',
@@ -289,6 +294,17 @@ export default {
   },
 
   methods: {
+    getMumu() {
+      let role=this.$store.state.role
+      if(role === '管理员'){
+        this.adminRole=true
+        this.tabvalue='name1'
+      }else if(role === '用户'){
+        this.adminRole=false
+        this.tabvalue='name2'
+        this.getAllJobOrder()
+      }
+    },
     // tab函数
     selectTab(name){
       if(name === 'name1'){

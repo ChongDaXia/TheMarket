@@ -11,6 +11,8 @@ const state = {
     userId: localStorage.getItem('userId'),
     // 用户角色
     role: localStorage.getItem('role'),
+    // 当前菜单
+    selectmemu: localStorage.getItem('selectmemu'),
     // 导航菜单
     memuTree: []
 }
@@ -22,6 +24,8 @@ const getters = {
     userId: state => state.userId,
     // 用户角色
     role: state => state.role,
+    // 当前菜单
+    selectmemu: state => state.selectmemu,
     // 获取导航菜单
     memuTree: state => state.memuTree
 }
@@ -37,7 +41,11 @@ const mutations = {
     },
     // 保存用户角色
     setRole (state, data) {
-        state.role =data
+        state.role = data
+    },
+    // 当前菜单
+    setSelectMemu (state, data) {
+        state.selectmemu = data
     },
     // 保存导航菜单
     setMenuTree (state, data) {
@@ -57,6 +65,10 @@ const actions = {
     // 改变用户角色
     setRole ({commit}, data) {
         commit('setRole', data)
+    },
+    // 改变当前菜单
+    setSelectMemu ({commit}, data) {
+        commit('setSelectMemu', data)
     },
     // 改变导航菜单
     setMenuTree ({commit}, data) {

@@ -3,6 +3,10 @@
         <Tabs class="tabstyle" value="name1" @on-click="selectTab">
             <TabPane label="采购" name="name1">
                 <div class="header">
+                    <span>
+                        [采购员]{{selectStaff.name}}<br/>
+                        [供应商]{{selectSupplier.name}}
+                    </span>
                     <Button @click="btnSelectGoods">选择商品</Button>
                     <Button @click="btnAddGoods">添加商品</Button>
                     <Button @click="btnSelectStaff">请选择采购员身份</Button>

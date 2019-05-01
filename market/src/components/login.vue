@@ -106,8 +106,10 @@ export default {
                   duration: 3
                 })
                 localStorage.setItem('role',  this.$refs[name].model.role)
+                this.$store.dispatch('setRole',this.$refs[name].model.role)
                 localStorage.setItem('userId',  data.userId)
                 localStorage.setItem('Flag', 'isLogin')
+                localStorage.setItem('selectmemu', '主页')
                 this.$router.push({name: 'home'})
               })
             }

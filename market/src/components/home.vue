@@ -6,7 +6,7 @@
                 <Menu mode="horizontal" theme="dark">
                     <!-- logo -->
                     <div class="layout-logo">
-                        商业中心管理系统
+                        <p class="logofont">商业中心管理系统</p>
                     </div>
 
                     <!-- 头部菜单 -->
@@ -123,7 +123,9 @@
                         <BreadcrumbItem to="/">
                             <Icon type="ios-apps" />主页
                         </BreadcrumbItem>
-                        <BreadcrumbItem>菜单名</BreadcrumbItem>
+                        <BreadcrumbItem>
+                            {{selectMumu}}
+                        </BreadcrumbItem>
                     </Breadcrumb>
                     <!-- <div>{{this.TheDate}}</div> -->
 
@@ -151,8 +153,24 @@ export default {
     this.getDate ()
   },
 
+  computed: {
+    listenstage() {
+      return this.$store.state.selectmemu;
+    }
+  },
+
+  watch:{
+    listenstage: function(ov,nv){
+      if(this.$store.state.selectmemu){
+        this.selectMumu=this.$store.state.selectmemu
+      }
+    }
+  },
+
   data () {
     return {
+      // 当前页面
+      selectMumu: '',
       // 时间
       TheDate: '',
       // 退出登录
@@ -235,6 +253,7 @@ export default {
       localStorage.removeItem("Flag")
       localStorage.removeItem("userId")
       localStorage.removeItem("role")
+      localStorage.removeItem("selectmemu")
       this.$store.dispatch('setUserId', '')
       this.loginOutModal = false;
       this.$Message.info('已退出登录')
@@ -353,6 +372,10 @@ export default {
     color: #ffde20;
     text-align: center;
     background: #ffffff;
+}
+.logofont{
+    position: relative;
+    top: -15px;
 }
 .layout-nav{
     width: 270px;

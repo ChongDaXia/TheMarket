@@ -749,6 +749,7 @@ export default {
             item['_highlight'] = false
           }
         })
+        this.selectUserModal=false
       }
     },
     // 添加租户确认

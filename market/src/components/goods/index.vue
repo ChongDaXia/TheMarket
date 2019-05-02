@@ -146,10 +146,27 @@
                 <!-- 采购单添加表 -->
                 <Modal 
                     v-model="newPurchaseModal" 
-                    title="确认提示" 
+                    title="采购单" 
                     @on-ok="resubmitAddPurchase" 
-                    @on-cancel="cancelAddPurchase">
-                    <p>是否确认保存该采购单？</p>
+                    @on-cancel="newPurchaseModal=false">
+                    <p>[采购时间]{{daytime}}</p>
+                    <p>[采购员]{{selectStaff.name}}</p>
+                    <p>[供应商]{{selectSupplier.name}}</p>
+                    <Row>
+                        <Col span="8">商品名称</Col>
+                        <Col span="8">数量</Col>
+                        <Col span="8">单价</Col>
+                    </Row>
+                    <ul>
+                        <li v-for="(item,index) in newGoodsForm">
+                            <Row>
+                                <Col span="8">{{item.name}}</Col>
+                                <Col span="8">{{item.amount}}</Col>
+                                <Col span="8">{{item.price}}</Col>
+                            </Row>
+                        </li>
+                    </ul>
+                    <p>[采购总额]{{newGoodsForm.totalPrice}}</p>
                 </Modal>
             </TabPane>
             
@@ -326,6 +343,32 @@
                         </template>
                     </Table>
                 </div>
+                <!-- 采购单添加表 -->
+                <Modal 
+                    v-model="newSaleModal" 
+                    title="销售单" 
+                    @on-ok="resubmitAddSale" 
+                    @on-cancel="newSaleModal=false">
+                    <p>[销售时间]{{daytime}}</p>
+                    <p>[销售员]{{saleSelectStaff.name}}</p>
+                    <p>[会员]{{selectMember.name}}</p>
+                    <Row>
+                        <Col span="8">商品名称</Col>
+                        <Col span="8">数量</Col>
+                        <Col span="8">单价</Col>
+                    </Row>
+                    <ul>
+                        <li v-for="(item,index) in saleNewGoodsForm">
+                            <Row>
+                                <Col span="8">{{item.name}}</Col>
+                                <Col span="8">{{item.amount}}</Col>
+                                <Col span="8">{{item.price}}</Col>
+                            </Row>
+                        </li>
+                    </ul>
+                    <p>[销售总额]{{saleNewGoodsForm.totalPrice}}</p>
+                    <p>[积分]{{saleNewGoodsForm.totalPrice*10}}</p>
+                </Modal>
             </TabPane>
 
             <!-- 供应商 -->
@@ -518,7 +561,7 @@
 
 <script>
 import moment from 'moment'
-import {selectGoods,getAllgoods,addnewpurchase,getAllPurchase,saleSelectGoods} from '@/http/moudules/goods'
+import {selectGoods,getAllgoods,addnewpurchase,getAllPurchase,saleSelectGoods,addnewsales} from '@/http/moudules/goods'
 import {selectPurchaseStaff} from '@/http/moudules/staff'
 import {getAllMember} from '@/http/moudules/member'
 import echarts from '../../echarts'
@@ -530,150 +573,8 @@ export default {
 
   data () {
     return {
+      // 当前时间
       daytime: moment().format('YYYY-MM-DD'),
-      // 选择商品弹框
-      selectItemModal: false,
-      // 选择商品表格表头
-      goodsTabletitle: [
-        {
-          type: 'index',
-          width: 60,
-          align: 'center'
-        },{
-          title: '商品名称',
-          key: 'name'
-        }
-      ],
-      // 选择商品表格数据
-      allGoodsList: [],
-      // 选择的商品
-      selectGoods: '',
-      // 添加商品弹框
-      addNewItemModal: false,
-      // 添加商品项数据
-      newItemForm: {
-        name: '',
-        amount: 1,
-        price: 0
-      },
-      // 添加商品项数据校验
-      newItemRules: {
-        name: [{
-          required: true,
-          trigger: 'blur, change',
-          pattern:/^[\u4E00-\u9FA5A-Za-z0-9]{2,20}$/,
-          message: '仅支持2-20位大小写字母或数字、中文'
-        }],
-        amount: [{
-          required: true,
-          trigger: 'blur, change',
-          pattern:/^[0-9]*$/,
-          message: '请输入数字'
-        }],
-        price: [{
-          required: true,
-          trigger: 'blur, change',
-          pattern:/^[0-9]\d*|[0-9]\d*\.\d*$/,
-          message: '格式错误'
-        }]
-      },
-
-
-      // 选择采购员弹框
-      selectStaffModal: false,
-      // 选择采购员表格表头
-      staffTabletitle: [
-        {
-          type: 'index',
-          width: 60,
-          align: 'center'
-        },{
-          title: '采购员',
-          key: 'name',
-          align: 'center'
-        }
-      ],
-      // 选择采购员表格数据
-      allSelectOffice: [],
-      // 选中的采购员
-      selectStaff: '',
-      // 选择供应商弹框
-      selectSupplierModal: false,
-      // 选择供应商表格数据
-      supplierTabletitle: [
-        {
-          type: 'index',
-          width: 60,
-          align: 'center'
-        },{
-          title: '供应商',
-          key: 'name',
-          align: 'center'
-        }
-      ],
-      // 选择的供应商
-      selectSupplier: '',
-      // 采购单确认弹框
-      newPurchaseModal: false,
-      // 采购单表格表头
-      newTableTitle: [
-        {
-          type: 'index',
-          width: 60,
-          align: 'center'
-        },{
-          title: '商品名称',
-          slot: 'name',
-          align: 'center',
-        },{
-          title: '数量',
-          slot: 'amount',
-          align: 'center',
-          sortable: true
-        },{
-          title: '单价',
-          slot: 'price',
-          align: 'center',
-          sortable: true
-        },{
-          title: '操作',
-          slot: 'action',
-          width: 80,
-          align: 'center'
-        }
-      ],
-      // 采购单表格数据
-      newGoodsForm: [],
-      // 商品名称筛选（goodsId）
-      selectGoodsId: '',
-      // 固定商品列表
-      TheallGoodsList: [],
-      // 变化商品列表
-      changedGoodsList: [],
-      // 表格加载
-      goodslistloading: false,
-      // 商品列表表头
-      changedGoodsTableTitle: [
-        {
-          type: 'index',
-          width: 80,
-          align: 'center'
-        },{
-          title: '商品名称',
-          key: 'name',
-          align: 'center'
-        },{
-          title: '库存数量',
-          key: 'amount',
-          align: 'center',
-          sortable: true
-        }
-      ],
-      // 所有商品
-      temp: {
-        name: '所有商品',
-        goodsId: 0
-      },
       // 选中时间
       searchTimes: [
         moment().subtract(30,'days').format('YYYY-MM-DD'),
@@ -714,6 +615,152 @@ export default {
           return data&&data.valueOf()>Date.now()
         }
       },
+      // 选择商品弹框
+      selectItemModal: false,
+      // 选择商品表格表头
+      goodsTabletitle: [
+        {
+          type: 'index',
+          width: 60,
+          align: 'center'
+        },{
+          title: '商品名称',
+          key: 'name',
+          align: 'center'
+        },{
+          title: '库存数量',
+          key: 'amount',
+          align: 'center'
+        }
+      ],
+      // 选择商品表格数据
+      allGoodsList: [],
+      // 添加商品弹框
+      addNewItemModal: false,
+      // 添加商品项数据
+      newItemForm: {
+        name: '',
+        amount: 1,
+        price: 0
+      },
+      // 添加商品项数据校验
+      newItemRules: {
+        name: [{
+          required: true,
+          trigger: 'blur, change',
+          pattern:/^[\u4E00-\u9FA5A-Za-z0-9]{2,20}$/,
+          message: '仅支持2-20位大小写字母或数字、中文'
+        }],
+        amount: [{
+          required: true,
+          trigger: 'blur, change',
+          pattern:/^[0-9]*$/,
+          message: '请输入数字'
+        }],
+        price: [{
+          required: true,
+          trigger: 'blur, change',
+          pattern:/^[0-9]\d*|[0-9]\d*\.\d*$/,
+          message: '格式错误'
+        }]
+      },
+      // 选择采购员弹框
+      selectStaffModal: false,
+      // 选择采购员表格表头
+      staffTabletitle: [
+        {
+          type: 'index',
+          width: 60,
+          align: 'center'
+        },{
+          title: '采购员',
+          key: 'name',
+          align: 'center'
+        }
+      ],
+      // 选择采购员表格数据
+      allSelectOffice: [],
+      // 选中的采购员
+      selectStaff: '',
+      // 选择供应商弹框
+      selectSupplierModal: false,
+      // 选择供应商表格数据
+      supplierTabletitle: [
+        {
+          type: 'index',
+          width: 60,
+          align: 'center'
+        },{
+          title: '供应商',
+          key: 'name',
+          align: 'center'
+        }
+      ],
+      // 供应商数据列表
+      supplierList: [],
+      // 选择的供应商
+      selectSupplier: '',
+      // 采购单确认弹框
+      newPurchaseModal: false,
+      // 采购单表格表头
+      newTableTitle: [
+        {
+          type: 'index',
+          width: 60,
+          align: 'center'
+        },{
+          title: '商品名称',
+          slot: 'name',
+          align: 'center',
+        },{
+          title: '数量',
+          slot: 'amount',
+          align: 'center',
+          sortable: true
+        },{
+          title: '单价',
+          slot: 'price',
+          align: 'center',
+          sortable: true
+        },{
+          title: '操作',
+          slot: 'action',
+          width: 80,
+          align: 'center'
+        }
+      ],
+      // 采购单表格数据
+      newGoodsForm: [],
+      // 商品名称筛选（goodsId）
+      selectGoodsId: '',
+      // 表格加载
+      goodslistloading: false,
+      // 商品列表表头
+      changedGoodsTableTitle: [
+        {
+          type: 'index',
+          width: 80,
+          align: 'center'
+        },{
+          title: '商品名称',
+          key: 'name',
+          align: 'center'
+        },{
+          title: '库存数量',
+          key: 'amount',
+          align: 'center',
+          sortable: true
+        }
+      ],
+      // 固定商品列表
+      TheallGoodsList: [],
+      // 变化商品列表
+      changedGoodsList: [],
+      // 所有商品
+      temp: {
+        name: '所有商品',
+        goodsId: 0
+      },
       // 表格加载
       purchaselistloading: false,
       // 采购单列表表头
@@ -749,22 +796,17 @@ export default {
       ThechangedPurchaseList: [],
       // 变化采购单列表
       changedPurchaseList: [],
-      
-
-
       // 销售选择商品弹框
       saleSelectItemModal: false,
       // 销售选择商品表格数据
       saleAllGoodsList: [],
-      // 销售选择的商品
-      saleSelectGoods: '',
       // 销售单单表格数据
       saleNewGoodsForm: [],
-
-
+      // 销售单确认弹窗
+      newSaleModal: false,
       // 选择销售员弹框
       saleSelectStaffModal: false,
-      // 选择采购员表格数据
+      // 选择销售员表格数据
       saleAllSelectOffice: [],
       // 选中的销售员
       saleSelectStaff: '',
@@ -785,12 +827,7 @@ export default {
       // 选择会员表格数据
       memberList: [],
       // 选择的会员
-      selectMember: '',
-      
-
-      
-      // 供应商数据列表
-      supplierList: [],
+      selectMember: '',     
       // 供应商信息
       newSupplierForm: {
         name: '',
@@ -907,13 +944,13 @@ export default {
       this.goodslistloading=true
       selectGoods({userId: this.$store.state.userId}).then(res => {
         if(res.code == '200'){
-          // 采购商品
+          // 采购（选择商品）
           this.allGoodsList=res.allgoods.map(item => {
             return {
               ...item
             }
           })
-          // 销售商品
+          // 销售（选择商品）
           this.saleAllGoodsList=res.allgoods.map(item => {
             return {
               ...item
@@ -1024,12 +1061,12 @@ export default {
         this.allGoodsList.forEach((item,index) => {
           if(item.goodsId === currentRow.goodsId) {
             item['_highlight'] = true
-            this.selectGoods=item
-            this.selectGoods.amount=1
-            this.selectGoods.price=0
-            this.selectGoods['unchange']=true
+            let selectGoods=item
+            selectGoods.amount=1
+            selectGoods.price=0
+            selectGoods['unchange']=true
             this.selectItemModal=false
-            this.newGoodsForm.push(this.selectGoods)
+            this.newGoodsForm.push(selectGoods)
             this.allGoodsList.splice(index,1)
           }else{
             item['_highlight'] = false
@@ -1097,44 +1134,50 @@ export default {
     // 删除商品列表中的商品项
     removeGoodsItem(row,index) {
       row['_highlight']=false
-      this.allGoodsList.push(row)
+      row['unchange']=false
+      this.TheallGoodsList.forEach(item => {
+        if(item.goodsId === row.goodsId){
+          this.allGoodsList.push(item)
+        }
+      })
       this.newGoodsForm.splice(index,1)
     },
     // 添加采购单
     btnAddPurchase() {
       var reg=new RegExp(/^[0-9]\d*|[0-9]\d*\.\d*$/)
       let ischecked=true
-      for (const key in this.newGoodsForm) {
-        const item = this.newGoodsForm[key];
-        console.log("信息",item)
-        if((item.price === 0) || (!reg.test(item.price))) {
-          this.$Message.error('请输入正确的单价')
-          ischecked=false
-          return
-        }
-        if(item.amount === null) {
-          this.$Message.error('请输入采购数量')
-          ischecked=false
-          return
-        }
+      if(this.newGoodsForm.length == 0){
+        this.$Message.error('请添加采购商品')
+        ischecked=false
+      } else {
+        this.newGoodsForm.forEach(item => {
+          if((item.price === 0) || (!reg.test(item.price)) || item.price === null) {
+            this.$Message.error('请输入正确的单价')
+            ischecked=false
+            return
+          }
+          if(item.amount === null) {
+            this.$Message.error('请输入采购数量')
+            ischecked=false
+            return
+          }
+        })
       }
       if(this.selectStaff.staffId == null){
         this.$Message.error('请选择采购员')
         ischecked=false
-      }
-      if(this.selectSupplier.supplierId == null){
+      }else if(this.selectSupplier.supplierId == null){
         this.$Message.error('请选择供应商')
         ischecked=false
       }
       if(ischecked) {
+        let totalPrice=0
+        this.newGoodsForm.forEach(item => {
+          totalPrice=totalPrice+item.amount*item.price
+        })
+        this.newGoodsForm.totalPrice=totalPrice
         this.newPurchaseModal=true
       }
-      let totalPrice=0
-      this.newGoodsForm.forEach(item => {
-        totalPrice=totalPrice+item.amount*item.price
-      })
-      this.newGoodsForm.totalPrice=totalPrice
-      console.log("采购单：",this.newGoodsForm)
     },
     // 新建采购单：采购员Id+供应商Id+总价格+时间
     // （选择商品）更新商品表：商品Id+数量
@@ -1149,7 +1192,6 @@ export default {
         totalPrice: this.newGoodsForm.totalPrice,
         newGoodsForm: JSON.stringify(this.newGoodsForm)
       }
-      console.log("传递的数据",purchase)
       addnewpurchase(purchase).then(data => {
         if(data.code == '200'){
           this.$Message.info('添加新采购单成功')
@@ -1160,11 +1202,6 @@ export default {
           this.$Message.info('添加新采购单失败')
         }
       })
-    },
-    // 取消添加采购单确认
-    cancelAddPurchase() {
-      this.newPurchaseModal=false
-      this.$Message.info('取消添加新采购单')
     },
     // 清空采购单
     clearPurchase(){
@@ -1401,6 +1438,24 @@ export default {
         }
       })
     },
+    // 销售选择商品
+    saleSelectGoodsList(currentRow, oldCurrentRow) {
+      if(currentRow){
+        this.saleAllGoodsList.forEach((item,index) => {
+          if(item.goodsId === currentRow.goodsId) {
+            item['_highlight'] = true
+            let saleSelectGoods=item
+            saleSelectGoods.amount=1
+            saleSelectGoods.price=0
+            this.saleSelectItemModal=false
+            this.saleNewGoodsForm.push(saleSelectGoods)
+            this.saleAllGoodsList.splice(index,1)
+          }else{
+            item['_highlight'] = false
+          }
+        })
+      }
+    },
     // 选择销售员
     saleSelectStaffList(currentRow, oldCurrentRow) {
       if(currentRow){
@@ -1429,35 +1484,88 @@ export default {
         })
       }
     },
-    // 销售选择商品
-    saleSelectGoodsList(currentRow, oldCurrentRow) {
-      if(currentRow){
-        this.saleAllGoodsList.forEach((item,index) => {
-          if(item.goodsId === currentRow.goodsId) {
-            item['_highlight'] = true
-            this.saleSelectGoods=item
-            this.saleSelectGoods.amount=1
-            this.saleSelectGoods.price=0
-            this.saleSelectItemModal=false
-            this.saleNewGoodsForm.push(this.saleSelectGoods)
-            this.saleAllGoodsList.splice(index,1)
-          }else{
-            item['_highlight'] = false
-          }
-        })
-      }
-    },
     // 删除销售单商品列表中的商品项
     saleRemoveGoodsItem(row,index) {
       row['_highlight']=false
-      this.saleAllGoodsList.push(row)
+      this.TheallGoodsList.forEach(item => {
+        if(item.goodsId === row.goodsId){
+          this.saleAllGoodsList.push(item)
+        }
+      })
       this.saleNewGoodsForm.splice(index,1)
     },
     // 添加销售单
     btnAddSales() {
-
+      var reg=new RegExp(/^[0-9]\d*|[0-9]\d*\.\d*$/)
+      let ischecked=true
+      if(this.saleNewGoodsForm.length == 0){
+        this.$Message.error('请选择销售商品')
+        ischecked=false
+      } else {
+        this.saleNewGoodsForm.forEach(item => {
+          if(item.price === 0 || (!reg.test(item.price)) || item.price === null){
+            this.$Message.error('请输入正确的单价')
+            ischecked=false
+            return
+          }
+          if(item.amount === null) {
+            this.$Message.error('请输入销售数量')
+            ischecked=false
+            return
+          }else{
+            let tempitem=this.TheallGoodsList.filter(i => i.goodsId == item.goodsId)
+            if(item.amount>tempitem[0].amount){
+              this.$Message.error(item.name,'库存不足')
+              ischecked=false
+              return
+            }
+          }
+        })
+      }
+      if(this.saleSelectStaff.staffId == null){
+        this.$Message.error('请选择销售员')
+        ischecked=false
+      }
+      if(ischecked) {
+        let totalPrice=0
+        this.saleNewGoodsForm.forEach(item => {
+          totalPrice=totalPrice+item.amount*item.price
+        })
+        this.saleNewGoodsForm.totalPrice=totalPrice
+        this.newSaleModal=true
+      }
+    },
+    // 添加销售单确认
+    resubmitAddSale() {
+      let sales={
+        staffId: this.saleSelectStaff.staffId,
+        memberId: this.selectMember.memberId,
+        totalPrice: this.saleNewGoodsForm.totalPrice,
+        saleNewGoodsForm: JSON.stringify(this.saleNewGoodsForm)
+      }
+      addnewsales(sales).then(data => {
+        if(data.code == '200'){
+          this.$Message.info('添加新销售单成功')
+          this.newSaleModal=false
+          this.clearSales()
+        }
+        if(data.code == '500') {
+          this.$Message.info('添加新销售单失败')
+        }
+      })
+    },
+    // 清空销售单
+    clearSales() {
+      this.saleNewGoodsForm=[]
+      this.selectMember=''
+      this.saleSelectStaff=''
+      this.memberList.forEach(item => {
+        item['_highlight'] = false
+      })
+      this.saleAllSelectOffice.forEach(item => {
+        item['_highlight'] = false
+      })
     }
-
   }
 }
 </script>

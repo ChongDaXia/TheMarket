@@ -111,6 +111,17 @@ export const addnewpurchase = params => {
     })
 }
 
+// 保存销售单
+export const addnewsales = params => {
+    return axios ({
+        url: '/goods/home/addnewsales',
+        method: 'post',
+        data: {
+            ...params
+        }
+    })
+}
+
 //获取采购单
 export const getAllPurchase = params => {
     return axios ({

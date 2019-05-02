@@ -162,6 +162,21 @@
                     <p>是否确认修改该员工薪资信息？</p>
                 </Modal>
             </TabPane>
+
+            <!-- 工资报表 -->
+            <TabPane label="工资报表" name="name3">
+                <Button @click="createSalary">创建当月工资单</Button>
+                <Table 
+                    height="400" 
+                    stripe 
+                    :columns="salarytableTitle" 
+                    :data="TheSelectStaffList" >
+                    <template slot-scope="{row,index}" slot="action">
+                      <Button icon="md-open" @click="staffDetail(row,index)" ></Button>
+                      <Button @click="wagesDetail(row,index)" >薪资详情</Button>
+                    </template>
+                </Table>
+            </TabPane>
         </Tabs>
 
         <!-- <vue-particles 
@@ -330,8 +345,39 @@ export default {
           pattern:/^[\u4E00-\u9FA5A-Za-z0-9]{2,20}$/,
           message: '仅支持2-20位大小写字母、数字、中文'
         }]
-      }
-
+      },
+      // 工资表格表头
+      salarytableTitle: [
+        {
+          title: '员工ID',
+          key: 'staffId'
+        },
+        {
+          title: '姓名',
+          key: 'name'
+        },
+        {
+          title: '岗位',
+          key: 'post'
+        },
+        {
+          title: '工资',
+          key: 'wages'
+        },
+        {
+          title: '当月工资发放状态',
+          key: 'salaryStatus'
+        },
+        {
+          title: '状态时间',
+          key: 'createTime'
+        },
+        {
+          title: '操作',
+          slot: 'action',
+          align: 'center'
+        }
+      ]
     }
   },
 

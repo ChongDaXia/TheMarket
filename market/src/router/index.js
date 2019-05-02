@@ -3,7 +3,7 @@ import Router from 'vue-router'
 // 引入项目的模块组件
 import login from '@/components/login'
 import home from '@/components/home'
-import addsome from '@/components/addsome'
+import pageindex from '@/components/pageindex'
 import usermanager from '@/components/user/index'
 import shopmanager from '@/components/shop/index'
 import goodsmanager from '@/components/goods/index'
@@ -11,6 +11,7 @@ import staffmanager from '@/components/staff/index'
 import membermanager from '@/components/member/index'
 import repairmanager from '@/components/repair/index'
 import informmanager from '@/components/inform/index'
+import financemanager from '@/components/finance/index'
 
 Vue.use(Router)
 
@@ -33,9 +34,9 @@ export default new Router({
       },
       children: [
         {
-          path: '/addsome',
-          name: 'addsome',
-          component: addsome,
+          path: '/pageindex',
+          name: 'pageindex',
+          component: pageindex,
           meta: {
             isLogin: true
           }
@@ -92,6 +93,14 @@ export default new Router({
           path: '/informmanager',
           name: 'informmanager',
           component: informmanager,
+          meta: {
+            isLogin: true
+          }
+        },
+        {
+          path: '/financemanager',
+          name: 'financemanager',
+          component: financemanager,
           meta: {
             isLogin: true
           }

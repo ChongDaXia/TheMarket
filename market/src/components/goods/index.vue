@@ -149,15 +149,18 @@
                     title="采购单" 
                     @on-ok="resubmitAddPurchase" 
                     @on-cancel="newPurchaseModal=false">
-                    <p>[采购时间]{{daytime}}</p>
-                    <p>[采购员]{{selectStaff.name}}</p>
-                    <p>[供应商]{{selectSupplier.name}}</p>
-                    <Row>
+                    <p><span class="mstyle">[采购时间]</span>{{daytime}}</p>
+                    <Divider />
+                    <p><span class="mstyle">[采购员]</span>{{selectStaff.name}}</p>
+                    <Divider />
+                    <p><span class="mstyle">[供应商]</span>{{selectSupplier.name}}</p>
+                    <Divider />
+                    <Row class="mstyle">
                         <Col span="8">商品名称</Col>
                         <Col span="8">数量</Col>
-                        <Col span="8">单价</Col>
+                        <Col span="8">单价（元）</Col>
                     </Row>
-                    <ul>
+                    <ul class="mstyle">
                         <li v-for="(item,index) in newGoodsForm">
                             <Row>
                                 <Col span="8">{{item.name}}</Col>
@@ -166,7 +169,8 @@
                             </Row>
                         </li>
                     </ul>
-                    <p>[采购总额]{{newGoodsForm.totalPrice}}</p>
+                    <Divider />
+                    <p><span class="mstyle">[采购总额]</span>{{newGoodsForm.totalPrice}}元</p>
                 </Modal>
             </TabPane>
             
@@ -349,15 +353,18 @@
                     title="销售单" 
                     @on-ok="resubmitAddSale" 
                     @on-cancel="newSaleModal=false">
-                    <p>[销售时间]{{daytime}}</p>
-                    <p>[销售员]{{saleSelectStaff.name}}</p>
-                    <p>[会员]{{selectMember.name}}</p>
-                    <Row>
+                    <p><span class="mstyle">[销售时间]</span>{{daytime}}</p>
+                    <Divider />
+                    <p><span class="mstyle">[销售员]</span>{{saleSelectStaff.name}}</p>
+                    <Divider />
+                    <p><span class="mstyle">[会员]</span>{{selectMember.name}}</p>
+                    <Divider />
+                    <Row class="mstyle">
                         <Col span="8">商品名称</Col>
                         <Col span="8">数量</Col>
-                        <Col span="8">单价</Col>
+                        <Col span="8">单价（元）</Col>
                     </Row>
-                    <ul>
+                    <ul class="mstyle">
                         <li v-for="(item,index) in saleNewGoodsForm">
                             <Row>
                                 <Col span="8">{{item.name}}</Col>
@@ -366,8 +373,13 @@
                             </Row>
                         </li>
                     </ul>
-                    <p>[销售总额]{{saleNewGoodsForm.totalPrice}}</p>
-                    <p>[积分]{{saleNewGoodsForm.totalPrice*10}}</p>
+                    <Divider />
+                    <p><span class="mstyle">[销售总额]</span>{{saleNewGoodsForm.totalPrice}}元</p>
+                    <Divider />
+                    <p v-if="selectMember.name != null">
+                        <span class="mstyle">[积分]</span>
+                        {{saleNewGoodsForm.totalPrice*10}}
+                    </p>
                 </Modal>
             </TabPane>
 
@@ -523,17 +535,17 @@
                 <Row>
                     <Col span="12" class="echartsbox">
                         <echarts
-                            style="width: 450px; height: 400px;"
-                            refName="goodsline"
-                            type="line"
-                            :chartsData="echartDataLine" />
-                    </Col>
-                    <Col span="12" class="echartsbox">
-                        <echarts
                             style="width: 400px; height: 400px;"
                             refName="goodsbar"
                             type="bar"
-                            :chartsData="echartDataLine" />
+                            :chartsData="echartAmountData" />
+                    </Col>
+                    <Col span="12" class="echartsbox">
+                        <echarts
+                            style="width: 450px; height: 400px;"
+                            refName="goodsline"
+                            type="bar"
+                            :chartsData="echartSalesCountData" />
                     </Col>
                 </Row>
             </TabPane>
@@ -906,8 +918,11 @@ export default {
       deleteable: false,
       // 供应商删除二次确认按钮
       redeleteSupplierModal: false,
-      // 图表显示数据
-      echartDataLine: {}
+      // 图表库存数据
+      echartAmountData: {},
+      // 图表销售数据
+      echartSalesCountData: {}
+
     }
   },
 
@@ -1003,14 +1018,20 @@ export default {
           })
           // 图表
           let x=[]
-          let echartData=[]
+          let echartamount=[]
+          let echartsalescount=[]
           res.allgoods.forEach(item => {
             x.push(item.name)
-            echartData.push(item.amount)
+            echartamount.push(item.amount)
+            echartsalescount.push(item.salesCount)
           })
-          this.echartDataLine={
+          this.echartAmountData={
             x: x.reverse(),
-            data: [{name: '商品库存', data: echartData.reverse()}]
+            data: [{name: '商品库存数量', data: echartamount.reverse()}]
+          }
+          this.echartSalesCountData={
+            x: x.reverse(),
+            data: [{name: '商品销售数量', data: echartsalescount.reverse()}]
           }
           this.goodslistloading=false
         }
@@ -1411,8 +1432,6 @@ export default {
         },2000)
       })
     },
-
-
     // 获取所有销售单
     saleGetAllgoods() {
       saleSelectGoods({userId: this.$store.state.userId}).then(res => {
@@ -1547,6 +1566,7 @@ export default {
         if(data.code == '200'){
           this.$Message.info('添加新销售单成功')
           this.newSaleModal=false
+          this.getAllgoods()
           this.clearSales()
         }
         if(data.code == '500') {
@@ -1680,5 +1700,8 @@ export default {
 .cardstyle{
   margin-bottom: 10px;
   border-color: #66a9c9;
+}
+.mstyle{
+  margin: 0 10px;
 }
 </style>

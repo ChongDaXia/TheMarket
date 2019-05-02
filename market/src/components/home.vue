@@ -120,7 +120,7 @@
                 <Layout :style="{padding: '0 24px 24px'}">
                     <!-- 主体路由 -->
                     <Breadcrumb style="margin:24px 0">
-                        <BreadcrumbItem to="/">
+                        <BreadcrumbItem to="/pageindex">
                             <Icon type="ios-apps" />主页
                         </BreadcrumbItem>
                         <BreadcrumbItem>
@@ -369,7 +369,8 @@ export default {
     top: 15px;
     left: 20px;
     border-radius: 3px;
-    color: #ffde20;
+    color: #66a9c9;
+    font-size: 20px;
     text-align: center;
     background: #ffffff;
 }

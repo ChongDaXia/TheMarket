@@ -34,7 +34,7 @@
                     <Icon type="md-chatboxes" class="iconstyle"/>
                     通知管理
                 </MenuItem>
-                <MenuItem name="EchartsPage">
+                <MenuItem name="FinanceManager">
                     <Icon type="ios-stats" class="iconstyle"/>
                     财务统计报表
                 </MenuItem>
@@ -119,9 +119,16 @@ export default {
           localStorage.setItem('selectmemu','通知管理')
           this.$store.dispatch('setSelectMemu','通知管理')
           break;
+        case 'FinanceManager':
+          this.$router.push({
+            path: '/financemanager'
+          })
+          localStorage.setItem('selectmemu','财务统计')
+          this.$store.dispatch('setSelectMemu','财务统计')
+          break;
         default:
           this.$router.push({
-            path: '/addsome',
+            path: '/pageindex',
             query: {
               theid: HomePage
             }

@@ -73,8 +73,8 @@
                         :data="selectStoreList" >
                         <template slot-scope="{row,index}" slot="action">
                             <Button icon="md-open" @click="showStoreDetail(row,index)" ></Button>
-                            <Button @click="addStoreUser(row,index)" v-if="row.rentStatus == '0'">添加租户</Button>
-                            <Button @click="updateStoreUser(row,index)" v-if="row.rentStatus == '1'">修改租户</Button>
+                            <Button @click="addStoreUser(row,index)" v-if="row.rentStatus == '未租出'">添加租户</Button>
+                            <Button @click="updateStoreUser(row,index)" v-if="row.rentStatus == '已租出'">修改租户</Button>
                         </template>
                     </Table>
                 </div>
@@ -155,26 +155,25 @@
                             <Button class="login-btn" shape="circle" @click="canceladdRent">取消</Button>
                             <Button class="login-btn" shape="circle" @click="submitNewRent">添加</Button>
                         </div>
-                          <!-- 租户选择列表 -->
-                <Modal 
-                    v-model="selectUserModal" 
-                    :mask-closable="false"  
-                    :footer-hide="true"
-                    width="400" >
-                    <p class="modaltitle">
-                        <span>租户</span>
-                    </p>
-                    <Table 
-                        ref="userTableRef" 
-                        height="300" border 
-                        :columns="userTabletitle" 
-                        :data="allSelectUser" 
-                        :highlight-row=true
-                        @on-current-change="selectUserList" />
-                </Modal>
+                        <!-- 租户选择列表 -->
+                        <Modal 
+                            v-model="selectUserModal" 
+                            :mask-closable="false"  
+                            :footer-hide="true"
+                            width="400" >
+                            <p class="modaltitle">
+                                <span>租户</span>
+                            </p>
+                            <Table 
+                                ref="userTableRef" 
+                                height="300" border 
+                                :columns="userTabletitle" 
+                                :data="allSelectUser" 
+                                :highlight-row=true
+                                @on-current-change="selectUserList" />
+                        </Modal>
                     </Form>
                 </Modal>
-              
                 <!-- 添加租户二次确认框 -->
                 <Modal 
                     v-model="readdRentModal" 
@@ -258,7 +257,7 @@
                         @on-select-all="selectDeleted"
                         @on-select-all-cancel="cancelselectDeleted" >
                         <template slot-scope="{row,index}" slot="action">
-                            <Button @click="remoteStoreUser(row,index)" v-if="row.rentStatus == '1'">移除租户</Button>
+                            <Button @click="remoteStoreUser(row,index)" v-if="row.rentStatus == '已租出'">移除租户</Button>
                         </template>
                     </Table>
                 </div>
@@ -379,9 +378,9 @@ export default {
           filterMultiple: false,
           filterMethod(value,row) {
             if(value === 1){
-              return row.rentStatus == '0'
+              return row.rentStatus == '未租出'
             } else if (value === 2) {
-              return row.rentStatus == '1'
+              return row.rentStatus == '已租出'
             }
           }
         }, {
@@ -628,6 +627,11 @@ export default {
                 i['userId']=item.userId
               }
             })
+            if(i.rentStatus==0){
+              i['rentStatus']='未租出'
+            }else if(i.rentStatus==1){
+              i['rentStatus']='已租出'
+            }
           })
           this.selectStoreList=this.TheselectStoreList.map(item => {
             return {
@@ -638,6 +642,13 @@ export default {
         }
         if(data.code == '300') {
           this.TheselectStoreList = data.stores;
+          this.TheselectStoreList.forEach(i => {
+            if(i.rentStatus==0){
+              i['rentStatus']='未租出'
+            }else if(i.rentStatus==1){
+              i['rentStatus']='已租出'
+            }
+          })
           this.selectStoreList=this.TheselectStoreList.map(item => {
             return {
               ...item
@@ -762,7 +773,6 @@ export default {
           this.$Message.error('填写内容不符合规范')
         }
       })
-      console.log("信息：",this.addRentForm)
     },
     // 取消添加租户确认
     canceladdRent() {
@@ -799,7 +809,6 @@ export default {
           this.$Message.error('填写内容不符合规范')
         }
       })
-      console.log("信息：",this.updateRentForm)
     },
     // 取消修改租户确认
     cancelupdateRent() {

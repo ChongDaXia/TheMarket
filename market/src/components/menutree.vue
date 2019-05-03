@@ -34,10 +34,10 @@
                     <Icon type="md-chatboxes" class="iconstyle"/>
                     通知管理
                 </MenuItem>
-                <MenuItem name="FinanceManager">
+                <!-- <MenuItem name="FinanceManager">
                     <Icon type="ios-stats" class="iconstyle"/>
                     财务统计报表
-                </MenuItem>
+                </MenuItem> -->
             </MenuGroup>
         </Menu>
     </div>

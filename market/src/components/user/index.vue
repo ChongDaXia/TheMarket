@@ -718,7 +718,7 @@ export default {
   margin: 0px auto;
   padding: 30px;
   box-shadow: 0 4px 50px rgba(80, 80, 80, 0.15);
-  background: #f8f8f9;
+  background: #fff;
 }
 .form-item{
   text-align: center;

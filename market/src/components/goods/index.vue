@@ -573,7 +573,7 @@
 
 <script>
 import moment from 'moment'
-import {selectGoods,getAllgoods,addnewpurchase,getAllPurchase,saleSelectGoods,addnewsales} from '@/http/moudules/goods'
+import {selectGoods,getallgoods,addnewpurchase,getAllPurchase,saleSelectGoods,addnewsales} from '@/http/moudules/goods'
 import {selectPurchaseStaff} from '@/http/moudules/staff'
 import {getAllMember} from '@/http/moudules/member'
 import echarts from '../../echarts'
@@ -935,24 +935,65 @@ export default {
     // tab函数
     selectTab(name){
       if(name === 'name1'){
-        this.getAllgoods()
         this.getAllsupplierlist()
-        this.newGoodsForm=[]
-        this.selectStaff=''
-        this.selectSupplier=''
+        this.updateAfterPurchase()
       }
       if(name === 'name2'){
         this.getAllPurchases()
       }
       if(name === 'name3'){
         this.getAllMemberInfo()
-        this.saleNewGoodsForm=[]
-        this.saleSelectStaff=''
-        this.selectMember=''
+        this.updateAfterSales()
       }
       if(name === 'name4'){
         this.getAllsupplierlist()
       }
+      if(name === 'name5'){
+        this.getEchartDate()
+      }
+    },
+    // 采购单刷新
+    updateAfterPurchase() {
+      this.getAllgoods()
+      this.newGoodsForm=[]
+      this.selectStaff=''
+      this.selectSupplier=''
+    },
+    // 销售单刷新
+    updateAfterSales() {
+      this.getAllgoods()
+      this.saleNewGoodsForm=[]
+      this.saleSelectStaff=''
+      this.selectMember=''
+    },
+    // 获取图表数据
+    getEchartDate(){
+      let tempdate=this.TheallGoodsList.map(item => item.goodsId)
+      getallgoods({tempdate: JSON.stringify(tempdate)}).then(res => {
+        if(res.code == '200'){
+          let goods=res.allgoods
+          // 图表
+          let x=[]
+          let echartamount=[]
+          let echartsalescount=[]
+          goods.forEach(item => {
+            x.push(item.name)
+            echartamount.push(item.amount)
+            echartsalescount.push(item.salesCount)
+          })
+          this.echartAmountData={
+            x: x.reverse(),
+            data: [{name: '商品库存数量', data: echartamount}]
+          }
+          this.echartSalesCountData={
+            x: x.reverse(),
+            data: [{name: '商品销售数量', data: echartsalescount}]
+          }
+        }
+        if(res.code == '500'){
+          this.$Message.info('暂时无商品数据')
+        }
+      })
     },
     // 获取所有商品\采购员\销售员\采购单\报表
     getAllgoods() {
@@ -977,7 +1018,6 @@ export default {
               ...item
             }
           })
-          this.TheallGoodsList.push(this.temp)
           // 变化的商品列表
           this.changedGoodsList=res.allgoods.map(item => {
             return {
@@ -1016,23 +1056,6 @@ export default {
               }
             })
           })
-          // 图表
-          let x=[]
-          let echartamount=[]
-          let echartsalescount=[]
-          res.allgoods.forEach(item => {
-            x.push(item.name)
-            echartamount.push(item.amount)
-            echartsalescount.push(item.salesCount)
-          })
-          this.echartAmountData={
-            x: x.reverse(),
-            data: [{name: '商品库存数量', data: echartamount.reverse()}]
-          }
-          this.echartSalesCountData={
-            x: x.reverse(),
-            data: [{name: '商品销售数量', data: echartsalescount.reverse()}]
-          }
           this.goodslistloading=false
         }
         if(res.code == '300'){
@@ -1217,12 +1240,14 @@ export default {
         if(data.code == '200'){
           this.$Message.info('添加新采购单成功')
           this.newPurchaseModal=false
+          this.getAllgoods()
           this.clearPurchase()
         }
         if(data.code == '500') {
           this.$Message.info('添加新采购单失败')
         }
       })
+
     },
     // 清空采购单
     clearPurchase(){

@@ -11,7 +11,7 @@ export const addnewgoods = params => {
     })
 }
 // 获取所有商品
-export const getAllgoods = params => {
+export const getallgoods = params => {
     return axios ({
         url: '/goods/home/getallgoods',
         method: 'get',

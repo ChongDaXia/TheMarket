@@ -619,6 +619,11 @@ export default {
                 i['name']=item.name
               }
             })
+            offices.forEach((item,index) => {
+              if(i.staffId == item.staffId){
+                i['post']=item.post
+              }
+            })
             i['createTime']=moment(i.createTime).format('YYYY-MM-DD')
             if(i.salaryStatus === 0){
               i['salaryStatus']='未发放'

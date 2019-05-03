@@ -32,6 +32,7 @@ export default new Router({
       meta: {
         isLogin: true
       },
+      redirect: '/pageindex',
       children: [
         {
           path: '/pageindex',

@@ -59,7 +59,9 @@ export default {
     width: 100%;
     height: 500px;
     background: #66a9c9;
-    text-align: center;
     padding-top: 50px;
+}
+img{
+    margin-left: 250px;
 }
 </style>       

@@ -78,7 +78,7 @@
                         </template>
                     </Table>
                 </div>
-                <!-- 数据详情 -->
+                <!-- 员工信息数据详情 -->
                 <Modal 
                     v-model="staffDetailModal" 
                     :mask-closable="false"  
@@ -163,19 +163,42 @@
                 </Modal>
             </TabPane>
 
-            <!-- 工资报表 -->
-            <TabPane label="工资报表" name="name3">
-                <Button @click="createSalary">创建当月工资单</Button>
-                <Table 
-                    height="400" 
-                    stripe 
-                    :columns="salarytableTitle" 
-                    :data="TheSelectStaffList" >
-                    <template slot-scope="{row,index}" slot="action">
-                      <Button icon="md-open" @click="staffDetail(row,index)" ></Button>
-                      <Button @click="wagesDetail(row,index)" >薪资详情</Button>
-                    </template>
-                </Table>
+            <!-- 工资表 -->
+            <TabPane label="工资表" name="name3">
+                <div class="header">
+                    <Button @click="createSalary">创建当月工资单</Button>
+                    <Modal 
+                        v-model="addNewSalaryModal" 
+                        :mask-closable="false"  
+                        @on-ok="submitAddNewSalary"  
+                        @on-cancel="cancelAddNewSalary" 
+                        width="400" >
+                        <p class="modaltitle">
+                            <span>请选择薪资员工</span>
+                        </p>
+                        <Table 
+                            ref="newSalaryTableRef" 
+                            height="300" border 
+                            :columns="newSalaryTabletitle" 
+                            :data="salaryStaffList" 
+                            @on-select="selectSalaryStaff"
+                            @on-select-cancel="cancelSalaryStaff"
+                            @on-select-all="selectSalaryStaff"
+                            @on-select-all-cancel="cancelSalaryStaff">
+                        </Table>
+                    </Modal>
+                </div>
+                <div class="content">
+                    <Table 
+                        height="400" 
+                        stripe 
+                        :columns="salarytableTitle" 
+                        :data="allStaffSalary" >
+                        <template slot-scope="{row,index}" slot="action">
+                          <Button @click="staffSalaryStates(row,index)" v-if="row.salaryStatus == '未发放'">发放工资</Button>
+                        </template>
+                    </Table>
+                </div>
             </TabPane>
         </Tabs>
 
@@ -202,7 +225,7 @@
 
 <script>
 import moment from 'moment'
-import {addnewstaff,getAllStaff,updatestaff,updatetakeoffice} from '@/http/moudules/staff'
+import {addnewstaff,getAllStaff,updatestaff,updatetakeoffice,getSalary,addNewSalary,updateSalary} from '@/http/moudules/staff'
 export default {
   data() {
     return {
@@ -362,7 +385,7 @@ export default {
         },
         {
           title: '工资',
-          key: 'wages'
+          key: 'salary'
         },
         {
           title: '当月工资发放状态',
@@ -377,7 +400,36 @@ export default {
           slot: 'action',
           align: 'center'
         }
-      ]
+      ],
+      // 本月开始结束时间
+      startDate: new Date(moment().startOf('month')).getTime(),
+      endDate: new Date(moment().endOf('month').endOf('month')).getTime(),
+      // 创建工资条弹框
+      addNewSalaryModal: false,
+      // 创建工资条表格表头
+      newSalaryTabletitle: [
+        {
+          type: 'selection',
+          width: 60,
+          align: 'center'
+        },{
+          title: '员工ID',
+          key: 'staffId'
+        },{
+          title: '姓名',
+          key: 'name'
+        },{
+          title: '工资',
+          key: 'wages'
+        },{
+          title: '岗位',
+          key: 'post'
+        }
+      ],
+      // 创建工资条表格数据
+      salaryStaffList: [],
+      // 所有工资单
+      allStaffSalary: [],
     }
   },
 
@@ -387,6 +439,10 @@ export default {
       if(name === 'name2'){
         this.getAllStaffInfo()
         this.selectStaffId=''
+      }
+      if(name === 'name3'){
+        this.getAllStaffInfo()
+        this.getAllSalary()
       }
     },
     // 添加新员工
@@ -439,6 +495,11 @@ export default {
             })
           })
           this.selectStaffList=this.TheSelectStaffList.map(item => {
+            return {
+              ...item
+            }
+          })
+          this.salaryStaffList=this.TheSelectStaffList.map(item => {
             return {
               ...item
             }
@@ -544,6 +605,122 @@ export default {
     recancelUpdateStaffWages() {
       this.restaffWagesModal=false
       this.$Message.info('取消员工薪资信息修改')
+    },
+    // 获取所有工资表单
+    getAllSalary() {
+      getSalary({userId: this.$store.state.userId}).then(data => {
+        if(data.code == '200'){
+          let offices=data.offices
+          let staff=data.staffs
+          let salarys=data.salarys
+          salarys.forEach((i,index) => {
+            staff.forEach(item => {
+              if(i.staffId == item.staffId){
+                i['name']=item.name
+              }
+            })
+            i['createTime']=moment(i.createTime).format('YYYY-MM-DD')
+            if(i.salaryStatus === 0){
+              i['salaryStatus']='未发放'
+            }else if(i.salaryStatus === 1){
+              i['salaryStatus']='已发放'
+            }
+          })
+          this.allStaffSalary=salarys
+        }
+        if(data.code == '500') {
+          this.$Message.info('暂无工资信息')
+        }
+      })
+    },
+    // 创建工资条按钮
+    createSalary() {
+      this.allStaffSalary.forEach(item => {
+        let time=new Date(item.createTime).getTime();
+        if(time >= this.startDate && time <= this.endDate){
+          this.salaryStaffList.forEach((i,index) => {
+            if(item.staffId == i.staffId){
+              this.salaryStaffList.splice(index,1)
+            }
+          })
+        }
+      })
+      this.addNewSalaryModal=true
+    },
+    // 工资收取人选中
+    selectSalaryStaff(selection, row){
+      // 全选
+      if (!row && selection && selection.length > 0) {
+        this.salaryStaffList.forEach(item => {
+          item['_checked'] = true
+        })
+      } else {
+        // 单选
+        this.salaryStaffList.forEach(item => {
+          if(item.staffId === row.staffId) {
+            item['_checked'] = true
+          }
+        })
+      }
+    },
+    // 工资收取人取消选中
+    cancelSalaryStaff(selection, row){
+      // 全不选
+      if (!row && selection && selection.length == 0) {
+        this.salaryStaffList.forEach(item => {
+          item['_checked'] = false
+        })
+      } else {
+        // 单不选
+        this.salaryStaffList.forEach(item => {
+          if(item.staffId === row.staffId) {
+            item['_checked'] = false
+          }
+        })
+      }
+    },
+    // 创建工资条确认按钮
+    submitAddNewSalary() {
+      this.salaryStaffList.forEach((item,index) => {
+        if(item['_checked'] == true) {
+          let temp={
+            staffId: item.staffId,
+            salary: item.wages,
+            salaryStatus: 0
+          }
+          addNewSalary(temp).then(data => {
+            if(data.code == '200'){
+              this.salaryStaffList.splice(index,1)
+            }
+            if(data.code == '500') {
+              this.$Message.error('工资单添加失败')
+            }
+          })
+        }
+      })
+      this.addNewSalaryModal=false
+      this.getAllSalary()
+    },
+    // 创建工资条取消按钮
+    cancelAddNewSalary() {
+      this.addNewSalaryModal=false
+    },
+    // 发放工资状态修改
+    staffSalaryStates(row,index){
+      let temp={
+        staffId: row.staffId,
+        salary: row.wages,
+        Time: row.createTime
+      }
+      updateSalary(temp).then(data => {
+        if(data.code == '200'){
+          this.$Message.info('状态修改成功')
+          this.getAllSalary()
+        }
+        if(data.code == '500') {
+          this.$Message.error('状态修改失败')
+        }
+      })
     }
   }
 }

@@ -50,3 +50,34 @@ export const updatetakeoffice = params => {
         }
     })
 }
+
+// 获取所有工资表信息
+export const getSalary = params => {
+    return axios ({
+        url: '/staff/home/getSalary',
+        method: 'get',
+        params: params
+    })
+}
+
+// 保存工资信息
+export const addNewSalary = params => {
+    return axios ({
+        url: '/staff/home/saveSalary',
+        method: 'post',
+        data: {
+            ...params
+        }
+    })
+}
+
+// 更新工资单状态
+export const updateSalary = params => {
+    return axios ({
+        url: '/staff/home/updateSalary',
+        method: 'post',
+        data: {
+            ...params
+        }
+    })
+}

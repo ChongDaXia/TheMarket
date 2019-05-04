@@ -1559,7 +1559,7 @@ export default {
           }else{
             let tempitem=this.TheallGoodsList.filter(i => i.goodsId == item.goodsId)
             if(item.amount>tempitem[0].amount){
-              this.$Message.error(item.name,'库存不足')
+              this.$Message.error('商品库存不足')
               ischecked=false
               return
             }
